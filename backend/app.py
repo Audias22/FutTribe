@@ -1,5 +1,6 @@
 # backend/app.py
 
+import os
 from flask import Flask, jsonify
 from flask_cors import CORS
 from db_connector import fetch_all_jugadores # Importamos la función que vamos a usar
@@ -37,5 +38,6 @@ def get_jugadores():
 
 # --- 4. EJECUTAR SERVIDOR ---
 if __name__ == '__main__':
-    # 'debug=True' recarga el servidor automáticamente cuando guardas cambios.
-    app.run(debug=True, port=5000)
+    # Railway usa la variable PORT del entorno
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

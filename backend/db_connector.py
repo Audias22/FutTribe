@@ -2,13 +2,19 @@
 
 import mysql.connector
 from mysql.connector import Error
+import os
+from dotenv import load_dotenv
 
-# --- CONFIGURACIÓN DE LA BASE DE DATOS (Servidor Local) ---
+# Cargar variables de entorno
+load_dotenv()
+
+# --- CONFIGURACIÓN DE LA BASE DE DATOS (Railway) ---
 DB_CONFIG = {
-    'host': 'localhost',  
-    'database': 'FutTribe_DB',
-    'user': 'root',
-    'password': 'user87819' 
+    'host': os.getenv('MYSQLHOST', 'mysql.railway.internal'),
+    'database': os.getenv('MYSQLDATABASE', 'railway'),
+    'user': os.getenv('MYSQLUSER', 'root'),
+    'password': os.getenv('MYSQLPASSWORD'),
+    'port': int(os.getenv('MYSQLPORT', 3306))
 }
 
 def get_db_connection():
