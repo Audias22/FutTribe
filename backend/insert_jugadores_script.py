@@ -1,17 +1,26 @@
 import json
 import mysql.connector
 from mysql.connector import Error
+from urllib.parse import urlparse
 
 # --- 1. CONFIGURACIÓN DE LA BASE DE DATOS ---
+# URL actualizada con credenciales correctas de Railway
+DATABASE_URL = "mysql://root:ZJAXqtmBOOWHLDobtmmOGKceSMLHuARd@centerbeam.proxy.rlwy.net:35357/railway"
+
+# Parsear la URL para extraer los componentes
+url = urlparse(DATABASE_URL)
 DB_CONFIG = {
-    'host': 'localhost',
-    'database': 'FutTribe_DB', # Nombre de tu base de datos (verificado en tu schema)
-    'user': 'root',
-    'password': 'user87819'  # Tu contraseña
+    'host': url.hostname,
+    'database': url.path[1:],  # Remover la barra inicial
+    'user': url.username,
+    'password': url.password,
+    'port': url.port,
+    'connect_timeout': 60,  # Timeout más largo para conexiones remotas
+    'autocommit': True
 }
 
-# La ruta del JSON es 'db/jugadores_historicos.json' desde la carpeta 'backend'
-JSON_FILE = '../db/jugadores_historicos.json' 
+# La ruta del JSON es '../db/jugadores_historicos.json' desde la carpeta 'backend'
+JSON_FILE = "C:/Users/user8/Desktop/archivos/VIII_SEM2025/AD_sistemas/FutTribe/db/jugadores_historicos.json" 
 TABLE_NAME = 'JUGADOR_HISTORICO'
 
 def connect_and_insert():
