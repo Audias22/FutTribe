@@ -10,8 +10,10 @@ function App() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // La URL de tu API de Flask
-    const API_URL = 'http://localhost:5000/api/v1/jugadores-historicos';
+    // Base URL configurable vía variable de entorno (REACT_APP_API_BASE_URL).
+    // Si no está definida, usar la URL pública de Railway.
+    const API_BASE = process.env.REACT_APP_API_BASE_URL || 'https://futtribe-production.up.railway.app';
+    const API_URL = `${API_BASE}/api/v1/jugadores-historicos`;
 
     fetch(API_URL)
       .then(response => {
@@ -29,7 +31,7 @@ function App() {
       .catch(err => {
         // Captura cualquier error (de red o de la API)
         console.error("Error al obtener jugadores:", err);
-        setError(`Error de conexión con la API: ${err.message}. Asegúrate que Flask (puerto 5000) esté corriendo.`);
+        setError(`Error de conexión con la API: ${err.message}. Comprueba la URL base (${API_BASE}) y que el backend esté desplegado.`);
         setLoading(false);
       });
   }, []); // El array vacío [] asegura que esto solo se ejecute al montar el componente
