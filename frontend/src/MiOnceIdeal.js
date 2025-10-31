@@ -63,18 +63,19 @@ export default function MiOnceIdeal() {
     return equipoArr.filter((j) => esPortero(j.position)).length;
   }
 
-  function puedeAñadir(jugador) {
+  // puedeAñadir ahora acepta un equipo candidato (por si estamos moviendo desde otro slot)
+  function puedeAñadir(jugador, equipoArr = miEquipoIdeal) {
     if (!jugador) return false;
-    // no duplicados
-    if (miEquipoIdeal.find((j) => j.id === jugador.id)) return false;
+    // no duplicados (si ya está en el equipo candidato)
+    if (equipoArr.find((j) => j.id === jugador.id)) return false;
     // límite total 11
-    if (miEquipoIdeal.length >= 11) return false;
+    if (equipoArr.length >= 11) return false;
     // portero único
-    if (esPortero(jugador.position) && contarPorteros(miEquipoIdeal) >= 1) return false;
+    if (esPortero(jugador.position) && contarPorteros(equipoArr) >= 1) return false;
     // defensas máximo 5
-    if (esDefensa(jugador.position) && contarDefensas(miEquipoIdeal) >= 5) return false;
+    if (esDefensa(jugador.position) && contarDefensas(equipoArr) >= 5) return false;
     // centrales dentro de defensas: máximo 4
-    if (esCentral(jugador.position) && contarCentrales(miEquipoIdeal) >= 4) return false;
+    if (esCentral(jugador.position) && contarCentrales(equipoArr) >= 4) return false;
     return true;
   }
 
@@ -139,52 +140,89 @@ export default function MiOnceIdeal() {
 
         <div style={{ marginBottom: 12 }}>
           <strong>Defensas:</strong> {contarDefensas(miEquipoIdeal)} / 5 &nbsp;|&nbsp;
-          <strong>Centrales:</strong> {contarCentrales(miEquipoIdeal)} / 4 &nbsp;|&nbsp;
           <strong>Porteros:</strong> {contarPorteros(miEquipoIdeal)} / 1
         </div>
 
-        <div style={{ minHeight: 200, border: "1px dashed #ccc", padding: 8 }}>
-          {miEquipoIdeal.length === 0 && <div style={{ color: "#666" }}>Aún no has añadido jugadores.</div>}
+        {/* Campo con 11 slots posicionados */}
+        <div style={{ width: 420, height: 560, position: 'relative', background: 'linear-gradient(#4caf50, #3a9b3a)', borderRadius: 8, padding: 8 }}>
+          {miEquipoIdeal.length === 0 && <div style={{ color: "#666", position: 'absolute', left: 10, top: 10 }}>Aún no has añadido jugadores.</div>}
 
-          {/* Slots de alineación (drag & drop) */}
-          <div style={{ display: "grid", gap: 6 }}>
-            {alineacion.map((slot, idx) => (
-              <div key={idx}
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={(e) => {
-                  const id = e.dataTransfer.getData('text/plain');
-                  const jugador = jugadoresDisponibles.find((p) => String(p.id) === id) || miEquipoIdeal.find((p) => String(p.id) === id);
-                  if (!jugador) return;
-                  const nueva = [...alineacion];
-                  const existente = nueva[idx];
-                  if (existente && jugador.id !== existente.id) {
-                    // si el slot ya tenía uno y viene uno distinto, devolver existente a disponibles
-                    setJugadoresDisponibles((prev) => [...prev, existente].sort((a,b)=>a.id-b.id));
-                  }
-                  // quitar jugador de disponibles
-                  setJugadoresDisponibles((prev) => prev.filter((p) => p.id !== jugador.id));
-                  // limpiar si el jugador estaba en otro slot
-                  const fromIdx = nueva.findIndex((s, i) => s && s.id === jugador.id && i !== idx);
-                  if (fromIdx !== -1) nueva[fromIdx] = null;
-                  nueva[idx] = jugador;
-                  setAlineacion(nueva);
-                }}
-                style={{ display: "flex", alignItems: "center", gap: 8, padding: 6, borderBottom: "1px solid #eee", minHeight: 56 }}>
-                {slot ? (
-                  <>
-                    <img src={slot.image_path} alt={slot.name} style={{ width: 48, height: 48, objectFit: "cover", borderRadius: 4 }} draggable onDragStart={(e)=>e.dataTransfer.setData('text/plain', String(slot.id))} />
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: "bold" }}>{slot.name}</div>
-                      <div style={{ fontSize: 12, color: "#666" }}>{slot.position}</div>
-                    </div>
-                    <button onClick={() => quitarJugador(slot)}>Quitar</button>
-                  </>
-                ) : (
-                  <div style={{ color: "#999" }}>Slot vacío (arrastra o pulsa Añadir)</div>
-                )}
-              </div>
-            ))}
-          </div>
+          {/* Coordenadas de los 11 slots (índice 0..10) */}
+          {(() => {
+            const slotsPos = [
+              { top: '85%', left: '50%', transform: 'translate(-50%, -50%)' }, // 0 - portero (abajo centro)
+              { top: '70%', left: '18%', transform: 'translate(-50%, -50%)' }, // 1 - defensa izq
+              { top: '70%', left: '36%', transform: 'translate(-50%, -50%)' }, // 2 - defensa
+              { top: '70%', left: '64%', transform: 'translate(-50%, -50%)' }, // 3 - defensa
+              { top: '70%', left: '82%', transform: 'translate(-50%, -50%)' }, // 4 - defensa der
+              { top: '50%', left: '14%', transform: 'translate(-50%, -50%)' }, // 5 - centro izq
+              { top: '50%', left: '36%', transform: 'translate(-50%, -50%)' }, // 6 - centro
+              { top: '50%', left: '64%', transform: 'translate(-50%, -50%)' }, // 7 - centro
+              { top: '50%', left: '86%', transform: 'translate(-50%, -50%)' }, // 8 - centro der
+              { top: '30%', left: '50%', transform: 'translate(-50%, -50%)' }, // 9 - mediapunta
+              { top: '10%', left: '50%', transform: 'translate(-50%, -50%)' }, // 10 - delantero
+            ];
+
+            return slotsPos.map((pos, idx) => {
+              const slot = alineacion[idx];
+              return (
+                <div key={idx}
+                  onDragOver={(e) => e.preventDefault()}
+                  onDrop={(e) => {
+                    const id = e.dataTransfer.getData('text/plain');
+                    const jugador = jugadoresDisponibles.find((p) => String(p.id) === id) || miEquipoIdeal.find((p) => String(p.id) === id);
+                    if (!jugador) return;
+
+                    // calcular equipo candidato: quitamos al jugador si venía de otro slot
+                    const nueva = [...alineacion];
+                    const existente = nueva[idx];
+
+                    // construir equipoSinExisting (quitamos el existente del equipo si hay swap)
+                    let equipoSinExisting = miEquipoIdeal.filter((j) => !existente || j.id !== existente.id);
+                    // si el jugador venía del equipo, quitarlo (porque lo estamos moviendo)
+                    equipoSinExisting = equipoSinExisting.filter((j) => j.id !== jugador.id);
+
+                    const equipoCandidate = [...equipoSinExisting, jugador];
+
+                    // validar restricciones sobre el equipoCandidate
+                    if (equipoCandidate.length > 11) return alert('No se pueden tener más de 11 jugadores.');
+                    if (contarPorteros(equipoCandidate) > 1) return alert('Ya hay un portero en el equipo.');
+                    if (contarDefensas(equipoCandidate) > 5) return alert('Límite de defensas alcanzado (5).');
+                    if (contarCentrales(equipoCandidate) > 4) return alert('Límite de centrales alcanzado (4).');
+
+                    // OK: efectuar swap/move
+                    // si existente distinto, devolver existente a disponibles
+                    if (existente && existente.id !== jugador.id) {
+                      setJugadoresDisponibles((prev) => [...prev, existente].sort((a,b)=>a.id-b.id));
+                    }
+
+                    // si el jugador venía de disponibles, quitarlo
+                    setJugadoresDisponibles((prev) => prev.filter((p) => p.id !== jugador.id));
+
+                    // limpiar origen si venía de otro slot
+                    const fromIdx = nueva.findIndex((s, i) => s && s.id === jugador.id && i !== idx);
+                    if (fromIdx !== -1) nueva[fromIdx] = null;
+
+                    nueva[idx] = jugador;
+                    setAlineacion(nueva);
+                  }}
+                  style={{ position: 'absolute', width: 160, height: 56, padding: 6, borderRadius: 6, background: 'rgba(255,255,255,0.9)', boxShadow: '0 1px 2px rgba(0,0,0,0.2)', display: 'flex', alignItems: 'center', gap: 8, justifyContent: 'space-between', transform: pos.transform, left: pos.left, top: pos.top }}>
+                  {slot ? (
+                    <>
+                      <img src={slot.image_path} alt={slot.name} style={{ width: 40, height: 40, objectFit: 'cover', borderRadius: 4 }} draggable onDragStart={(e)=>e.dataTransfer.setData('text/plain', String(slot.id))} />
+                      <div style={{ flex: 1, marginLeft: 6 }}>
+                        <div style={{ fontWeight: 'bold', fontSize: 12 }}>{slot.name}</div>
+                        <div style={{ fontSize: 11, color: '#444' }}>{slot.position}</div>
+                      </div>
+                      <button onClick={() => quitarJugador(slot)} style={{ marginLeft: 8 }}>Quitar</button>
+                    </>
+                  ) : (
+                    <div style={{ width: '100%', textAlign: 'center', color: '#666' }}>Slot vacío</div>
+                  )}
+                </div>
+              );
+            });
+          })()}
         </div>
 
         <div style={{ marginTop: 12 }}>
