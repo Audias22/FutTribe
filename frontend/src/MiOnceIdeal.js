@@ -107,6 +107,24 @@ export default function MiOnceIdeal() {
   const fieldRef = useRef(null);
   const draggingRef = useRef(null); // { idx, startX, startY, startLeftPct, startTopPct }
   const [highlightSlot, setHighlightSlot] = useState(null);
+  const [compactListBelow, setCompactListBelow] = useState(true);
+
+  function handlePlayerDragStart(player, e, from = 'players') {
+    try {
+      e.dataTransfer.setData('text/plain', JSON.stringify({ playerId: player.id, from }));
+      e.dataTransfer.effectAllowed = 'move';
+      // try to set a nicer drag image using the img inside the card
+      const img = e.currentTarget.querySelector && e.currentTarget.querySelector('img');
+      if (img) {
+        const w = img.naturalWidth || img.width;
+        const h = img.naturalHeight || img.height;
+        // some browsers require the image to be loaded; this will fail silently if not
+        e.dataTransfer.setDragImage(img, Math.floor(w/2), Math.floor(h/2));
+      }
+    } catch (err) {
+      // ignore
+    }
+  }
 
   function pointerToClient(e) {
     if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -271,33 +289,58 @@ export default function MiOnceIdeal() {
       <div style={{ display: 'flex', gap: 12 }}>
           {/* Players list narrow and horizontal carousel below field */}
           <div style={{ flex: 1 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <label style={{ marginRight: 8 }}>List below field:</label>
+                <button onClick={()=>setCompactListBelow((v)=>!v)}>{compactListBelow ? 'Hide below' : 'Show below'}</button>
+              </div>
+            </div>
+
             <div ref={fieldRef} onDragOver={(e)=>e.preventDefault()} onDrop={(e)=>{
                 // drop on field (not on a slot): place in nearest slot to drop coords
                 try{
                   const raw = e.dataTransfer.getData('text/plain');
                   const payload = JSON.parse(raw || null);
                   if (!payload) return;
+                  const fieldRect = fieldRef.current.getBoundingClientRect();
+                  const dropX = e.clientX;
+                  const dropY = e.clientY;
+                  // compute nearest slot
+                  let nearest = 0;
+                  let bestD = Infinity;
+                  slotsPosState.forEach((pos, idx)=>{
+                    const leftPct = parseFloat(String(pos.left).replace('%',''))/100;
+                    const topPct = parseFloat(String(pos.top).replace('%',''))/100;
+                    const cx = fieldRect.left + fieldRect.width * leftPct;
+                    const cy = fieldRect.top + fieldRect.height * topPct;
+                    const d2 = (cx - dropX)*(cx - dropX) + (cy - dropY)*(cy - dropY);
+                    if (d2 < bestD) { bestD = d2; nearest = idx; }
+                  });
                   if (payload.from === 'players') {
                     const player = jugadoresDisponibles.find(p=>p.id===payload.playerId);
                     if (!player) return;
-                    const fieldRect = fieldRef.current.getBoundingClientRect();
-                    const dropX = e.clientX;
-                    const dropY = e.clientY;
-                    // compute nearest slot
-                    let nearest = 0;
-                    let bestD = Infinity;
-                    slotsPosState.forEach((pos, idx)=>{
-                      const leftPct = parseFloat(String(pos.left).replace('%',''))/100;
-                      const topPct = parseFloat(String(pos.top).replace('%',''))/100;
-                      const cx = fieldRect.left + fieldRect.width * leftPct;
-                      const cy = fieldRect.top + fieldRect.height * topPct;
-                      const d2 = (cx - dropX)*(cx - dropX) + (cy - dropY)*(cy - dropY);
-                      if (d2 < bestD) { bestD = d2; nearest = idx; }
-                    });
                     addPlayerToSlot(player, nearest);
+                  } else if ((payload.from||'').startsWith('slot-')) {
+                    // moving a placed player to nearest slot
+                    const fromIdx = Number((payload.from||'slot-0').split('-')[1]);
+                    if (fromIdx === nearest) return;
+                    const nueva = [...alineacion];
+                    const playerMoving = nueva[fromIdx];
+                    const destExisting = nueva[nearest];
+                    // validate
+                    let equipoCandidate = miEquipoIdeal.filter((j)=> j.id !== (playerMoving?playerMoving.id:null) && (!destExisting || j.id !== destExisting.id));
+                    equipoCandidate.push(playerMoving);
+                    if (!puedeAñadir(playerMoving, equipoCandidate)) {
+                      setMessage({type:'error', text:'No se puede mover: restricciones.'});
+                      return;
+                    }
+                    nueva[fromIdx] = destExisting || null;
+                    nueva[nearest] = playerMoving;
+                    setAlineacion(nueva);
+                    setMessage({type:'info', text:'Movimiento completado.'});
                   }
                 }catch(err){ }
-              }} style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(#4caf50, #3a9b3a)', borderRadius: 8 }}>
+              }} style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(#4caf50, #3a9b3a)', borderRadius: 8, backgroundImage: `url("data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1000 600\"> <rect width=\"100%\" height=\"100%\" fill=\"%233ca64a\"/> <rect x=\"60\" y=\"40\" width=\"880\" height=\"520\" rx=\"20\" fill=\"%234caf50\"/> <line x1=\"500\" y1=\"40\" x2=\"500\" y2=\"560\" stroke=\"%23e6ffea\" stroke-width=\"6\" opacity=\"0.25\"/> <circle cx=\"500\" cy=\"300\" r=\"60\" stroke=\"%23e6ffea\" stroke-width=\"6\" fill=\"none\" opacity=\"0.18\"/> <rect x=\"180\" y=\"180\" width=\"120\" height=\"240\" rx=\"8\" stroke=\"%23e6ffea\" stroke-width=\"4\" fill=\"none\" opacity=\"0.18\"/> <rect x=\"700\" y=\"180\" width=\"120\" height=\"240\" rx=\"8\" stroke=\"%23e6ffea\" stroke-width=\"4\" fill=\"none\" opacity=\"0.18\"/> </svg>')}" )` }}>
               {/* Field slots */}
               {slotsPosState.map((pos, idx) => (
                     <div key={`slot-${idx}`} id={`slot-${idx}`}
@@ -340,7 +383,7 @@ export default function MiOnceIdeal() {
                       style={{ position: 'absolute', width: 200, height: 80, left: pos.left, top: pos.top, transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', padding: 8, borderRadius: 10, background: highlightSlot===idx ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.95)', boxShadow: highlightSlot===idx ? '0 6px 18px rgba(0,0,0,0.25)' : '0 2px 6px rgba(0,0,0,0.15)', zIndex: highlightSlot===idx ? 40 : 20, transition: 'all 160ms ease' }}>
                       <div className={`slot-handle-${idx}`} onMouseDown={(e)=>handlePointerStart(idx,e)} onTouchStart={(e)=>handlePointerStart(idx,e)} style={{ position: 'absolute', left: 8, top: 8, width: 14, height: 14, borderRadius: 10, background: '#9aa7b2', cursor: 'grab', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} title="Arrastra aquí para mover el slot" />
                       {alineacion[idx] ? (
-                        <div draggable onDragStart={(e)=> e.dataTransfer.setData('text/plain', JSON.stringify({playerId: alineacion[idx].id, from:`slot-${idx}`}))} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
+                        <div draggable onDragStart={(e)=> handlePlayerDragStart(alineacion[idx], e, `slot-${idx}`)} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
                           <img src={alineacion[idx].image_path} alt={alineacion[idx].name} style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, boxShadow: '0 2px 6px rgba(0,0,0,0.12)' }} />
                           <div style={{ flex: 1 }}>
                             <div style={{ fontWeight: '700', fontSize: 13 }}>{alineacion[idx].name}</div>
@@ -354,6 +397,36 @@ export default function MiOnceIdeal() {
                     </div>
                 ))}
             </div>
+
+            {/* Compact list below option */}
+            {compactListBelow && (
+              <div style={{ width: '100%', marginTop: 12, padding: 8, background: '#fafafa', borderRadius: 8 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <strong>Jugadores Disponibles ({filtered.length})</strong>
+                </div>
+                <div onDragOver={(e)=>e.preventDefault()} onDrop={(e)=>{
+                  try{
+                    const raw = e.dataTransfer.getData('text/plain');
+                    const payload = JSON.parse(raw);
+                    if (payload && (payload.from||'').startsWith('slot-')) {
+                      const fromIdx = Number(payload.from.split('-')[1]);
+                      removeFromSlot(fromIdx);
+                    }
+                  }catch(err){}
+                }} style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: 6 }}>
+                  {filtered.map((p) => (
+                    <div key={uid(p.id)} draggable onDragStart={(e)=>handlePlayerDragStart(p,e,'players')} style={{ width: 120, background: '#fff', borderRadius: 8, padding: 6, boxShadow: '0 1px 3px rgba(0,0,0,0.08)', textAlign: 'center' }}>
+                      <img src={p.image_path} alt={p.name} style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 6 }} />
+                      <div style={{ fontWeight: 700, fontSize: 12, marginTop: 6 }}>{p.name}</div>
+                      <div style={{ fontSize: 11, color: '#666' }}>{p.position}</div>
+                      <div style={{ marginTop: 6 }}>
+                        <button onClick={() => handleAddButton(p)} disabled={!puedeAñadir(p)} style={{ padding: '6px 8px', fontSize: 12 }}>{esPortero(p.position) ? 'Añadir (GK)' : 'Añadir'}</button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Right panel: controls and search */}
