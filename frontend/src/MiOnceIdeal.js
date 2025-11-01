@@ -340,7 +340,7 @@ export default function MiOnceIdeal() {
                     setMessage({type:'info', text:'Movimiento completado.'});
                   }
                 }catch(err){ }
-              }} style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(#4caf50, #3a9b3a)', borderRadius: 8, backgroundImage: `url("data:image/svg+xml;utf8,${encodeURIComponent('<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 1000 600\"> <rect width=\"100%\" height=\"100%\" fill=\"%233ca64a\"/> <rect x=\"60\" y=\"40\" width=\"880\" height=\"520\" rx=\"20\" fill=\"%234caf50\"/> <line x1=\"500\" y1=\"40\" x2=\"500\" y2=\"560\" stroke=\"%23e6ffea\" stroke-width=\"6\" opacity=\"0.25\"/> <circle cx=\"500\" cy=\"300\" r=\"60\" stroke=\"%23e6ffea\" stroke-width=\"6\" fill=\"none\" opacity=\"0.18\"/> <rect x=\"180\" y=\"180\" width=\"120\" height=\"240\" rx=\"8\" stroke=\"%23e6ffea\" stroke-width=\"4\" fill=\"none\" opacity=\"0.18\"/> <rect x=\"700\" y=\"180\" width=\"120\" height=\"240\" rx=\"8\" stroke=\"%23e6ffea\" stroke-width=\"4\" fill=\"none\" opacity=\"0.18\"/> </svg>')}" )` }}>
+              }} style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(180deg, #4caf50 0%, #45a047 100%)', borderRadius: 8, boxShadow: 'inset 0 0 80px rgba(0,0,0,0.1)' }}>
               {/* Field slots */}
               {slotsPosState.map((pos, idx) => (
                     <div key={`slot-${idx}`} id={`slot-${idx}`}
