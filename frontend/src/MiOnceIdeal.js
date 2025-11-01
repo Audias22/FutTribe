@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import DraggableCore from 'react-draggable';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "https://futtribe-production.up.railway.app";
 const API_URL = `${API_BASE}/api/v1/jugadores-historicos`;
@@ -106,6 +105,56 @@ export default function MiOnceIdeal() {
   const slotsPosPreset = formationPositions[formation] || formationPositions['4-4-2'];
   const [slotsPosState, setSlotsPosState] = useState(slotsPosPreset);
   const fieldRef = useRef(null);
+  const draggingRef = useRef(null); // { idx, startX, startY, startLeftPct, startTopPct }
+
+  function pointerToClient(e) {
+    if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    return { x: e.clientX, y: e.clientY };
+  }
+
+  function handlePointerStart(idx, e) {
+    e.preventDefault();
+    const p = pointerToClient(e);
+    const fieldEl = fieldRef.current;
+    if (!fieldEl) return;
+    const fieldRect = fieldEl.getBoundingClientRect();
+    const slot = slotsPosState[idx] || { left: '50%', top: '50%' };
+    const startLeftPct = parseFloat(String(slot.left).replace('%',''));
+    const startTopPct = parseFloat(String(slot.top).replace('%',''));
+    draggingRef.current = { idx, startX: p.x, startY: p.y, startLeftPct, startTopPct, fieldRect };
+    window.addEventListener('mousemove', handlePointerMove);
+    window.addEventListener('mouseup', handlePointerEnd);
+    window.addEventListener('touchmove', handlePointerMove, { passive: false });
+    window.addEventListener('touchend', handlePointerEnd);
+  }
+
+  function handlePointerMove(e) {
+    if (!draggingRef.current) return;
+    e.preventDefault();
+    const p = pointerToClient(e);
+    const d = draggingRef.current;
+    const fieldRect = d.fieldRect || fieldRef.current.getBoundingClientRect();
+    const deltaX = p.x - d.startX;
+    const deltaY = p.y - d.startY;
+    const deltaLeftPct = (deltaX / fieldRect.width) * 100;
+    const deltaTopPct = (deltaY / fieldRect.height) * 100;
+    const newLeft = Math.max(2, Math.min(98, d.startLeftPct + deltaLeftPct));
+    const newTop = Math.max(2, Math.min(98, d.startTopPct + deltaTopPct));
+    setSlotsPosState((prev) => {
+      const out = [...prev];
+      out[d.idx] = { left: `${newLeft}%`, top: `${newTop}%` };
+      return out;
+    });
+  }
+
+  function handlePointerEnd() {
+    if (!draggingRef.current) return;
+    draggingRef.current = null;
+    window.removeEventListener('mousemove', handlePointerMove);
+    window.removeEventListener('mouseup', handlePointerEnd);
+    window.removeEventListener('touchmove', handlePointerMove);
+    window.removeEventListener('touchend', handlePointerEnd);
+  }
 
   // cuando cambia la formación por defecto, reestablecer preset si el usuario no movió manualmente.
   useEffect(() => {
@@ -214,22 +263,7 @@ export default function MiOnceIdeal() {
             <div ref={fieldRef} style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(#4caf50, #3a9b3a)', borderRadius: 8 }}>
               {/* Field slots */}
               {slotsPosState.map((pos, idx) => (
-                  <DraggableCore key={`dragcore-${idx}`} handle={`.slot-handle-${idx}`} onStop={() => {
-                    // al soltar, calculamos la nueva posición porcentual relativa al field
-                    const slotEl = document.getElementById(`slot-${idx}`);
-                    const fieldEl = fieldRef.current;
-                    if (!slotEl || !fieldEl) return;
-                    const slotRect = slotEl.getBoundingClientRect();
-                    const fieldRect = fieldEl.getBoundingClientRect();
-                    const centerX = slotRect.left + slotRect.width / 2;
-                    const centerY = slotRect.top + slotRect.height / 2;
-                    const leftPct = Math.max(2, Math.min(98, ((centerX - fieldRect.left) / fieldRect.width) * 100));
-                    const topPct = Math.max(2, Math.min(98, ((centerY - fieldRect.top) / fieldRect.height) * 100));
-                    const nueva = [...slotsPosState];
-                    nueva[idx] = { left: `${leftPct}%`, top: `${topPct}%` };
-                    setSlotsPosState(nueva);
-                  }}>
-                    <div id={`slot-${idx}`}
+                    <div key={`slot-${idx}`} id={`slot-${idx}`}
                       onDragOver={(e)=>e.preventDefault()}
                       onDrop={(e)=>{
                         // parse dataTransfer
@@ -264,7 +298,7 @@ export default function MiOnceIdeal() {
                         }
                       }}
                       style={{ position: 'absolute', width: 160, height: 64, left: pos.left, top: pos.top, transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', padding: 6, borderRadius: 6, background: 'rgba(255,255,255,0.95)', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                      <div className={`slot-handle-${idx}`} style={{ position: 'absolute', left: 6, top: 6, width: 12, height: 12, borderRadius: 6, background: '#ccc', cursor: 'move' }} title="Arrastra aquí para mover el slot" />
+                      <div className={`slot-handle-${idx}`} onMouseDown={(e)=>handlePointerStart(idx,e)} onTouchStart={(e)=>handlePointerStart(idx,e)} style={{ position: 'absolute', left: 6, top: 6, width: 12, height: 12, borderRadius: 6, background: '#ccc', cursor: 'move' }} title="Arrastra aquí para mover el slot" />
                       {alineacion[idx] ? (
                         <div draggable onDragStart={(e)=> e.dataTransfer.setData('text/plain', JSON.stringify({playerId: alineacion[idx].id, from:`slot-${idx}`}))} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
                           <img src={alineacion[idx].image_path} alt={alineacion[idx].name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }} />
@@ -278,7 +312,6 @@ export default function MiOnceIdeal() {
                         <div style={{ width: '100%', textAlign: 'center', color: '#666' }}>Slot vacío</div>
                       )}
                     </div>
-                  </DraggableCore>
                 ))}
             </div>
           </div>
