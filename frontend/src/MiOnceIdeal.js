@@ -1,7 +1,95 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "https://futtribe-production.up.railway.app";
 const API_URL = `${API_BASE}/api/v1/jugadores-historicos`;
+
+// Diseños de cancha disponibles
+const FIELD_DESIGNS = [
+  { 
+    id: 'classic', 
+    name: 'Clásico',
+    gradient: 'linear-gradient(180deg, #4a9d4f 0%, #3d8b41 50%, #4a9d4f 100%)',
+    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.03) 50px, rgba(0,0,0,0.03) 100px)'
+  },
+  { 
+    id: 'dark', 
+    name: 'Oscuro',
+    gradient: 'linear-gradient(180deg, #2d5016 0%, #1e3a0e 50%, #2d5016 100%)',
+    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.1) 50px, rgba(0,0,0,0.1) 100px)'
+  },
+  { 
+    id: 'blue', 
+    name: 'Azul',
+    gradient: 'linear-gradient(180deg, #1e3a5f 0%, #14283d 50%, #1e3a5f 100%)',
+    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.08) 50px, rgba(0,0,0,0.08) 100px)'
+  },
+  { 
+    id: 'modern', 
+    name: 'Moderno',
+    gradient: 'linear-gradient(180deg, #3a7d44 0%, #2d6236 50%, #3a7d44 100%)',
+    pattern: 'repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255,255,255,0.02) 30px, rgba(255,255,255,0.02) 60px)'
+  }
+];
+
+// ----------------------------------------------------------------------------------
+// FUNCIÓN CLAVE CORREGIDA: Determina la posición detallada por coordenadas X, Y
+// Usa solo las 12 posiciones especificadas: LI, DC, MC, MCD, MD, MI, MP, LD, POR, DFC, ED, EI
+// ----------------------------------------------------------------------------------
+function getDetailedPosition(xPercent, yPercent) {
+  // PORTERO (POR / GK) - Y > 80% (Fondo del campo)
+  if (yPercent > 80) {
+      if (xPercent > 40 && xPercent < 60) return { label: 'POR', type: 'GK' };
+      // Si está en el fondo pero fuera del área, lo forzamos a ser defensa lateral
+      if (xPercent < 20) return { label: 'LI', type: 'DEF' };
+      if (xPercent > 80) return { label: 'LD', type: 'DEF' };
+      // Normalizar Y para el cálculo de la zona defensiva más cercana
+      yPercent = 70; 
+  }
+  
+  // DEFENSA (LI, LD, DFC) - Y entre 60% y 80%
+  if (yPercent > 60) {
+    // Laterales (Cerca de la banda)
+    if (xPercent < 25) return { label: 'LI', type: 'DEF' }; 
+    if (xPercent > 75) return { label: 'LD', type: 'DEF' }; 
+    
+    // Centrales
+    if (xPercent >= 25 && xPercent <= 75) return { label: 'DFC', type: 'DEF' }; 
+
+    // Fallback
+    return xPercent < 50 ? { label: 'LI', type: 'DEF' } : { label: 'LD', type: 'DEF' };
+  }
+
+  // MEDIOCAMPO (MCD, MC, MP, MI, MD) - Y entre 35% y 60%
+  if (yPercent > 35) {
+    // Media/Pivote Defensivo (Más atrás en el medio)
+    if (yPercent > 50) {
+      if (xPercent > 35 && xPercent < 65) return { label: 'MCD', type: 'MID' }; 
+    }
+    
+    // Interiores/Extremos de Medio campo (Banda)
+    if (xPercent < 20) return { label: 'MI', type: 'MID' }; // Interior Izquierdo
+    if (xPercent > 80) return { label: 'MD', type: 'MID' }; // Interior Derecho
+
+    // Media Punta (Más adelante en el medio)
+    if (yPercent < 45) {
+      if (xPercent > 35 && xPercent < 65) return { label: 'MP', type: 'MID' };
+    }
+
+    // Mediocentro (General)
+    return { label: 'MC', type: 'MID' };
+  }
+
+  // ATAQUE (EI, ED, DC) - Y < 35% (Frente del campo)
+  if (yPercent <= 35) {
+    if (xPercent < 25) return { label: 'EI', type: 'FWD' }; // Extremo Izquierdo
+    if (xPercent > 75) return { label: 'ED', type: 'FWD' }; // Extremo Derecho
+    return { label: 'DC', type: 'FWD' }; // Delantero Centro
+  }
+  
+  // Posición genérica (Fallback de seguridad)
+  return { label: 'POS', type: 'CUSTOM' }; 
+}
+// ----------------------------------------------------------------------------------
 
 export default function MiOnceIdeal() {
   const [jugadoresDisponibles, setJugadoresDisponibles] = useState([]);
@@ -13,6 +101,8 @@ export default function MiOnceIdeal() {
   const [formation, setFormation] = useState("4-4-2");
   const [showModal, setShowModal] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState(null);
+  const [fieldDesign, setFieldDesign] = useState('classic');
+  const fieldRef = useRef(null);
 
   const miEquipoIdeal = alineacion.filter(Boolean);
 
@@ -39,22 +129,40 @@ export default function MiOnceIdeal() {
     return posicion(pos).split(/[^A-Z0-9]+/).map((t) => t.trim()).filter(Boolean);
   }
   
+  // --- Categorización de Jugadores ---
+  
   function esDefensa(pos) {
     const toks = tokensPos(pos);
-    const defs = ["LI", "LD", "CB", "DFC", "LIBERO", "DF", "LB", "RB"];
+    const defs = ["LI", "LD", "DFC", "CB", "DF", "LB", "RB"]; 
     return toks.some((t) => defs.includes(t));
   }
   
   function esCentral(pos) {
     const toks = tokensPos(pos);
-    return toks.some((t) => ["CB", "DFC"].includes(t));
+    const centrales = ["DFC", "CB"];
+    return toks.some((t) => centrales.includes(t));
   }
   
   function esPortero(pos) {
     const toks = tokensPos(pos);
-    return toks.some((t) => ["GK", "POR", "PORTERO", "POR."].includes(t));
+    const porteros = ["POR", "GK"];
+    return toks.some((t) => porteros.includes(t));
   }
 
+  function esMediocampista(pos) {
+    const toks = tokensPos(pos);
+    const mcs = ["MC", "MCD", "MP", "MI", "MD", "M", "CM", "CDM", "CAM"]; 
+    return toks.some((t) => mcs.includes(t));
+  }
+
+  function esDelantero(pos) {
+    const toks = tokensPos(pos);
+    const dels = ["DC", "ED", "EI", "DELANTERO", "FWD", "ST", "CF", "RW", "LW"]; 
+    return toks.some((t) => dels.includes(t));
+  }
+
+  // --- Conteo de Límites ---
+  
   function contarDefensas(equipoArr) {
     return equipoArr.filter((j) => esDefensa(j.position)).length;
   }
@@ -67,105 +175,213 @@ export default function MiOnceIdeal() {
     return equipoArr.filter((j) => esPortero(j.position)).length;
   }
 
+  // --- Formaciones Fijas (Completo) ---
+  const base442 = [
+    { top: '82%', left: '50%', label: 'POR', type: 'GK' },
+    { top: '65%', left: '18%', label: 'LI', type: 'DEF' }, 
+    { top: '65%', left: '38%', label: 'DFC', type: 'DEF' }, 
+    { top: '65%', left: '62%', label: 'DFC', type: 'DEF' }, 
+    { top: '65%', left: '82%', label: 'LD', type: 'DEF' },
+    { top: '45%', left: '18%', label: 'MI', type: 'MID' }, 
+    { top: '45%', left: '38%', label: 'MC', type: 'MID' }, 
+    { top: '45%', left: '62%', label: 'MC', type: 'MID' }, 
+    { top: '45%', left: '82%', label: 'MD', type: 'MID' },
+    { top: '22%', left: '40%', label: 'DC', type: 'FWD' }, 
+    { top: '22%', left: '60%', label: 'DC', type: 'FWD' }
+  ];
+
   const formationPositions = useMemo(() => ({
-    "4-4-2": [
-      { top: '85%', left: '50%', label: 'POR' },
-      { top: '68%', left: '18%', label: 'LI' }, 
-      { top: '68%', left: '38%', label: 'DFC' }, 
-      { top: '68%', left: '62%', label: 'DFC' }, 
-      { top: '68%', left: '82%', label: 'LD' },
-      { top: '48%', left: '16%', label: 'MI' }, 
-      { top: '48%', left: '38%', label: 'MC' }, 
-      { top: '48%', left: '62%', label: 'MC' }, 
-      { top: '48%', left: '84%', label: 'MD' },
-      { top: '25%', left: '40%', label: 'DC' }, 
-      { top: '25%', left: '60%', label: 'DC' }
-    ],
+    "4-4-2": base442,
     "4-3-3": [
-      { top: '85%', left: '50%', label: 'POR' },
-      { top: '68%', left: '18%', label: 'LI' }, 
-      { top: '68%', left: '38%', label: 'DFC' }, 
-      { top: '68%', left: '62%', label: 'DFC' }, 
-      { top: '68%', left: '82%', label: 'LD' },
-      { top: '48%', left: '32%', label: 'MC' }, 
-      { top: '48%', left: '50%', label: 'MC' }, 
-      { top: '48%', left: '68%', label: 'MC' },
-      { top: '22%', left: '18%', label: 'EI' }, 
-      { top: '18%', left: '50%', label: 'DC' }, 
-      { top: '22%', left: '82%', label: 'ED' }
+      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '65%', left: '18%', label: 'LI', type: 'DEF' }, 
+      { top: '65%', left: '38%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '62%', label: 'DFC', type: 'DEF' },
+      { top: '65%', left: '82%', label: 'LD', type: 'DEF' },
+      { top: '50%', left: '32%', label: 'MCD', type: 'MID' }, 
+      { top: '45%', left: '50%', label: 'MC', type: 'MID' }, 
+      { top: '50%', left: '68%', label: 'MC', type: 'MID' },
+      { top: '22%', left: '18%', label: 'EI', type: 'FWD' }, 
+      { top: '18%', left: '50%', label: 'DC', type: 'FWD' }, 
+      { top: '22%', left: '82%', label: 'ED', type: 'FWD' }
     ],
     "3-5-2": [
-      { top: '85%', left: '50%', label: 'POR' },
-      { top: '68%', left: '28%', label: 'DFC' }, 
-      { top: '68%', left: '50%', label: 'DFC' }, 
-      { top: '68%', left: '72%', label: 'DFC' },
-      { top: '48%', left: '12%', label: 'MI' }, 
-      { top: '48%', left: '32%', label: 'MC' }, 
-      { top: '48%', left: '50%', label: 'MC' }, 
-      { top: '48%', left: '68%', label: 'MC' }, 
-      { top: '48%', left: '88%', label: 'MD' },
-      { top: '25%', left: '40%', label: 'DC' }, 
-      { top: '25%', left: '60%', label: 'DC' }
+      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '65%', left: '28%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '50%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '72%', label: 'DFC', type: 'DEF' },
+      { top: '45%', left: '12%', label: 'MI', type: 'MID' }, 
+      { top: '50%', left: '32%', label: 'MC', type: 'MID' }, 
+      { top: '55%', left: '50%', label: 'MCD', type: 'MID' },
+      { top: '50%', left: '68%', label: 'MC', type: 'MID' }, 
+      { top: '45%', left: '88%', label: 'MD', type: 'MID' },
+      { top: '22%', left: '40%', label: 'DC', type: 'FWD' }, 
+      { top: '22%', left: '60%', label: 'DC', type: 'FWD' }
     ],
     "5-3-2": [
-      { top: '85%', left: '50%', label: 'POR' },
-      { top: '68%', left: '12%', label: 'LI' }, 
-      { top: '68%', left: '30%', label: 'DFC' }, 
-      { top: '68%', left: '50%', label: 'DFC' }, 
-      { top: '68%', left: '70%', label: 'DFC' }, 
-      { top: '68%', left: '88%', label: 'LD' },
-      { top: '48%', left: '32%', label: 'MC' }, 
-      { top: '48%', left: '50%', label: 'MC' }, 
-      { top: '48%', left: '68%', label: 'MC' },
-      { top: '25%', left: '40%', label: 'DC' }, 
-      { top: '25%', left: '60%', label: 'DC' }
-    ]
-  }), []);
+      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '12%', label: 'LI', type: 'DEF' }, 
+      { top: '65%', left: '30%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '50%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '70%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '88%', label: 'LD', type: 'DEF' },
+      { top: '45%', left: '32%', label: 'MC', type: 'MID' }, 
+      { top: '45%', left: '50%', label: 'MCD', type: 'MID' }, 
+      { top: '45%', left: '68%', label: 'MC', type: 'MID' },
+      { top: '22%', left: '40%', label: 'DC', type: 'FWD' }, 
+      { top: '22%', left: '60%', label: 'DC', type: 'FWD' }
+    ],
+    "3-4-3": [
+      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '65%', left: '28%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '50%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '72%', label: 'DFC', type: 'DEF' },
+      { top: '45%', left: '25%', label: 'MI', type: 'MID' }, 
+      { top: '50%', left: '42%', label: 'MCD', type: 'MID' }, 
+      { top: '50%', left: '58%', label: 'MC', type: 'MID' }, 
+      { top: '45%', left: '75%', label: 'MD', type: 'MID' }, 
+      { top: '22%', left: '20%', label: 'EI', type: 'FWD' }, 
+      { top: '18%', left: '50%', label: 'DC', type: 'FWD' },
+      { top: '22%', left: '80%', label: 'ED', type: 'FWD' }
+    ],
+    "4-2-3-1": [
+      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '65%', left: '18%', label: 'LI', type: 'DEF' }, 
+      { top: '65%', left: '38%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '62%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '82%', label: 'LD', type: 'DEF' },
+      { top: '52%', left: '38%', label: 'MCD', type: 'MID' }, 
+      { top: '52%', left: '62%', label: 'MCD', type: 'MID' },
+      { top: '35%', left: '22%', label: 'MI', type: 'MID' }, 
+      { top: '32%', left: '50%', label: 'MP', type: 'MID' }, 
+      { top: '35%', left: '78%', label: 'MD', type: 'MID' }, 
+      { top: '16%', left: '50%', label: 'DC', type: 'FWD' }
+    ],
+    "4-5-1": [
+      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '65%', left: '18%', label: 'LI', type: 'DEF' }, 
+      { top: '65%', left: '38%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '62%', label: 'DFC', type: 'DEF' }, 
+      { top: '65%', left: '82%', label: 'LD', type: 'DEF' },
+      { top: '45%', left: '14%', label: 'MI', type: 'MID' }, 
+      { top: '45%', left: '32%', label: 'MC', type: 'MID' }, 
+      { top: '50%', left: '50%', label: 'MCD', type: 'MID' }, 
+      { top: '45%', left: '68%', label: 'MC', type: 'MID' }, 
+      { top: '45%', left: '86%', label: 'MD', type: 'MID' },
+      { top: '18%', left: '50%', label: 'DC', type: 'FWD' }
+    ],
+    "custom": base442.map(pos => ({ ...pos }))
+  }), [base442]); 
 
-  const positions = formationPositions[formation] || formationPositions['4-4-2'];
+  const [customPositions, setCustomPositions] = useState(null);
 
-  const filtered = jugadoresDisponibles.filter((j) => 
-    (j.name || "").toLowerCase().includes(q.trim().toLowerCase())
-  );
+  useEffect(() => {
+    // Inicialización del custom mode
+    if (formation === 'custom' && !customPositions) {
+      setCustomPositions(formationPositions['custom'].map(pos => {
+        const x = parseFloat(pos.left);
+        const y = parseFloat(pos.top);
+        // Usa la función detallada para la etiqueta inicial
+        return { ...pos, ...getDetailedPosition(x, y) }; 
+      }));
+    } else if (formation !== 'custom' && customPositions) {
+      setCustomPositions(null); 
+    }
+  }, [formation, customPositions, formationPositions]);
 
+  const positions = formation === 'custom' && customPositions 
+    ? customPositions 
+    : formationPositions[formation] || formationPositions['4-4-2'];
+  
+  // Filtrar jugadores según el TIPO (GK/DEF/MID/FWD) del slot seleccionado
+  const getFilteredPlayers = () => {
+    let filtered = jugadoresDisponibles.filter((j) => 
+      (j.name || "").toLowerCase().includes(q.trim().toLowerCase())
+    );
+
+    if (selectedSlot === null || !positions[selectedSlot]) {
+      return filtered;
+    }
+    
+    // El filtro se aplica por el TIPO de zona (GK/DEF/MID/FWD)
+    const slotType = positions[selectedSlot].type;
+    
+    if (slotType === 'GK') {
+      filtered = filtered.filter(j => esPortero(j.position));
+    } else if (slotType === 'DEF') {
+      filtered = filtered.filter(j => esDefensa(j.position));
+    } else if (slotType === 'MID') {
+      filtered = filtered.filter(j => esMediocampista(j.position));
+    } else if (slotType === 'FWD') {
+      filtered = filtered.filter(j => esDelantero(j.position));
+    }
+    
+    return filtered;
+  };
+  
+  const filtered = getFilteredPlayers();
+
+  // --- Lógica de Manejo de Slots y Jugadores ---
+  
   function addPlayerToSlot(player, slotIdx) {
     if (!player) return false;
     
+    // 1. Ya está en el equipo
     if (alineacion.find((j) => j && j.id === player.id)) {
       setMessage({ type: 'error', text: 'Este jugador ya está en el equipo.' });
       return false;
     }
     
-    if (miEquipoIdeal.length >= 11) {
+    // 2. Equipo lleno
+    if (miEquipoIdeal.length >= 11 && !alineacion[slotIdx]) {
       setMessage({ type: 'error', text: 'El equipo ya tiene 11 jugadores.' });
       return false;
     }
 
     const nueva = [...alineacion];
     const existente = nueva[slotIdx];
+    
+    // Candidato para la comprobación de límites
     let equipoCandidate = miEquipoIdeal.filter((j) => !existente || j.id !== existente.id);
     equipoCandidate = equipoCandidate.filter((j) => j.id !== player.id);
     equipoCandidate.push(player);
 
+    // 3. Límite de Defensas (5)
     if (esDefensa(player.position) && contarDefensas(equipoCandidate) > 5) {
-      setMessage({ type: 'error', text: 'Límite: máximo 5 defensas.' });
+      setMessage({ type: 'error', text: `Límite: Ya tienes ${contarDefensas(equipoCandidate) - 1} defensas. Máximo 5.` });
       return false;
     }
     
+    // 4. Límite de Centrales (4)
     if (esCentral(player.position) && contarCentrales(equipoCandidate) > 4) {
-      setMessage({ type: 'error', text: 'Límite: máximo 4 centrales.' });
+      setMessage({ type: 'error', text: `Límite: Ya tienes ${contarCentrales(equipoCandidate) - 1} centrales. Máximo 4.` });
       return false;
     }
 
-    if (esPortero(player.position) && slotIdx !== 0) {
-      setMessage({ type: 'error', text: 'El portero debe ir en la posición de portero.' });
+    // 5. Límite de Porteros (1)
+    if (esPortero(player.position) && contarPorteros(equipoCandidate) > 1) {
+      setMessage({ type: 'error', text: 'Límite: Solo puedes seleccionar un portero.' });
+      return false;
+    }
+    
+    // 6. Restricción Portero/Posición
+    const slotType = positions[slotIdx].type;
+    if (esPortero(player.position) && slotType !== 'GK') {
+       setMessage({ type: 'error', text: 'Un portero solo puede ser asignado a una posición de Portero.' });
+       return false;
+    }
+    if (!esPortero(player.position) && slotType === 'GK') {
+      setMessage({ type: 'error', text: `Un jugador de ${player.position} no puede ir en la posición de Portero.` });
       return false;
     }
 
+
+    // Si se reemplaza un jugador existente, devolverlo a la lista de disponibles
     if (existente && existente.id !== player.id) {
-      setJugadoresDisponibles((prev) => [...prev, existente].sort((a,b)=>a.id-b.id));
+      setJugadoresDisponibles((prev) => [...prev.filter(p => p.id !== existente.id), existente].sort((a,b)=>a.id-b.id));
     }
 
+    // Ejecutar la adición
     setJugadoresDisponibles((prev) => prev.filter((p) => p.id !== player.id));
     nueva[slotIdx] = player;
     setAlineacion(nueva);
@@ -189,6 +405,92 @@ export default function MiOnceIdeal() {
     setShowModal(true);
     setQ("");
   }
+
+  async function downloadAsImage() {
+    if (miEquipoIdeal.length !== 11) {
+      setMessage({ type: 'error', text: 'Completa tu once ideal primero.' });
+      return;
+    }
+
+    try {
+      setMessage({ type: 'info', text: 'Generando imagen... ⏳' });
+      
+      // Cargar todas las imágenes como crossOrigin para evitar CORS
+      const images = fieldRef.current.querySelectorAll('img');
+      images.forEach(img => {
+        if (!img.complete) {
+          img.crossOrigin = 'anonymous';
+        }
+      });
+      
+      // Esperar a que todas las imágenes carguen
+      await Promise.all(
+        Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.onload = resolve;
+            img.onerror = resolve; // Resolver aunque falle para continuar
+            setTimeout(resolve, 3000); // timeout de seguridad
+          });
+        })
+      );
+      
+      const html2canvas = (await import('html2canvas')).default; 
+      const canvas = await html2canvas(fieldRef.current, {
+        backgroundColor: '#1e3c72',
+        scale: 2,
+        logging: true,
+        useCORS: true,
+        allowTaint: false,
+        imageTimeout: 0,
+        removeContainer: true
+      });
+      
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.download = 'mi-once-ideal.png';
+        link.href = url;
+        link.click();
+        URL.revokeObjectURL(url);
+        setMessage({ type: 'success', text: '¡Imagen descargada correctamente! 📸' });
+      }, 'image/png', 1.0);
+      
+    } catch (err) {
+      console.error('Error al descargar:', err);
+      setMessage({ type: 'error', text: 'Error al descargar. Intenta de nuevo.' });
+    }
+  }
+
+  // ----------------------------------------------------------------------------------
+  // Manejo de Arrastre en Modo Custom
+  // ----------------------------------------------------------------------------------
+  function handleDragPosition(idx, e) {
+    if (formation !== 'custom' || !fieldRef.current) return;
+    
+    // Calcula las coordenadas X/Y como porcentaje
+    const fieldRect = fieldRef.current.getBoundingClientRect();
+    const x = ((e.clientX - fieldRect.left) / fieldRect.width) * 100;
+    const y = ((e.clientY - fieldRect.top) / fieldRect.height) * 100;
+
+    // Obtener la nueva posición DETALLADA basada en las coordenadas
+    const newDetailedPos = getDetailedPosition(x, y); 
+    
+    setCustomPositions(prev => {
+      const newPos = [...prev];
+      newPos[idx] = { 
+          ...newPos[idx], 
+          left: `${Math.max(5, Math.min(95, x))}%`, 
+          top: `${Math.max(5, Math.min(95, y))}%`,  
+          label: newDetailedPos.label, 
+          type: newDetailedPos.type   
+      };
+      return newPos;
+    });
+  }
+  // ----------------------------------------------------------------------------------
+
+  const selectedDesign = FIELD_DESIGNS.find(d => d.id === fieldDesign) || FIELD_DESIGNS[0];
 
   if (loading) {
     return (
@@ -214,7 +516,7 @@ export default function MiOnceIdeal() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '24px 0' }}>
-      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 16px' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px' }}>
         {/* Header */}
         <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: 24, marginBottom: 24, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
@@ -233,10 +535,14 @@ export default function MiOnceIdeal() {
                 onChange={(e) => setFormation(e.target.value)}
                 style={{ padding: '10px 16px', fontSize: 16, border: '2px solid #667eea', borderRadius: 8, fontWeight: 'bold', cursor: 'pointer', background: 'white' }}
               >
-                <option>4-4-2</option>
-                <option>4-3-3</option>
-                <option>3-5-2</option>
-                <option>5-3-2</option>
+                <option value="4-4-2">4-4-2</option>
+                <option value="4-3-3">4-3-3</option>
+                <option value="3-5-2">3-5-2</option>
+                <option value="5-3-2">5-3-2</option>
+                <option value="3-4-3">3-4-3</option>
+                <option value="4-2-3-1">4-2-3-1</option>
+                <option value="4-5-1">4-5-1</option>
+                <option value="custom">🎨 Crea tu táctica</option>
               </select>
             </div>
           </div>
@@ -263,64 +569,64 @@ export default function MiOnceIdeal() {
         </div>
 
         {/* Campo de fútbol */}
-        <div style={{ 
+        <div ref={fieldRef} style={{ 
           position: 'relative',
-          width: '100%',
-          paddingBottom: '140%',
-          maxWidth: 900,
+          width: '60%',
+          paddingBottom: '60%',
+          maxWidth: 700,
           margin: '0 auto',
-          background: 'linear-gradient(180deg, #4a9d4f 0%, #3d8b41 50%, #4a9d4f 100%)',
+          background: selectedDesign.gradient,
           borderRadius: 16,
           boxShadow: '0 12px 48px rgba(0,0,0,0.3)',
           overflow: 'hidden'
         }}>
-          {/* Patrón de césped */}
           <div style={{
             position: 'absolute',
             inset: 0,
-            background: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.03) 50px, rgba(0,0,0,0.03) 100px)',
+            background: selectedDesign.pattern,
             opacity: 0.6
           }} />
           
-          {/* Líneas del campo */}
-          <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} viewBox="0 0 100 140" preserveAspectRatio="none">
-            <rect x="2" y="2" width="96" height="136" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
-            <line x1="2" y1="70" x2="98" y2="70" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
-            <circle cx="50" cy="70" r="8" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
-            <circle cx="50" cy="70" r="0.5" fill="rgba(255,255,255,0.6)" />
+          <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} viewBox="0 0 100 100" preserveAspectRatio="none">
+            <rect x="2" y="2" width="96" height="96" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <line x1="2" y1="50" x2="98" y2="50" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <circle cx="50" cy="50" r="10" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <circle cx="50" cy="50" r="0.8" fill="rgba(255,255,255,0.6)" />
             <rect x="25" y="2" width="50" height="16" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
             <rect x="35" y="2" width="30" height="8" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
-            <circle cx="50" cy="12" r="0.5" fill="rgba(255,255,255,0.6)" />
-            <rect x="25" y="122" width="50" height="16" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
-            <rect x="35" y="130" width="30" height="8" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
-            <circle cx="50" cy="126" r="0.5" fill="rgba(255,255,255,0.6)" />
+            <circle cx="50" cy="12" r="0.8" fill="rgba(255,255,255,0.6)" />
+            <rect x="25" y="82" width="50" height="16" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <rect x="35" y="90" width="30" height="8" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <circle cx="50" cy="88" r="0.8" fill="rgba(255,255,255,0.6)" />
           </svg>
 
-          {/* Slots de jugadores */}
           <div style={{ position: 'absolute', inset: 0 }}>
             {positions.map((pos, idx) => (
               <div
                 key={idx}
+                draggable={formation === 'custom'}
+                onDragEnd={(e) => handleDragPosition(idx, e)}
                 style={{
                   position: 'absolute',
                   left: pos.left,
                   top: pos.top,
                   transform: 'translate(-50%, -50%)',
-                  transition: 'all 0.3s ease'
+                  transition: 'all 0.3s ease',
+                  cursor: formation === 'custom' ? 'move' : 'default'
                 }}
               >
                 {alineacion[idx] ? (
                   <div 
                     onClick={() => openModal(idx)}
                     style={{
-                      width: 90,
+                      width: 80,
                       background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                      borderRadius: 12,
-                      padding: 8,
-                      boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+                      borderRadius: 10,
+                      padding: 6,
+                      boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
                       cursor: 'pointer',
                       transition: 'all 0.3s ease',
-                      border: '3px solid #ffd700',
+                      border: '2px solid #ffd700',
                       position: 'relative'
                     }}
                   >
@@ -331,227 +637,264 @@ export default function MiOnceIdeal() {
                       }}
                       style={{
                         position: 'absolute',
-                        top: -8,
-                        right: -8,
-                        width: 24,
-                        height: 24,
+                        top: -6,
+                        right: -6,
+                        width: 20,
+                        height: 20,
                         borderRadius: '50%',
                         border: 'none',
                         background: '#dc3545',
                         color: 'white',
-                        fontSize: 16,
+                        fontSize: 14,
                         fontWeight: 'bold',
                         cursor: 'pointer',
-                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                        boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
                         zIndex: 10
-                      }}
-                    >
-                      ×
-                    </button>
-                    <img 
-                      src={alineacion[idx].image_path} 
-                      alt={alineacion[idx].name}
-                      style={{
-                        width: '100%',
-                        height: 85,
-                        objectFit: 'cover',
-                        borderRadius: 8,
-                        marginBottom: 6
-                      }}
-                    />
-                    <div style={{ color: 'white', fontSize: 10, fontWeight: 'bold', textAlign: 'center', marginBottom: 2 }}>
-                      {alineacion[idx].name.split(' ').slice(-1)[0].toUpperCase()}
-                    </div>
-                    <div style={{ 
-                      background: 'rgba(255,215,0,0.9)', 
-                      color: '#1e3c72', 
-                      fontSize: 8, 
-                      fontWeight: 'bold', 
-                      padding: '2px 4px', 
-                      borderRadius: 4, 
-                      textAlign: 'center' 
-                    }}>
-                      {pos.label}
-                    </div>
-                  </div>
-                ) : (
-                  <div
-                    onClick={() => openModal(idx)}
-                    style={{
-                      width: 90,
-                      height: 120,
-                      background: 'rgba(255,255,255,0.2)',
-                      backdropFilter: 'blur(10px)',
-                      border: '3px dashed rgba(255,255,255,0.5)',
-                      borderRadius: 12,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      gap: 8
                     }}
-                  >
-                    <div style={{ fontSize: 32 }}>➕</div>
-                    <div style={{ 
-                      color: 'white', 
-                      fontSize: 11, 
-                      fontWeight: 'bold',
-                      background: 'rgba(0,0,0,0.5)',
-                      padding: '4px 8px',
-                      borderRadius: 6
+                >
+                    ×
+                </button>
+                <img
+                    src={alineacion[idx].image_path}
+                    alt={alineacion[idx].name}
+                    style={{
+                        width: '100%',
+                        height: 70,
+                        objectFit: 'cover',
+                        borderRadius: 6,
+                        marginBottom: 4
+                    }}
+                />
+                <div style={{ color: 'white', fontSize: 9, fontWeight: 'bold', textAlign: 'center', marginBottom: 2 }}>
+                    {alineacion[idx].name.split(' ').slice(-1)[0].toUpperCase()}
+                </div>
+                <div style={{
+                    background: 'rgba(255,215,0,0.9)',
+                    color: '#1e3c72',
+                    fontSize: 7,
+                    fontWeight: 'bold',
+                    padding: '2px',
+                    borderRadius: 3,
+                    textAlign: 'center'
+                }}>
+                    {pos.label} {/* Etiqueta Dinámica: LI, DC, MP, etc. */}
+                </div>
+                </div>
+                ) : (
+                <div
+                    onClick={() => openModal(idx)}
+                    className="espacio-vacio"
+                    style={{
+                        width: 80,
+                        height: 100,
+                        background: 'rgba(255,255,255,0.2)',
+                        backdropFilter: 'blur(8px)',
+                        border: '2px dashed rgba(255,255,255,0.5)',
+                        borderRadius: 10,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        cursor: 'pointer',
+                        transition: 'all 0.3s ease',
+                        gap: 6
+                    }}
+                >
+                    <div style={{ fontSize: 28 }}>➕</div>
+                    <div style={{
+                        color: 'white',
+                        fontSize: 10,
+                        fontWeight: 'bold',
+                        background: 'rgba(0,0,0,0.5)',
+                        padding: '3px 6px',
+                        borderRadius: 4
                     }}>
-                      {pos.label}
+                        {pos.label} {/* Etiqueta Dinámica: LI, DC, MP, etc. */}
                     </div>
-                  </div>
+                </div>
                 )}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Botón guardar */}
-        <div style={{ marginTop: 24, textAlign: 'center' }}>
-          <button
-            disabled={miEquipoIdeal.length !== 11}
-            onClick={() => setMessage({ type: 'success', text: '¡Once ideal guardado correctamente! 🎉' })}
+                </div>
+                ))}
+                </div>
+                </div>
+                {/* Selector de diseño de cancha */}
+    <div style={{ marginTop: 20, textAlign: 'center' }}>
+      <p style={{ color: 'white', fontWeight: 'bold', marginBottom: 12 }}>🎨 Diseño de Cancha:</p>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+        {FIELD_DESIGNS.map(design => (
+          <div
+            key={design.id}
+            onClick={() => setFieldDesign(design.id)}
             style={{
-              padding: '16px 48px',
-              fontSize: 18,
-              fontWeight: 'bold',
-              background: miEquipoIdeal.length === 11 ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#ccc',
+              width: 80,
+              height: 80,
+              background: design.gradient,
+              borderRadius: 8,
+              cursor: 'pointer',
+              border: fieldDesign === design.id ? '4px solid #ffd700' : '3px solid rgba(255,255,255,0.3)',
+              boxShadow: fieldDesign === design.id ? '0 4px 16px rgba(255,215,0,0.5)' : '0 2px 8px rgba(0,0,0,0.2)',
+              transition: 'all 0.3s ease',
+              position: 'relative',
+              overflow: 'hidden'
+            }}
+          >
+            <div style={{
+              position: 'absolute',
+              inset: 0,
+              background: design.pattern,
+              opacity: 0.5
+            }} />
+            <div style={{
+              position: 'absolute',
+              bottom: 4,
+              left: 0,
+              right: 0,
+              textAlign: 'center',
               color: 'white',
-              border: 'none',
-              borderRadius: 12,
-              cursor: miEquipoIdeal.length === 11 ? 'pointer' : 'not-allowed',
-              boxShadow: miEquipoIdeal.length === 11 ? '0 8px 24px rgba(102,126,234,0.4)' : 'none',
-              transition: 'all 0.3s ease'
-            }}
-          >
-            {miEquipoIdeal.length === 11 ? '💾 Guardar Once Ideal' : `Faltan ${11 - miEquipoIdeal.length} jugadores`}
-          </button>
-        </div>
+              fontSize: 9,
+              fontWeight: 'bold',
+              textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+            }}>
+              {design.name}
+            </div>
+          </div>
+        ))}
       </div>
+    </div>
 
-      {/* Modal de selección */}
-      {showModal && (
-        <div 
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.8)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: 16
-          }}
-          onClick={() => setShowModal(false)}
-        >
-          <div 
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: 'white',
-              borderRadius: 16,
-              maxWidth: 1000,
-              width: '100%',
-              maxHeight: '90vh',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
-            }}
+    {/* Botones de acción */}
+    <div style={{ marginTop: 24, textAlign: 'center', display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+      <button
+        disabled={miEquipoIdeal.length !== 11}
+        onClick={downloadAsImage}
+        style={{
+          padding: '14px 32px',
+          fontSize: 16,
+          fontWeight: 'bold',
+          background: miEquipoIdeal.length === 11 ? 'linear-gradient(135deg, #28a745 0%, #20c997 100%)' : '#ccc',
+          color: 'white',
+          border: 'none',
+          borderRadius: 10,
+          cursor: miEquipoIdeal.length === 11 ? 'pointer' : 'not-allowed',
+          boxShadow: miEquipoIdeal.length === 11 ? '0 6px 20px rgba(40,167,69,0.4)' : 'none',
+          transition: 'all 0.3s ease'
+        }}
+      >
+        📸 Descargar como Imagen
+      </button>
+
+      <button
+        onClick={() => {
+            setAlineacion(Array(11).fill(null));
+            setJugadoresDisponibles(prev => [...prev].sort((a,b)=>a.id-b.id)); 
+            setCustomPositions(null); 
+            setFormation("4-4-2"); 
+            setMessage({ type: 'info', text: 'El equipo ha sido vaciado.' });
+        }}
+        style={{
+          padding: '14px 32px',
+          fontSize: 16,
+          fontWeight: 'bold',
+          background: 'linear-gradient(135deg, #dc3545 0%, #e85e71 100%)',
+          color: 'white',
+          border: 'none',
+          borderRadius: 10,
+          cursor: 'pointer',
+          boxShadow: '0 6px 20px rgba(220,53,69,0.4)',
+          transition: 'all 0.3s ease'
+        }}
+      >
+        🗑️ Vaciar Equipo
+      </button>
+    </div>
+
+    {/* Modal de selección de jugador */}
+    {showModal && selectedSlot !== null && (
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <div style={{ background: 'white', borderRadius: 12, padding: 24, width: '90%', maxWidth: 800, maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
+          <button
+            onClick={() => setShowModal(false)}
+            style={{ position: 'absolute', top: 10, right: 10, background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: '#333' }}
           >
-            <div style={{ padding: 24, borderBottom: '2px solid #eee', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <h2 style={{ margin: 0, color: 'white', fontSize: 28, fontWeight: 'bold' }}>
-                  ⚽ Selecciona un Jugador
-                </h2>
-                <button
-                  onClick={() => setShowModal(false)}
+            ×
+          </button>
+          <h2 style={{ fontSize: 24, margin: '0 0 16px', color: '#1e3c72' }}>
+            Seleccionar Jugador para <span style={{ color: '#667eea', fontWeight: 'bold' }}>{positions[selectedSlot].label}</span>
+          </h2>
+          <div style={{ marginBottom: 16 }}>
+            <input
+              type="text"
+              placeholder="Buscar jugador..."
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              style={{ width: '100%', padding: 12, fontSize: 16, border: '2px solid #ccc', borderRadius: 8 }}
+            />
+          </div>
+
+          {filtered.length === 0 ? (
+            <div style={{ textAlign: 'center', padding: 40, color: '#999' }}>
+              No se encontraron jugadores que coincidan con el tipo de posición **{positions[selectedSlot].type}** o la búsqueda.
+            </div>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 16 }}>
+              {filtered.map((player) => (
+                <div
+                  key={player.id}
+                  onClick={() => addPlayerToSlot(player, selectedSlot)}
                   style={{
-                    width: 36,
-                    height: 36,
-                    borderRadius: '50%',
-                    border: 'none',
-                    background: 'rgba(255,255,255,0.2)',
-                    color: 'white',
-                    fontSize: 24,
-                    cursor: 'pointer'
+                    background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                    borderRadius: 10,
+                    padding: 8,
+                    cursor: 'pointer',
+                    boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    transition: 'all 0.2s ease',
+                    transform: 'translateY(0)',
+                    border: '2px solid transparent'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = 'translateY(-3px)';
+                    e.currentTarget.style.borderColor = '#ffd700';
+                    e.currentTarget.style.boxShadow = '0 12px 24px rgba(255,215,0,0.4)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = 'translateY(0)';
+                    e.currentTarget.style.borderColor = 'transparent';
+                    e.currentTarget.style.boxShadow = 'none';
                   }}
                 >
-                  ×
-                </button>
-              </div>
-              <input
-                type="text"
-                placeholder="🔍 Buscar por nombre..."
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                autoFocus
-                style={{
-                  width: '100%',
-                  padding: '12px 16px',
-                  fontSize: 16,
-                  border: 'none',
-                  borderRadius: 8,
-                  outline: 'none'
-                }}
-              />
-            </div>
-
-            <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', 
-                gap: 16 
-              }}>
-                {filtered.map((player) => (
-                  <div
-                    key={player.id}
-                    onClick={() => addPlayerToSlot(player, selectedSlot)}
+                  <img 
+                    src={player.image_path} 
+                    alt={player.name}
                     style={{
-                      background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                      borderRadius: 12,
-                      padding: 12,
-                      cursor: 'pointer',
-                      transition: 'all 0.3s ease',
-                      border: '3px solid transparent'
+                      width: '100%',
+                      height: 140,
+                      objectFit: 'cover',
+                      borderRadius: 8,
+                      marginBottom: 8
                     }}
-                  >
-                    <img 
-                      src={player.image_path} 
-                      alt={player.name}
-                      style={{
-                        width: '100%',
-                        height: 150,
-                        objectFit: 'cover',
-                        borderRadius: 8,
-                        marginBottom: 8
-                      }}
-                    />
-                    <div style={{ color: 'white', fontWeight: 'bold', fontSize: 14, textAlign: 'center', marginBottom: 4 }}>
-                      {player.name}
-                    </div>
-                    <div style={{ 
-                      background: 'rgba(255,215,0,0.9)', 
-                      color: '#1e3c72', 
-                      fontSize: 12, 
-                      fontWeight: 'bold', 
-                      padding: '4px 8px', 
-                      borderRadius: 6, 
-                      textAlign: 'center' 
-                    }}>
-                      {player.position}
-                    </div>
+                  />
+                  <div style={{ color: 'white', fontWeight: 'bold', fontSize: 13, textAlign: 'center', marginBottom: 4 }}>
+                    {player.name}
                   </div>
-                ))}
-              </div>
+                  <div style={{ 
+                    background: 'rgba(255,215,0,0.9)', 
+                    color: '#1e3c72', 
+                    fontSize: 11, 
+                    fontWeight: 'bold', 
+                    padding: '4px 6px', 
+                    borderRadius: 6, 
+                    textAlign: 'center' 
+                  }}>
+                    {player.position}
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+          )}
         </div>
-      )}
+      </div>
+    )}
+      </div>
     </div>
   );
 }
