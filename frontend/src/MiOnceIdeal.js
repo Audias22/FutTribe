@@ -1,23 +1,20 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "https://futtribe-production.up.railway.app";
 const API_URL = `${API_BASE}/api/v1/jugadores-historicos`;
 
-const GK_SLOT_INDEX = 0;
-
-function uid(x) {
-  return String(x);
-}
-
 export default function MiOnceIdeal() {
   const [jugadoresDisponibles, setJugadoresDisponibles] = useState([]);
   const [alineacion, setAlineacion] = useState(Array(11).fill(null));
-  const miEquipoIdeal = alineacion.filter(Boolean);
   const [q, setQ] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [message, setMessage] = useState(null); // {type:'error'|'info', text}
+  const [message, setMessage] = useState(null);
   const [formation, setFormation] = useState("4-4-2");
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState(null);
+
+  const miEquipoIdeal = alineacion.filter(Boolean);
 
   useEffect(() => {
     setLoading(true);
@@ -37,18 +34,22 @@ export default function MiOnceIdeal() {
   }, []);
 
   const posicion = (p) => (p || "").toUpperCase();
+  
   function tokensPos(pos) {
     return posicion(pos).split(/[^A-Z0-9]+/).map((t) => t.trim()).filter(Boolean);
   }
+  
   function esDefensa(pos) {
     const toks = tokensPos(pos);
     const defs = ["LI", "LD", "CB", "DFC", "LIBERO", "DF", "LB", "RB"];
     return toks.some((t) => defs.includes(t));
   }
+  
   function esCentral(pos) {
     const toks = tokensPos(pos);
     return toks.some((t) => ["CB", "DFC"].includes(t));
   }
+  
   function esPortero(pos) {
     const toks = tokensPos(pos);
     return toks.some((t) => ["GK", "POR", "PORTERO", "POR."].includes(t));
@@ -57,174 +58,119 @@ export default function MiOnceIdeal() {
   function contarDefensas(equipoArr) {
     return equipoArr.filter((j) => esDefensa(j.position)).length;
   }
+  
   function contarCentrales(equipoArr) {
     return equipoArr.filter((j) => esCentral(j.position)).length;
   }
+  
   function contarPorteros(equipoArr) {
     return equipoArr.filter((j) => esPortero(j.position)).length;
   }
 
-  function puedeAñadir(jugador, equipoArr = miEquipoIdeal) {
-    if (!jugador) return false;
-    if (equipoArr.find((j) => j.id === jugador.id)) return false;
-    if (equipoArr.length >= 11) return false;
-    if (esPortero(jugador.position) && contarPorteros(equipoArr) >= 1) return false;
-    if (esDefensa(jugador.position) && contarDefensas(equipoArr) >= 5) return false;
-    if (esCentral(jugador.position) && contarCentrales(equipoArr) >= 4) return false;
-    return true;
-  }
-
-  // Presets de formaciones (coordenadas relativas)
   const formationPositions = useMemo(() => ({
     "4-4-2": [
-      { top: '88%', left: '50%' }, // GK
-      { top: '72%', left: '20%' }, { top: '72%', left: '36%' }, { top: '72%', left: '64%' }, { top: '72%', left: '80%' },
-      { top: '52%', left: '18%' }, { top: '52%', left: '36%' }, { top: '52%', left: '64%' }, { top: '52%', left: '82%' },
-      { top: '28%', left: '40%' }, { top: '28%', left: '60%' }
-    ],
-    "3-5-2": [
-      { top: '88%', left: '50%' },
-      { top: '70%', left: '30%' }, { top: '70%', left: '50%' }, { top: '70%', left: '70%' },
-      { top: '52%', left: '12%' }, { top: '52%', left: '34%' }, { top: '52%', left: '50%' }, { top: '52%', left: '66%' }, { top: '52%', left: '88%' },
-      { top: '28%', left: '42%' }, { top: '28%', left: '58%' }
+      { top: '85%', left: '50%', label: 'POR' },
+      { top: '68%', left: '18%', label: 'LI' }, 
+      { top: '68%', left: '38%', label: 'DFC' }, 
+      { top: '68%', left: '62%', label: 'DFC' }, 
+      { top: '68%', left: '82%', label: 'LD' },
+      { top: '48%', left: '16%', label: 'MI' }, 
+      { top: '48%', left: '38%', label: 'MC' }, 
+      { top: '48%', left: '62%', label: 'MC' }, 
+      { top: '48%', left: '84%', label: 'MD' },
+      { top: '25%', left: '40%', label: 'DC' }, 
+      { top: '25%', left: '60%', label: 'DC' }
     ],
     "4-3-3": [
-      { top: '88%', left: '50%' },
-      { top: '72%', left: '18%' }, { top: '72%', left: '36%' }, { top: '72%', left: '64%' }, { top: '72%', left: '82%' },
-      { top: '52%', left: '34%' }, { top: '52%', left: '50%' }, { top: '52%', left: '66%' },
-      { top: '30%', left: '18%' }, { top: '24%', left: '50%' }, { top: '30%', left: '82%' }
+      { top: '85%', left: '50%', label: 'POR' },
+      { top: '68%', left: '18%', label: 'LI' }, 
+      { top: '68%', left: '38%', label: 'DFC' }, 
+      { top: '68%', left: '62%', label: 'DFC' }, 
+      { top: '68%', left: '82%', label: 'LD' },
+      { top: '48%', left: '32%', label: 'MC' }, 
+      { top: '48%', left: '50%', label: 'MC' }, 
+      { top: '48%', left: '68%', label: 'MC' },
+      { top: '22%', left: '18%', label: 'EI' }, 
+      { top: '18%', left: '50%', label: 'DC' }, 
+      { top: '22%', left: '82%', label: 'ED' }
+    ],
+    "3-5-2": [
+      { top: '85%', left: '50%', label: 'POR' },
+      { top: '68%', left: '28%', label: 'DFC' }, 
+      { top: '68%', left: '50%', label: 'DFC' }, 
+      { top: '68%', left: '72%', label: 'DFC' },
+      { top: '48%', left: '12%', label: 'MI' }, 
+      { top: '48%', left: '32%', label: 'MC' }, 
+      { top: '48%', left: '50%', label: 'MC' }, 
+      { top: '48%', left: '68%', label: 'MC' }, 
+      { top: '48%', left: '88%', label: 'MD' },
+      { top: '25%', left: '40%', label: 'DC' }, 
+      { top: '25%', left: '60%', label: 'DC' }
     ],
     "5-3-2": [
-      { top: '88%', left: '50%' },
-      { top: '72%', left: '12%' }, { top: '72%', left: '30%' }, { top: '72%', left: '50%' }, { top: '72%', left: '70%' }, { top: '72%', left: '88%' },
-      { top: '52%', left: '34%' }, { top: '52%', left: '50%' }, { top: '52%', left: '66%' },
-      { top: '30%', left: '40%' }, { top: '30%', left: '60%' }
+      { top: '85%', left: '50%', label: 'POR' },
+      { top: '68%', left: '12%', label: 'LI' }, 
+      { top: '68%', left: '30%', label: 'DFC' }, 
+      { top: '68%', left: '50%', label: 'DFC' }, 
+      { top: '68%', left: '70%', label: 'DFC' }, 
+      { top: '68%', left: '88%', label: 'LD' },
+      { top: '48%', left: '32%', label: 'MC' }, 
+      { top: '48%', left: '50%', label: 'MC' }, 
+      { top: '48%', left: '68%', label: 'MC' },
+      { top: '25%', left: '40%', label: 'DC' }, 
+      { top: '25%', left: '60%', label: 'DC' }
     ]
   }), []);
 
-  const slotsPosPreset = formationPositions[formation] || formationPositions['4-4-2'];
-  const [slotsPosState, setSlotsPosState] = useState(slotsPosPreset);
-  const fieldRef = useRef(null);
-  const draggingRef = useRef(null); // { idx, startX, startY, startLeftPct, startTopPct }
-  const [highlightSlot, setHighlightSlot] = useState(null);
-  const [compactListBelow, setCompactListBelow] = useState(true);
+  const positions = formationPositions[formation] || formationPositions['4-4-2'];
 
-  function handlePlayerDragStart(player, e, from = 'players') {
-    try {
-      e.dataTransfer.setData('text/plain', JSON.stringify({ playerId: player.id, from }));
-      e.dataTransfer.effectAllowed = 'move';
-      // try to set a nicer drag image using the img inside the card
-      const img = e.currentTarget.querySelector && e.currentTarget.querySelector('img');
-      if (img) {
-        const w = img.naturalWidth || img.width;
-        const h = img.naturalHeight || img.height;
-        // some browsers require the image to be loaded; this will fail silently if not
-        e.dataTransfer.setDragImage(img, Math.floor(w/2), Math.floor(h/2));
-      }
-    } catch (err) {
-      // ignore
-    }
-  }
-
-  function pointerToClient(e) {
-    if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    return { x: e.clientX, y: e.clientY };
-  }
-
-  function handlePointerStart(idx, e) {
-    e.preventDefault();
-    const p = pointerToClient(e);
-    const fieldEl = fieldRef.current;
-    if (!fieldEl) return;
-    const fieldRect = fieldEl.getBoundingClientRect();
-    const slot = slotsPosState[idx] || { left: '50%', top: '50%' };
-    const startLeftPct = parseFloat(String(slot.left).replace('%',''));
-    const startTopPct = parseFloat(String(slot.top).replace('%',''));
-    draggingRef.current = { idx, startX: p.x, startY: p.y, startLeftPct, startTopPct, fieldRect };
-    window.addEventListener('mousemove', handlePointerMove);
-    window.addEventListener('mouseup', handlePointerEnd);
-    window.addEventListener('touchmove', handlePointerMove, { passive: false });
-    window.addEventListener('touchend', handlePointerEnd);
-  }
-
-  function handlePointerMove(e) {
-    if (!draggingRef.current) return;
-    e.preventDefault();
-    const p = pointerToClient(e);
-    const d = draggingRef.current;
-    const fieldRect = d.fieldRect || fieldRef.current.getBoundingClientRect();
-    const deltaX = p.x - d.startX;
-    const deltaY = p.y - d.startY;
-    const deltaLeftPct = (deltaX / fieldRect.width) * 100;
-    const deltaTopPct = (deltaY / fieldRect.height) * 100;
-    const newLeft = Math.max(2, Math.min(98, d.startLeftPct + deltaLeftPct));
-    const newTop = Math.max(2, Math.min(98, d.startTopPct + deltaTopPct));
-    setSlotsPosState((prev) => {
-      const out = [...prev];
-      out[d.idx] = { left: `${newLeft}%`, top: `${newTop}%` };
-      return out;
-    });
-  }
-
-  function handlePointerEnd() {
-    if (!draggingRef.current) return;
-    draggingRef.current = null;
-    window.removeEventListener('mousemove', handlePointerMove);
-    window.removeEventListener('mouseup', handlePointerEnd);
-    window.removeEventListener('touchmove', handlePointerMove);
-    window.removeEventListener('touchend', handlePointerEnd);
-  }
-
-  // cuando cambia la formación por defecto, reestablecer preset si el usuario no movió manualmente.
-  useEffect(() => {
-    setSlotsPosState(formationPositions[formation] || formationPositions['4-4-2']);
-  }, [formation, formationPositions]);
-
-  const filtered = jugadoresDisponibles.filter((j) => (j.name || "").toLowerCase().includes(q.trim().toLowerCase()));
+  const filtered = jugadoresDisponibles.filter((j) => 
+    (j.name || "").toLowerCase().includes(q.trim().toLowerCase())
+  );
 
   function addPlayerToSlot(player, slotIdx) {
-    // reglas claras y mensajes específicos
     if (!player) return false;
+    
     if (alineacion.find((j) => j && j.id === player.id)) {
       setMessage({ type: 'error', text: 'Este jugador ya está en el equipo.' });
       return false;
     }
+    
     if (miEquipoIdeal.length >= 11) {
       setMessage({ type: 'error', text: 'El equipo ya tiene 11 jugadores.' });
       return false;
     }
-  // candidate team to validate limits
+
     const nueva = [...alineacion];
     const existente = nueva[slotIdx];
     let equipoCandidate = miEquipoIdeal.filter((j) => !existente || j.id !== existente.id);
     equipoCandidate = equipoCandidate.filter((j) => j.id !== player.id);
     equipoCandidate.push(player);
+
     if (esDefensa(player.position) && contarDefensas(equipoCandidate) > 5) {
-      setMessage({ type: 'error', text: 'Limite: un máximo de 5 defensas.' });
+      setMessage({ type: 'error', text: 'Límite: máximo 5 defensas.' });
       return false;
     }
+    
     if (esCentral(player.position) && contarCentrales(equipoCandidate) > 4) {
-      setMessage({ type: 'error', text: 'Limite: un máximo de 4 centrales.' });
-      return false;
-    }
-    // Portero: permitir solo si se colocó explícitamente en el slot GK
-    if (esPortero(player.position) && slotIdx !== GK_SLOT_INDEX) {
-      setMessage({ type: 'error', text: 'Para colocar un portero, arrástralo al slot de portero (posición superior).' });
+      setMessage({ type: 'error', text: 'Límite: máximo 4 centrales.' });
       return false;
     }
 
-    // if existe devolverlo a disponibles
+    if (esPortero(player.position) && slotIdx !== 0) {
+      setMessage({ type: 'error', text: 'El portero debe ir en la posición de portero.' });
+      return false;
+    }
+
     if (existente && existente.id !== player.id) {
       setJugadoresDisponibles((prev) => [...prev, existente].sort((a,b)=>a.id-b.id));
     }
 
     setJugadoresDisponibles((prev) => prev.filter((p) => p.id !== player.id));
-    // limpiar origen si venía de otro slot
-    const fromIdx = nueva.findIndex((s, i) => s && s.id === player.id && i !== slotIdx);
-    if (fromIdx !== -1) nueva[fromIdx] = null;
     nueva[slotIdx] = player;
     setAlineacion(nueva);
-    setMessage({ type: 'info', text: `${player.name} colocado en slot ${slotIdx + 1}.` });
+    setMessage({ type: 'success', text: `${player.name} añadido correctamente.` });
+    setShowModal(false);
     return true;
   }
 
@@ -235,232 +181,377 @@ export default function MiOnceIdeal() {
     nueva[slotIdx] = null;
     setAlineacion(nueva);
     setJugadoresDisponibles((prev) => [...prev, jugador].sort((a,b)=>a.id-b.id));
-    setMessage({ type: 'info', text: `${jugador.name} devuelto a disponibles.` });
+    setMessage({ type: 'info', text: `${jugador.name} eliminado del equipo.` });
   }
 
-  // HTML5 drag/drop handlers will be used instead of react-beautiful-dnd.
-
-  // Add by button: place GK only into GK slot; otherwise first empty non-GK slot
-  function handleAddButton(player) {
-    if (!player) return;
-    if (esPortero(player.position)) {
-      if (!alineacion[GK_SLOT_INDEX]) return addPlayerToSlot(player, GK_SLOT_INDEX);
-      setMessage({ type: 'error', text: 'Ya hay un portero en el equipo.' });
-      return;
-    }
-    // find first empty slot that's not GK
-    const idx = alineacion.findIndex((s, i) => s === null && i !== GK_SLOT_INDEX);
-    if (idx === -1) {
-      setMessage({ type: 'error', text: 'No hay slots libres (excluye slot GK).' });
-      return;
-    }
-    return addPlayerToSlot(player, idx);
+  function openModal(slotIdx) {
+    setSelectedSlot(slotIdx);
+    setShowModal(true);
+    setQ("");
   }
 
-  if (loading) return <div>Cargando jugadores...</div>;
-  if (error) return <div style={{ color: 'red' }}>Error: {error}</div>;
+  if (loading) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+        <div style={{ textAlign: 'center', color: 'white' }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>⚽</div>
+          <div style={{ fontSize: 24, fontWeight: 'bold' }}>Cargando jugadores...</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#f8f9fa' }}>
+        <div style={{ textAlign: 'center', color: '#dc3545', padding: 24, background: 'white', borderRadius: 12, boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>⚠️</div>
+          <div style={{ fontSize: 20, fontWeight: 'bold' }}>Error: {error}</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ padding: 12 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-        <h2 style={{ margin: 0 }}>Mi Once Ideal ({miEquipoIdeal.length}/11)</h2>
-        <div>
-          <label style={{ marginRight: 8 }}>Formación:</label>
-          <select value={formation} onChange={(e) => setFormation(e.target.value)}>
-            <option>4-4-2</option>
-            <option>3-5-2</option>
-            <option>4-3-3</option>
-            <option>5-3-2</option>
-          </select>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '24px 0' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 16px' }}>
+        {/* Header */}
+        <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: 24, marginBottom: 24, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
+            <div>
+              <h1 style={{ margin: 0, fontSize: 32, fontWeight: 'bold', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                ⚽ Mi Once Ideal
+              </h1>
+              <p style={{ margin: '8px 0 0', color: '#666', fontSize: 14 }}>
+                Jugadores: {miEquipoIdeal.length}/11 | Defensas: {contarDefensas(miEquipoIdeal)}/5 | Porteros: {contarPorteros(miEquipoIdeal)}/1
+              </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <label style={{ fontWeight: 600, color: '#333' }}>Formación:</label>
+              <select 
+                value={formation} 
+                onChange={(e) => setFormation(e.target.value)}
+                style={{ padding: '10px 16px', fontSize: 16, border: '2px solid #667eea', borderRadius: 8, fontWeight: 'bold', cursor: 'pointer', background: 'white' }}
+              >
+                <option>4-4-2</option>
+                <option>4-3-3</option>
+                <option>3-5-2</option>
+                <option>5-3-2</option>
+              </select>
+            </div>
+          </div>
+
+          {message && (
+            <div style={{ 
+              marginTop: 16, 
+              padding: 16, 
+              borderRadius: 8, 
+              background: message.type === 'error' ? '#fee' : message.type === 'success' ? '#efe' : '#eef',
+              border: `2px solid ${message.type === 'error' ? '#f99' : message.type === 'success' ? '#9f9' : '#99f'}`,
+              color: message.type === 'error' ? '#c33' : message.type === 'success' ? '#3c3' : '#33c',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12
+            }}>
+              <span style={{ fontSize: 20 }}>
+                {message.type === 'error' ? '❌' : message.type === 'success' ? '✅' : 'ℹ️'}
+              </span>
+              {message.text}
+            </div>
+          )}
+        </div>
+
+        {/* Campo de fútbol */}
+        <div style={{ 
+          position: 'relative',
+          width: '100%',
+          paddingBottom: '140%',
+          maxWidth: 900,
+          margin: '0 auto',
+          background: 'linear-gradient(180deg, #4a9d4f 0%, #3d8b41 50%, #4a9d4f 100%)',
+          borderRadius: 16,
+          boxShadow: '0 12px 48px rgba(0,0,0,0.3)',
+          overflow: 'hidden'
+        }}>
+          {/* Patrón de césped */}
+          <div style={{
+            position: 'absolute',
+            inset: 0,
+            background: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.03) 50px, rgba(0,0,0,0.03) 100px)',
+            opacity: 0.6
+          }} />
+          
+          {/* Líneas del campo */}
+          <svg style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }} viewBox="0 0 100 140" preserveAspectRatio="none">
+            <rect x="2" y="2" width="96" height="136" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <line x1="2" y1="70" x2="98" y2="70" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <circle cx="50" cy="70" r="8" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <circle cx="50" cy="70" r="0.5" fill="rgba(255,255,255,0.6)" />
+            <rect x="25" y="2" width="50" height="16" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <rect x="35" y="2" width="30" height="8" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <circle cx="50" cy="12" r="0.5" fill="rgba(255,255,255,0.6)" />
+            <rect x="25" y="122" width="50" height="16" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <rect x="35" y="130" width="30" height="8" fill="none" stroke="rgba(255,255,255,0.6)" strokeWidth="0.3" />
+            <circle cx="50" cy="126" r="0.5" fill="rgba(255,255,255,0.6)" />
+          </svg>
+
+          {/* Slots de jugadores */}
+          <div style={{ position: 'absolute', inset: 0 }}>
+            {positions.map((pos, idx) => (
+              <div
+                key={idx}
+                style={{
+                  position: 'absolute',
+                  left: pos.left,
+                  top: pos.top,
+                  transform: 'translate(-50%, -50%)',
+                  transition: 'all 0.3s ease'
+                }}
+              >
+                {alineacion[idx] ? (
+                  <div 
+                    onClick={() => openModal(idx)}
+                    style={{
+                      width: 90,
+                      background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                      borderRadius: 12,
+                      padding: 8,
+                      boxShadow: '0 6px 20px rgba(0,0,0,0.4)',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      border: '3px solid #ffd700',
+                      position: 'relative'
+                    }}
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFromSlot(idx);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: -8,
+                        right: -8,
+                        width: 24,
+                        height: 24,
+                        borderRadius: '50%',
+                        border: 'none',
+                        background: '#dc3545',
+                        color: 'white',
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        cursor: 'pointer',
+                        boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+                        zIndex: 10
+                      }}
+                    >
+                      ×
+                    </button>
+                    <img 
+                      src={alineacion[idx].image_path} 
+                      alt={alineacion[idx].name}
+                      style={{
+                        width: '100%',
+                        height: 85,
+                        objectFit: 'cover',
+                        borderRadius: 8,
+                        marginBottom: 6
+                      }}
+                    />
+                    <div style={{ color: 'white', fontSize: 10, fontWeight: 'bold', textAlign: 'center', marginBottom: 2 }}>
+                      {alineacion[idx].name.split(' ').slice(-1)[0].toUpperCase()}
+                    </div>
+                    <div style={{ 
+                      background: 'rgba(255,215,0,0.9)', 
+                      color: '#1e3c72', 
+                      fontSize: 8, 
+                      fontWeight: 'bold', 
+                      padding: '2px 4px', 
+                      borderRadius: 4, 
+                      textAlign: 'center' 
+                    }}>
+                      {pos.label}
+                    </div>
+                  </div>
+                ) : (
+                  <div
+                    onClick={() => openModal(idx)}
+                    style={{
+                      width: 90,
+                      height: 120,
+                      background: 'rgba(255,255,255,0.2)',
+                      backdropFilter: 'blur(10px)',
+                      border: '3px dashed rgba(255,255,255,0.5)',
+                      borderRadius: 12,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      gap: 8
+                    }}
+                  >
+                    <div style={{ fontSize: 32 }}>➕</div>
+                    <div style={{ 
+                      color: 'white', 
+                      fontSize: 11, 
+                      fontWeight: 'bold',
+                      background: 'rgba(0,0,0,0.5)',
+                      padding: '4px 8px',
+                      borderRadius: 6
+                    }}>
+                      {pos.label}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Botón guardar */}
+        <div style={{ marginTop: 24, textAlign: 'center' }}>
+          <button
+            disabled={miEquipoIdeal.length !== 11}
+            onClick={() => setMessage({ type: 'success', text: '¡Once ideal guardado correctamente! 🎉' })}
+            style={{
+              padding: '16px 48px',
+              fontSize: 18,
+              fontWeight: 'bold',
+              background: miEquipoIdeal.length === 11 ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#ccc',
+              color: 'white',
+              border: 'none',
+              borderRadius: 12,
+              cursor: miEquipoIdeal.length === 11 ? 'pointer' : 'not-allowed',
+              boxShadow: miEquipoIdeal.length === 11 ? '0 8px 24px rgba(102,126,234,0.4)' : 'none',
+              transition: 'all 0.3s ease'
+            }}
+          >
+            {miEquipoIdeal.length === 11 ? '💾 Guardar Once Ideal' : `Faltan ${11 - miEquipoIdeal.length} jugadores`}
+          </button>
         </div>
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        <strong>Defensas:</strong> {contarDefensas(miEquipoIdeal)} / 5 &nbsp;|&nbsp;
-        <strong>Porteros:</strong> {contarPorteros(miEquipoIdeal)} / 1
-      </div>
+      {/* Modal de selección */}
+      {showModal && (
+        <div 
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.8)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 1000,
+            padding: 16
+          }}
+          onClick={() => setShowModal(false)}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: 'white',
+              borderRadius: 16,
+              maxWidth: 1000,
+              width: '100%',
+              maxHeight: '90vh',
+              overflow: 'hidden',
+              display: 'flex',
+              flexDirection: 'column',
+              boxShadow: '0 20px 60px rgba(0,0,0,0.5)'
+            }}
+          >
+            <div style={{ padding: 24, borderBottom: '2px solid #eee', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+                <h2 style={{ margin: 0, color: 'white', fontSize: 28, fontWeight: 'bold' }}>
+                  ⚽ Selecciona un Jugador
+                </h2>
+                <button
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    width: 36,
+                    height: 36,
+                    borderRadius: '50%',
+                    border: 'none',
+                    background: 'rgba(255,255,255,0.2)',
+                    color: 'white',
+                    fontSize: 24,
+                    cursor: 'pointer'
+                  }}
+                >
+                  ×
+                </button>
+              </div>
+              <input
+                type="text"
+                placeholder="🔍 Buscar por nombre..."
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                autoFocus
+                style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  fontSize: 16,
+                  border: 'none',
+                  borderRadius: 8,
+                  outline: 'none'
+                }}
+              />
+            </div>
 
-      {message && (
-        <div style={{ marginBottom: 8, padding: 8, borderRadius: 6, background: message.type === 'error' ? '#ffd6d6' : '#e6ffea', color: message.type === 'error' ? '#900' : '#063' }}>
-          {message.text}
+            <div style={{ flex: 1, overflowY: 'auto', padding: 24 }}>
+              <div style={{ 
+                display: 'grid', 
+                gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', 
+                gap: 16 
+              }}>
+                {filtered.map((player) => (
+                  <div
+                    key={player.id}
+                    onClick={() => addPlayerToSlot(player, selectedSlot)}
+                    style={{
+                      background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
+                      borderRadius: 12,
+                      padding: 12,
+                      cursor: 'pointer',
+                      transition: 'all 0.3s ease',
+                      border: '3px solid transparent'
+                    }}
+                  >
+                    <img 
+                      src={player.image_path} 
+                      alt={player.name}
+                      style={{
+                        width: '100%',
+                        height: 150,
+                        objectFit: 'cover',
+                        borderRadius: 8,
+                        marginBottom: 8
+                      }}
+                    />
+                    <div style={{ color: 'white', fontWeight: 'bold', fontSize: 14, textAlign: 'center', marginBottom: 4 }}>
+                      {player.name}
+                    </div>
+                    <div style={{ 
+                      background: 'rgba(255,215,0,0.9)', 
+                      color: '#1e3c72', 
+                      fontSize: 12, 
+                      fontWeight: 'bold', 
+                      padding: '4px 8px', 
+                      borderRadius: 6, 
+                      textAlign: 'center' 
+                    }}>
+                      {player.position}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       )}
-
-      <div style={{ display: 'flex', gap: 12 }}>
-          {/* Players list narrow and horizontal carousel below field */}
-          <div style={{ flex: 1 }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                <label style={{ marginRight: 8 }}>List below field:</label>
-                <button onClick={()=>setCompactListBelow((v)=>!v)}>{compactListBelow ? 'Hide below' : 'Show below'}</button>
-              </div>
-            </div>
-
-            <div ref={fieldRef} onDragOver={(e)=>e.preventDefault()} onDrop={(e)=>{
-                // drop on field (not on a slot): place in nearest slot to drop coords
-                try{
-                  const raw = e.dataTransfer.getData('text/plain');
-                  const payload = JSON.parse(raw || null);
-                  if (!payload) return;
-                  const fieldRect = fieldRef.current.getBoundingClientRect();
-                  const dropX = e.clientX;
-                  const dropY = e.clientY;
-                  // compute nearest slot
-                  let nearest = 0;
-                  let bestD = Infinity;
-                  slotsPosState.forEach((pos, idx)=>{
-                    const leftPct = parseFloat(String(pos.left).replace('%',''))/100;
-                    const topPct = parseFloat(String(pos.top).replace('%',''))/100;
-                    const cx = fieldRect.left + fieldRect.width * leftPct;
-                    const cy = fieldRect.top + fieldRect.height * topPct;
-                    const d2 = (cx - dropX)*(cx - dropX) + (cy - dropY)*(cy - dropY);
-                    if (d2 < bestD) { bestD = d2; nearest = idx; }
-                  });
-                  if (payload.from === 'players') {
-                    const player = jugadoresDisponibles.find(p=>p.id===payload.playerId);
-                    if (!player) return;
-                    addPlayerToSlot(player, nearest);
-                  } else if ((payload.from||'').startsWith('slot-')) {
-                    // moving a placed player to nearest slot
-                    const fromIdx = Number((payload.from||'slot-0').split('-')[1]);
-                    if (fromIdx === nearest) return;
-                    const nueva = [...alineacion];
-                    const playerMoving = nueva[fromIdx];
-                    const destExisting = nueva[nearest];
-                    // validate
-                    let equipoCandidate = miEquipoIdeal.filter((j)=> j.id !== (playerMoving?playerMoving.id:null) && (!destExisting || j.id !== destExisting.id));
-                    equipoCandidate.push(playerMoving);
-                    if (!puedeAñadir(playerMoving, equipoCandidate)) {
-                      setMessage({type:'error', text:'No se puede mover: restricciones.'});
-                      return;
-                    }
-                    nueva[fromIdx] = destExisting || null;
-                    nueva[nearest] = playerMoving;
-                    setAlineacion(nueva);
-                    setMessage({type:'info', text:'Movimiento completado.'});
-                  }
-                }catch(err){ }
-              }} style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(180deg, #4caf50 0%, #45a047 100%)', borderRadius: 8, boxShadow: 'inset 0 0 80px rgba(0,0,0,0.1)' }}>
-              {/* Field slots */}
-              {slotsPosState.map((pos, idx) => (
-                    <div key={`slot-${idx}`} id={`slot-${idx}`}
-                      onDragOver={(e)=>{ e.preventDefault(); setHighlightSlot(idx); }}
-                      onDragEnter={(e)=>{ e.preventDefault(); setHighlightSlot(idx); }}
-                      onDragLeave={()=>{ setHighlightSlot(null); }}
-                      onDrop={(e)=>{
-                        setHighlightSlot(null);
-                        // parse dataTransfer
-                        try {
-                          const raw = e.dataTransfer.getData('text/plain');
-                          const payload = JSON.parse(raw);
-                          if (!payload) return;
-                          if (payload.from === 'players') {
-                            const player = jugadoresDisponibles.find(p=>p.id===payload.playerId);
-                            if (player) addPlayerToSlot(player, idx);
-                          } else if ((payload.from||'').startsWith('slot-')) {
-                            const fromIdx = Number(payload.from.split('-')[1]);
-                            // slot->slot move/swap
-                            if (fromIdx === idx) return;
-                            const nueva = [...alineacion];
-                            const playerMoving = nueva[fromIdx];
-                            const destExisting = nueva[idx];
-                            let equipoCandidate = miEquipoIdeal.filter((j)=> j.id !== (playerMoving?playerMoving.id:null) && (!destExisting || j.id !== destExisting.id));
-                            equipoCandidate.push(playerMoving);
-                            if (!puedeAñadir(playerMoving, equipoCandidate)) {
-                              setMessage({type:'error', text:'No se puede mover: restricciones.'});
-                              return;
-                            }
-                            // swap
-                            nueva[fromIdx] = destExisting || null;
-                            nueva[idx] = playerMoving;
-                            setAlineacion(nueva);
-                            setMessage({type:'info', text:'Movimiento completado.'});
-                          }
-                        } catch (err) {
-                          // ignore
-                        }
-                      }}
-                      style={{ position: 'absolute', width: 200, height: 80, left: pos.left, top: pos.top, transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', padding: 8, borderRadius: 10, background: highlightSlot===idx ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.95)', boxShadow: highlightSlot===idx ? '0 6px 18px rgba(0,0,0,0.25)' : '0 2px 6px rgba(0,0,0,0.15)', zIndex: highlightSlot===idx ? 40 : 20, transition: 'all 160ms ease' }}>
-                      <div className={`slot-handle-${idx}`} onMouseDown={(e)=>handlePointerStart(idx,e)} onTouchStart={(e)=>handlePointerStart(idx,e)} style={{ position: 'absolute', left: 8, top: 8, width: 14, height: 14, borderRadius: 10, background: '#9aa7b2', cursor: 'grab', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} title="Arrastra aquí para mover el slot" />
-                      {alineacion[idx] ? (
-                        <div draggable onDragStart={(e)=> handlePlayerDragStart(alineacion[idx], e, `slot-${idx}`)} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
-                          <img src={alineacion[idx].image_path} alt={alineacion[idx].name} style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, boxShadow: '0 2px 6px rgba(0,0,0,0.12)' }} />
-                          <div style={{ flex: 1 }}>
-                            <div style={{ fontWeight: '700', fontSize: 13 }}>{alineacion[idx].name}</div>
-                            <div style={{ fontSize: 12, color: '#444' }}>{alineacion[idx].position}</div>
-                          </div>
-                          <button onClick={() => removeFromSlot(idx)} style={{ padding: '6px 8px', borderRadius: 6 }}>Quitar</button>
-                        </div>
-                      ) : (
-                        <div style={{ width: '100%', textAlign: 'center', color: '#666', fontWeight: 600 }}>Slot vacío</div>
-                      )}
-                    </div>
-                ))}
-            </div>
-
-            {/* Compact list below option */}
-            {compactListBelow && (
-              <div style={{ width: '100%', marginTop: 12, padding: 8, background: '#fafafa', borderRadius: 8 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
-                  <strong>Jugadores Disponibles ({filtered.length})</strong>
-                </div>
-                <div onDragOver={(e)=>e.preventDefault()} onDrop={(e)=>{
-                  try{
-                    const raw = e.dataTransfer.getData('text/plain');
-                    const payload = JSON.parse(raw);
-                    if (payload && (payload.from||'').startsWith('slot-')) {
-                      const fromIdx = Number(payload.from.split('-')[1]);
-                      removeFromSlot(fromIdx);
-                    }
-                  }catch(err){}
-                }} style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: 6 }}>
-                  {filtered.map((p) => (
-                    <div key={uid(p.id)} draggable onDragStart={(e)=>handlePlayerDragStart(p,e,'players')} style={{ width: 120, background: '#fff', borderRadius: 8, padding: 6, boxShadow: '0 1px 3px rgba(0,0,0,0.08)', textAlign: 'center' }}>
-                      <img src={p.image_path} alt={p.name} style={{ width: 72, height: 72, objectFit: 'cover', borderRadius: 6 }} />
-                      <div style={{ fontWeight: 700, fontSize: 12, marginTop: 6 }}>{p.name}</div>
-                      <div style={{ fontSize: 11, color: '#666' }}>{p.position}</div>
-                      <div style={{ marginTop: 6 }}>
-                        <button onClick={() => handleAddButton(p)} disabled={!puedeAñadir(p)} style={{ padding: '6px 8px', fontSize: 12 }}>{esPortero(p.position) ? 'Añadir (GK)' : 'Añadir'}</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Right panel: controls and search */}
-          <div style={{ width: 360 }}>
-            <h3>Jugadores Disponibles ({filtered.length})</h3>
-            <input placeholder="Buscar por nombre..." value={q} onChange={(e)=>setQ(e.target.value)} style={{ width: '100%', padding: 8, marginBottom: 8 }} />
-            <div onDragOver={(e)=>e.preventDefault()} onDrop={(e)=>{
-              try{
-                const raw = e.dataTransfer.getData('text/plain');
-                const payload = JSON.parse(raw);
-                if (payload && (payload.from||'').startsWith('slot-')) {
-                  const fromIdx = Number(payload.from.split('-')[1]);
-                  removeFromSlot(fromIdx);
-                }
-              }catch(err){}
-            }} style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: 6, height: 200 }}>
-              {filtered.map((p, index) => (
-                <div key={uid(p.id)} draggable onDragStart={(e)=>e.dataTransfer.setData('text/plain', JSON.stringify({playerId: p.id, from: 'players'}))} style={{ minWidth: 120, background: '#fff', borderRadius: 8, padding: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
-                  <img src={p.image_path} alt={p.name} style={{ width: 96, height: 96, objectFit: 'cover', borderRadius: 8 }} />
-                  <div style={{ fontWeight: 700, marginTop: 6 }}>{p.name}</div>
-                  <div style={{ fontSize: 12, color: '#666' }}>{p.position}</div>
-                  <div style={{ marginTop: 6 }}>
-                    <button onClick={() => handleAddButton(p)} disabled={!puedeAñadir(p)}>{esPortero(p.position) ? 'Añadir (GK)' : 'Añadir'}</button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{ marginTop: 12 }}>
-              <button disabled={miEquipoIdeal.length !== 11} onClick={()=>setMessage({type:'info', text:'Guardado (simulado)'} )}>Guardar Once Ideal</button>
-            </div>
-          </div>
-        </div>
-      
     </div>
   );
 }
