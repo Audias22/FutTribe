@@ -175,15 +175,7 @@ export default function MiOnceIdeal() {
       setMessage({ type: 'error', text: 'El equipo ya tiene 11 jugadores.' });
       return false;
     }
-    if (esPortero(player.position)) {
-      if (!alineacion[GK_SLOT_INDEX]) {
-        slotIdx = GK_SLOT_INDEX;
-      } else if (slotIdx !== GK_SLOT_INDEX) {
-        setMessage({ type: 'error', text: 'Ya hay un portero en el equipo.' });
-        return false;
-      }
-    }
-    // candidate team to validate limits
+  // candidate team to validate limits
     const nueva = [...alineacion];
     const existente = nueva[slotIdx];
     let equipoCandidate = miEquipoIdeal.filter((j) => !existente || j.id !== existente.id);
@@ -195,6 +187,11 @@ export default function MiOnceIdeal() {
     }
     if (esCentral(player.position) && contarCentrales(equipoCandidate) > 4) {
       setMessage({ type: 'error', text: 'Limite: un máximo de 4 centrales.' });
+      return false;
+    }
+    // Portero: permitir solo si se colocó explícitamente en el slot GK
+    if (esPortero(player.position) && slotIdx !== GK_SLOT_INDEX) {
+      setMessage({ type: 'error', text: 'Para colocar un portero, arrástralo al slot de portero (posición superior).' });
       return false;
     }
 
@@ -225,15 +222,18 @@ export default function MiOnceIdeal() {
 
   // HTML5 drag/drop handlers will be used instead of react-beautiful-dnd.
 
-  // Add by button: auto place GK into GK slot
+  // Add by button: place GK only into GK slot; otherwise first empty non-GK slot
   function handleAddButton(player) {
-    if (esPortero(player.position) && !alineacion[GK_SLOT_INDEX]) {
-      return addPlayerToSlot(player, GK_SLOT_INDEX);
+    if (!player) return;
+    if (esPortero(player.position)) {
+      if (!alineacion[GK_SLOT_INDEX]) return addPlayerToSlot(player, GK_SLOT_INDEX);
+      setMessage({ type: 'error', text: 'Ya hay un portero en el equipo.' });
+      return;
     }
-    // otherwise try first empty slot
-    const idx = alineacion.findIndex((s) => s === null);
+    // find first empty slot that's not GK
+    const idx = alineacion.findIndex((s, i) => s === null && i !== GK_SLOT_INDEX);
     if (idx === -1) {
-      setMessage({ type: 'error', text: 'El equipo ya tiene 11 jugadores.' });
+      setMessage({ type: 'error', text: 'No hay slots libres (excluye slot GK).' });
       return;
     }
     return addPlayerToSlot(player, idx);
@@ -271,7 +271,33 @@ export default function MiOnceIdeal() {
       <div style={{ display: 'flex', gap: 12 }}>
           {/* Players list narrow and horizontal carousel below field */}
           <div style={{ flex: 1 }}>
-            <div ref={fieldRef} style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(#4caf50, #3a9b3a)', borderRadius: 8 }}>
+            <div ref={fieldRef} onDragOver={(e)=>e.preventDefault()} onDrop={(e)=>{
+                // drop on field (not on a slot): place in nearest slot to drop coords
+                try{
+                  const raw = e.dataTransfer.getData('text/plain');
+                  const payload = JSON.parse(raw || null);
+                  if (!payload) return;
+                  if (payload.from === 'players') {
+                    const player = jugadoresDisponibles.find(p=>p.id===payload.playerId);
+                    if (!player) return;
+                    const fieldRect = fieldRef.current.getBoundingClientRect();
+                    const dropX = e.clientX;
+                    const dropY = e.clientY;
+                    // compute nearest slot
+                    let nearest = 0;
+                    let bestD = Infinity;
+                    slotsPosState.forEach((pos, idx)=>{
+                      const leftPct = parseFloat(String(pos.left).replace('%',''))/100;
+                      const topPct = parseFloat(String(pos.top).replace('%',''))/100;
+                      const cx = fieldRect.left + fieldRect.width * leftPct;
+                      const cy = fieldRect.top + fieldRect.height * topPct;
+                      const d2 = (cx - dropX)*(cx - dropX) + (cy - dropY)*(cy - dropY);
+                      if (d2 < bestD) { bestD = d2; nearest = idx; }
+                    });
+                    addPlayerToSlot(player, nearest);
+                  }
+                }catch(err){ }
+              }} style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(#4caf50, #3a9b3a)', borderRadius: 8 }}>
               {/* Field slots */}
               {slotsPosState.map((pos, idx) => (
                     <div key={`slot-${idx}`} id={`slot-${idx}`}
