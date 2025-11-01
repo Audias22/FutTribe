@@ -106,6 +106,7 @@ export default function MiOnceIdeal() {
   const [slotsPosState, setSlotsPosState] = useState(slotsPosPreset);
   const fieldRef = useRef(null);
   const draggingRef = useRef(null); // { idx, startX, startY, startLeftPct, startTopPct }
+  const [highlightSlot, setHighlightSlot] = useState(null);
 
   function pointerToClient(e) {
     if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
@@ -164,9 +165,17 @@ export default function MiOnceIdeal() {
   const filtered = jugadoresDisponibles.filter((j) => (j.name || "").toLowerCase().includes(q.trim().toLowerCase()));
 
   function addPlayerToSlot(player, slotIdx) {
-    // auto-place GK to GK slot if possible
+    // reglas claras y mensajes específicos
+    if (!player) return false;
+    if (alineacion.find((j) => j && j.id === player.id)) {
+      setMessage({ type: 'error', text: 'Este jugador ya está en el equipo.' });
+      return false;
+    }
+    if (miEquipoIdeal.length >= 11) {
+      setMessage({ type: 'error', text: 'El equipo ya tiene 11 jugadores.' });
+      return false;
+    }
     if (esPortero(player.position)) {
-      // if GK slot empty, force into GK slot
       if (!alineacion[GK_SLOT_INDEX]) {
         slotIdx = GK_SLOT_INDEX;
       } else if (slotIdx !== GK_SLOT_INDEX) {
@@ -174,16 +183,18 @@ export default function MiOnceIdeal() {
         return false;
       }
     }
-
-    // create candidate team
+    // candidate team to validate limits
     const nueva = [...alineacion];
     const existente = nueva[slotIdx];
     let equipoCandidate = miEquipoIdeal.filter((j) => !existente || j.id !== existente.id);
     equipoCandidate = equipoCandidate.filter((j) => j.id !== player.id);
     equipoCandidate.push(player);
-
-    if (!puedeAñadir(player, equipoCandidate.filter(Boolean))) {
-      setMessage({ type: 'error', text: 'Restricción: no puedes añadir este jugador.' });
+    if (esDefensa(player.position) && contarDefensas(equipoCandidate) > 5) {
+      setMessage({ type: 'error', text: 'Limite: un máximo de 5 defensas.' });
+      return false;
+    }
+    if (esCentral(player.position) && contarCentrales(equipoCandidate) > 4) {
+      setMessage({ type: 'error', text: 'Limite: un máximo de 4 centrales.' });
       return false;
     }
 
@@ -264,8 +275,11 @@ export default function MiOnceIdeal() {
               {/* Field slots */}
               {slotsPosState.map((pos, idx) => (
                     <div key={`slot-${idx}`} id={`slot-${idx}`}
-                      onDragOver={(e)=>e.preventDefault()}
+                      onDragOver={(e)=>{ e.preventDefault(); setHighlightSlot(idx); }}
+                      onDragEnter={(e)=>{ e.preventDefault(); setHighlightSlot(idx); }}
+                      onDragLeave={()=>{ setHighlightSlot(null); }}
                       onDrop={(e)=>{
+                        setHighlightSlot(null);
                         // parse dataTransfer
                         try {
                           const raw = e.dataTransfer.getData('text/plain');
@@ -297,19 +311,19 @@ export default function MiOnceIdeal() {
                           // ignore
                         }
                       }}
-                      style={{ position: 'absolute', width: 160, height: 64, left: pos.left, top: pos.top, transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', padding: 6, borderRadius: 6, background: 'rgba(255,255,255,0.95)', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                      <div className={`slot-handle-${idx}`} onMouseDown={(e)=>handlePointerStart(idx,e)} onTouchStart={(e)=>handlePointerStart(idx,e)} style={{ position: 'absolute', left: 6, top: 6, width: 12, height: 12, borderRadius: 6, background: '#ccc', cursor: 'move' }} title="Arrastra aquí para mover el slot" />
+                      style={{ position: 'absolute', width: 200, height: 80, left: pos.left, top: pos.top, transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', padding: 8, borderRadius: 10, background: highlightSlot===idx ? 'rgba(255,255,255,1)' : 'rgba(255,255,255,0.95)', boxShadow: highlightSlot===idx ? '0 6px 18px rgba(0,0,0,0.25)' : '0 2px 6px rgba(0,0,0,0.15)', zIndex: highlightSlot===idx ? 40 : 20, transition: 'all 160ms ease' }}>
+                      <div className={`slot-handle-${idx}`} onMouseDown={(e)=>handlePointerStart(idx,e)} onTouchStart={(e)=>handlePointerStart(idx,e)} style={{ position: 'absolute', left: 8, top: 8, width: 14, height: 14, borderRadius: 10, background: '#9aa7b2', cursor: 'grab', boxShadow: '0 1px 2px rgba(0,0,0,0.15)' }} title="Arrastra aquí para mover el slot" />
                       {alineacion[idx] ? (
-                        <div draggable onDragStart={(e)=> e.dataTransfer.setData('text/plain', JSON.stringify({playerId: alineacion[idx].id, from:`slot-${idx}`}))} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
-                          <img src={alineacion[idx].image_path} alt={alineacion[idx].name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }} />
+                        <div draggable onDragStart={(e)=> e.dataTransfer.setData('text/plain', JSON.stringify({playerId: alineacion[idx].id, from:`slot-${idx}`}))} style={{ display: 'flex', alignItems: 'center', gap: 10, width: '100%' }}>
+                          <img src={alineacion[idx].image_path} alt={alineacion[idx].name} style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 8, boxShadow: '0 2px 6px rgba(0,0,0,0.12)' }} />
                           <div style={{ flex: 1 }}>
-                            <div style={{ fontWeight: '700', fontSize: 12 }}>{alineacion[idx].name}</div>
-                            <div style={{ fontSize: 11, color: '#444' }}>{alineacion[idx].position}</div>
+                            <div style={{ fontWeight: '700', fontSize: 13 }}>{alineacion[idx].name}</div>
+                            <div style={{ fontSize: 12, color: '#444' }}>{alineacion[idx].position}</div>
                           </div>
-                          <button onClick={() => removeFromSlot(idx)}>Quitar</button>
+                          <button onClick={() => removeFromSlot(idx)} style={{ padding: '6px 8px', borderRadius: 6 }}>Quitar</button>
                         </div>
                       ) : (
-                        <div style={{ width: '100%', textAlign: 'center', color: '#666' }}>Slot vacío</div>
+                        <div style={{ width: '100%', textAlign: 'center', color: '#666', fontWeight: 600 }}>Slot vacío</div>
                       )}
                     </div>
                 ))}
