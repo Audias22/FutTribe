@@ -397,7 +397,24 @@ export default function MiOnceIdeal() {
     nueva[slotIdx] = null;
     setAlineacion(nueva);
     setJugadoresDisponibles((prev) => [...prev, jugador].sort((a,b)=>a.id-b.id));
-    setMessage({ type: 'info', text: `${jugador.name} eliminado del equipo.` });
+    setMessage({ type: 'info', text: `${jugador.name} devuelto a disponibles.` });
+  }
+
+  function swapPlayers(fromIdx, toIdx) {
+    if (fromIdx === toIdx) return;
+    
+    const nueva = [...alineacion];
+    const playerFrom = nueva[fromIdx];
+    const playerTo = nueva[toIdx];
+    
+    if (!playerFrom) return; // No hay jugador para mover
+    
+    // Intercambiar
+    nueva[fromIdx] = playerTo;
+    nueva[toIdx] = playerFrom;
+    
+    setAlineacion(nueva);
+    setMessage({ type: 'success', text: playerTo ? `${playerFrom.name} ↔ ${playerTo.name}` : `${playerFrom.name} movido` });
   }
 
   function openModal(slotIdx) {
@@ -617,6 +634,22 @@ export default function MiOnceIdeal() {
               >
                 {alineacion[idx] ? (
                   <div 
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = 'move';
+                      e.dataTransfer.setData('fromSlot', idx.toString());
+                    }}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'move';
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const fromIdx = parseInt(e.dataTransfer.getData('fromSlot'));
+                      if (!isNaN(fromIdx)) {
+                        swapPlayers(fromIdx, idx);
+                      }
+                    }}
                     onClick={() => openModal(idx)}
                     style={{
                       width: 80,
@@ -624,11 +657,13 @@ export default function MiOnceIdeal() {
                       borderRadius: 10,
                       padding: 6,
                       boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-                      cursor: 'pointer',
+                      cursor: 'grab',
                       transition: 'all 0.3s ease',
                       border: '2px solid #ffd700',
                       position: 'relative'
                     }}
+                    onMouseDown={(e) => e.currentTarget.style.cursor = 'grabbing'}
+                    onMouseUp={(e) => e.currentTarget.style.cursor = 'grab'}
                   >
                     <button
                       onClick={(e) => {
@@ -683,6 +718,17 @@ export default function MiOnceIdeal() {
                 ) : (
                 <div
                     onClick={() => openModal(idx)}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.dataTransfer.dropEffect = 'move';
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      const fromIdx = parseInt(e.dataTransfer.getData('fromSlot'));
+                      if (!isNaN(fromIdx)) {
+                        swapPlayers(fromIdx, idx);
+                      }
+                    }}
                     className="espacio-vacio"
                     style={{
                         width: 80,
