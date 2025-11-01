@@ -1,5 +1,6 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import DraggableCore from 'react-draggable';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "https://futtribe-production.up.railway.app";
 const API_URL = `${API_BASE}/api/v1/jugadores-historicos`;
@@ -103,7 +104,14 @@ export default function MiOnceIdeal() {
     ]
   }), []);
 
-  const slotsPos = formationPositions[formation] || formationPositions['4-4-2'];
+  const slotsPosPreset = formationPositions[formation] || formationPositions['4-4-2'];
+  const [slotsPosState, setSlotsPosState] = useState(slotsPosPreset);
+  const fieldRef = useRef(null);
+
+  // cuando cambia la formación por defecto, reestablecer preset si el usuario no movió manualmente.
+  useEffect(() => {
+    setSlotsPosState(formationPositions[formation] || formationPositions['4-4-2']);
+  }, [formation, formationPositions]);
 
   const filtered = jugadoresDisponibles.filter((j) => (j.name || "").toLowerCase().includes(q.trim().toLowerCase()));
 
@@ -252,32 +260,49 @@ export default function MiOnceIdeal() {
           <div style={{ flex: 1 }}>
             <div style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(#4caf50, #3a9b3a)', borderRadius: 8 }}>
               {/* Field slots */}
-              {slotsPos.map((pos, idx) => (
-                <Droppable droppableId={`slot-${idx}`} key={`slot-${idx}`} direction="vertical">
-                  {(provided) => (
-                    <div ref={provided.innerRef} {...provided.droppableProps}
-                      style={{ position: 'absolute', width: 160, height: 64, left: pos.left, top: pos.top, transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', padding: 6, borderRadius: 6, background: 'rgba(255,255,255,0.95)', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                      {alineacion[idx] ? (
-                        <Draggable draggableId={`player-${alineacion[idx].id}`} index={0} key={`p-${alineacion[idx].id}`}>
-                          {(drv) => (
-                            <div ref={drv.innerRef} {...drv.draggableProps} {...drv.dragHandleProps} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', ...drv.draggableProps.style }}>
-                              <img src={alineacion[idx].image_path} alt={alineacion[idx].name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }} />
-                              <div style={{ flex: 1 }}>
-                                <div style={{ fontWeight: '700', fontSize: 12 }}>{alineacion[idx].name}</div>
-                                <div style={{ fontSize: 11, color: '#444' }}>{alineacion[idx].position}</div>
-                              </div>
-                              <button onClick={() => removeFromSlot(idx)}>Quitar</button>
-                            </div>
+              {slotsPosState.map((pos, idx) => (
+                  <DraggableCore key={`dragcore-${idx}`} handle={`.slot-handle-${idx}`} onStop={() => {
+                    // al soltar, calculamos la nueva posición porcentual relativa al field
+                    const slotEl = document.getElementById(`slot-${idx}`);
+                    const fieldEl = fieldRef.current;
+                    if (!slotEl || !fieldEl) return;
+                    const slotRect = slotEl.getBoundingClientRect();
+                    const fieldRect = fieldEl.getBoundingClientRect();
+                    const centerX = slotRect.left + slotRect.width / 2;
+                    const centerY = slotRect.top + slotRect.height / 2;
+                    const leftPct = Math.max(2, Math.min(98, ((centerX - fieldRect.left) / fieldRect.width) * 100));
+                    const topPct = Math.max(2, Math.min(98, ((centerY - fieldRect.top) / fieldRect.height) * 100));
+                    const nueva = [...slotsPosState];
+                    nueva[idx] = { left: `${leftPct}%`, top: `${topPct}%` };
+                    setSlotsPosState(nueva);
+                  }}>
+                    <Droppable droppableId={`slot-${idx}`} key={`slot-${idx}`} direction="vertical">
+                      {(provided) => (
+                        <div id={`slot-${idx}`} ref={provided.innerRef} {...provided.droppableProps}
+                          style={{ position: 'absolute', width: 160, height: 64, left: pos.left, top: pos.top, transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', padding: 6, borderRadius: 6, background: 'rgba(255,255,255,0.95)', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                          <div className={`slot-handle-${idx}`} style={{ position: 'absolute', left: 6, top: 6, width: 12, height: 12, borderRadius: 6, background: '#ccc', cursor: 'move' }} title="Arrastra aquí para mover el slot" />
+                          {alineacion[idx] ? (
+                            <Draggable draggableId={`player-${alineacion[idx].id}`} index={0} key={`p-${alineacion[idx].id}`}>
+                              {(drv) => (
+                                <div ref={drv.innerRef} {...drv.draggableProps} {...drv.dragHandleProps} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', ...drv.draggableProps.style }}>
+                                  <img src={alineacion[idx].image_path} alt={alineacion[idx].name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }} />
+                                  <div style={{ flex: 1 }}>
+                                    <div style={{ fontWeight: '700', fontSize: 12 }}>{alineacion[idx].name}</div>
+                                    <div style={{ fontSize: 11, color: '#444' }}>{alineacion[idx].position}</div>
+                                  </div>
+                                  <button onClick={() => removeFromSlot(idx)}>Quitar</button>
+                                </div>
+                              )}
+                            </Draggable>
+                          ) : (
+                            <div style={{ width: '100%', textAlign: 'center', color: '#666' }}>Slot vacío</div>
                           )}
-                        </Draggable>
-                      ) : (
-                        <div style={{ width: '100%', textAlign: 'center', color: '#666' }}>Slot vacío</div>
+                          {provided.placeholder}
+                        </div>
                       )}
-                      {provided.placeholder}
-                    </div>
-                  )}
-                </Droppable>
-              ))}
+                    </Droppable>
+                  </DraggableCore>
+                ))}
             </div>
           </div>
 
