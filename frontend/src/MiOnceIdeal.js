@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo, useRef } from "react";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import DraggableCore from 'react-draggable';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "https://futtribe-production.up.railway.app";
@@ -164,52 +163,7 @@ export default function MiOnceIdeal() {
     setMessage({ type: 'info', text: `${jugador.name} devuelto a disponibles.` });
   }
 
-  function onDragEnd(result) {
-    setMessage(null);
-    const { source, destination, draggableId } = result;
-    if (!destination) return;
-    const playerId = Number(draggableId.replace('player-', ''));
-    const player = jugadoresDisponibles.find((p) => p.id === playerId) || miEquipoIdeal.find((p) => p.id === playerId);
-    if (!player) return;
-
-    // dragging from players list to a slot
-    if (source.droppableId === 'players' && destination.droppableId.startsWith('slot-')) {
-      const slotIdx = Number(destination.droppableId.replace('slot-', ''));
-      addPlayerToSlot(player, slotIdx);
-      return;
-    }
-
-    // dragging from slot to players
-    if (source.droppableId.startsWith('slot-') && destination.droppableId === 'players') {
-      const fromIdx = Number(source.droppableId.replace('slot-', ''));
-      removeFromSlot(fromIdx);
-      return;
-    }
-
-    // slot to slot (move or swap)
-    if (source.droppableId.startsWith('slot-') && destination.droppableId.startsWith('slot-')) {
-      const fromIdx = Number(source.droppableId.replace('slot-', ''));
-      const toIdx = Number(destination.droppableId.replace('slot-', ''));
-      if (fromIdx === toIdx) return;
-      const nueva = [...alineacion];
-      const playerMoving = nueva[fromIdx];
-      const destExisting = nueva[toIdx];
-
-      // candidate after move
-      let equipoCandidate = miEquipoIdeal.filter((j) => j.id !== (playerMoving ? playerMoving.id : null) && (!destExisting || j.id !== destExisting.id));
-      equipoCandidate.push(playerMoving);
-      if (!puedeAñadir(playerMoving, equipoCandidate)) {
-        setMessage({ type: 'error', text: 'No se puede mover: restricciones.' });
-        return;
-      }
-
-      nueva[fromIdx] = destExisting || null;
-      nueva[toIdx] = playerMoving;
-      setAlineacion(nueva);
-      setMessage({ type: 'info', text: 'Movimiento completado.' });
-      return;
-    }
-  }
+  // HTML5 drag/drop handlers will be used instead of react-beautiful-dnd.
 
   // Add by button: auto place GK into GK slot
   function handleAddButton(player) {
@@ -254,11 +208,10 @@ export default function MiOnceIdeal() {
         </div>
       )}
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div style={{ display: 'flex', gap: 12 }}>
+      <div style={{ display: 'flex', gap: 12 }}>
           {/* Players list narrow and horizontal carousel below field */}
           <div style={{ flex: 1 }}>
-            <div style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(#4caf50, #3a9b3a)', borderRadius: 8 }}>
+            <div ref={fieldRef} style={{ width: '100%', height: 560, position: 'relative', background: 'linear-gradient(#4caf50, #3a9b3a)', borderRadius: 8 }}>
               {/* Field slots */}
               {slotsPosState.map((pos, idx) => (
                   <DraggableCore key={`dragcore-${idx}`} handle={`.slot-handle-${idx}`} onStop={() => {
@@ -276,31 +229,55 @@ export default function MiOnceIdeal() {
                     nueva[idx] = { left: `${leftPct}%`, top: `${topPct}%` };
                     setSlotsPosState(nueva);
                   }}>
-                    <Droppable droppableId={`slot-${idx}`} key={`slot-${idx}`} direction="vertical">
-                      {(provided) => (
-                        <div id={`slot-${idx}`} ref={provided.innerRef} {...provided.droppableProps}
-                          style={{ position: 'absolute', width: 160, height: 64, left: pos.left, top: pos.top, transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', padding: 6, borderRadius: 6, background: 'rgba(255,255,255,0.95)', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
-                          <div className={`slot-handle-${idx}`} style={{ position: 'absolute', left: 6, top: 6, width: 12, height: 12, borderRadius: 6, background: '#ccc', cursor: 'move' }} title="Arrastra aquí para mover el slot" />
-                          {alineacion[idx] ? (
-                            <Draggable draggableId={`player-${alineacion[idx].id}`} index={0} key={`p-${alineacion[idx].id}`}>
-                              {(drv) => (
-                                <div ref={drv.innerRef} {...drv.draggableProps} {...drv.dragHandleProps} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%', ...drv.draggableProps.style }}>
-                                  <img src={alineacion[idx].image_path} alt={alineacion[idx].name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }} />
-                                  <div style={{ flex: 1 }}>
-                                    <div style={{ fontWeight: '700', fontSize: 12 }}>{alineacion[idx].name}</div>
-                                    <div style={{ fontSize: 11, color: '#444' }}>{alineacion[idx].position}</div>
-                                  </div>
-                                  <button onClick={() => removeFromSlot(idx)}>Quitar</button>
-                                </div>
-                              )}
-                            </Draggable>
-                          ) : (
-                            <div style={{ width: '100%', textAlign: 'center', color: '#666' }}>Slot vacío</div>
-                          )}
-                          {provided.placeholder}
+                    <div id={`slot-${idx}`}
+                      onDragOver={(e)=>e.preventDefault()}
+                      onDrop={(e)=>{
+                        // parse dataTransfer
+                        try {
+                          const raw = e.dataTransfer.getData('text/plain');
+                          const payload = JSON.parse(raw);
+                          if (!payload) return;
+                          if (payload.from === 'players') {
+                            const player = jugadoresDisponibles.find(p=>p.id===payload.playerId);
+                            if (player) addPlayerToSlot(player, idx);
+                          } else if ((payload.from||'').startsWith('slot-')) {
+                            const fromIdx = Number(payload.from.split('-')[1]);
+                            // slot->slot move/swap
+                            if (fromIdx === idx) return;
+                            const nueva = [...alineacion];
+                            const playerMoving = nueva[fromIdx];
+                            const destExisting = nueva[idx];
+                            let equipoCandidate = miEquipoIdeal.filter((j)=> j.id !== (playerMoving?playerMoving.id:null) && (!destExisting || j.id !== destExisting.id));
+                            equipoCandidate.push(playerMoving);
+                            if (!puedeAñadir(playerMoving, equipoCandidate)) {
+                              setMessage({type:'error', text:'No se puede mover: restricciones.'});
+                              return;
+                            }
+                            // swap
+                            nueva[fromIdx] = destExisting || null;
+                            nueva[idx] = playerMoving;
+                            setAlineacion(nueva);
+                            setMessage({type:'info', text:'Movimiento completado.'});
+                          }
+                        } catch (err) {
+                          // ignore
+                        }
+                      }}
+                      style={{ position: 'absolute', width: 160, height: 64, left: pos.left, top: pos.top, transform: 'translate(-50%, -50%)', display: 'flex', alignItems: 'center', padding: 6, borderRadius: 6, background: 'rgba(255,255,255,0.95)', boxShadow: '0 2px 4px rgba(0,0,0,0.2)' }}>
+                      <div className={`slot-handle-${idx}`} style={{ position: 'absolute', left: 6, top: 6, width: 12, height: 12, borderRadius: 6, background: '#ccc', cursor: 'move' }} title="Arrastra aquí para mover el slot" />
+                      {alineacion[idx] ? (
+                        <div draggable onDragStart={(e)=> e.dataTransfer.setData('text/plain', JSON.stringify({playerId: alineacion[idx].id, from:`slot-${idx}`}))} style={{ display: 'flex', alignItems: 'center', gap: 8, width: '100%' }}>
+                          <img src={alineacion[idx].image_path} alt={alineacion[idx].name} style={{ width: 48, height: 48, objectFit: 'cover', borderRadius: 6 }} />
+                          <div style={{ flex: 1 }}>
+                            <div style={{ fontWeight: '700', fontSize: 12 }}>{alineacion[idx].name}</div>
+                            <div style={{ fontSize: 11, color: '#444' }}>{alineacion[idx].position}</div>
+                          </div>
+                          <button onClick={() => removeFromSlot(idx)}>Quitar</button>
                         </div>
+                      ) : (
+                        <div style={{ width: '100%', textAlign: 'center', color: '#666' }}>Slot vacío</div>
                       )}
-                    </Droppable>
+                    </div>
                   </DraggableCore>
                 ))}
             </div>
@@ -310,34 +287,34 @@ export default function MiOnceIdeal() {
           <div style={{ width: 360 }}>
             <h3>Jugadores Disponibles ({filtered.length})</h3>
             <input placeholder="Buscar por nombre..." value={q} onChange={(e)=>setQ(e.target.value)} style={{ width: '100%', padding: 8, marginBottom: 8 }} />
-            <Droppable droppableId="players" direction="horizontal">
-              {(provided) => (
-                <div ref={provided.innerRef} {...provided.droppableProps} style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: 6, height: 200 }}>
-                  {filtered.map((p, index) => (
-                    <Draggable key={uid(p.id)} draggableId={`player-${p.id}`} index={index}>
-                      {(prov) => (
-                        <div ref={prov.innerRef} {...prov.draggableProps} {...prov.dragHandleProps} style={{ minWidth: 120, background: '#fff', borderRadius: 8, padding: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center', ...prov.draggableProps.style }}>
-                          <img src={p.image_path} alt={p.name} style={{ width: 96, height: 96, objectFit: 'cover', borderRadius: 8 }} />
-                          <div style={{ fontWeight: 700, marginTop: 6 }}>{p.name}</div>
-                          <div style={{ fontSize: 12, color: '#666' }}>{p.position}</div>
-                          <div style={{ marginTop: 6 }}>
-                            <button onClick={() => handleAddButton(p)} disabled={!puedeAñadir(p)}>{esPortero(p.position) ? 'Añadir (GK)' : 'Añadir'}</button>
-                          </div>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
+            <div onDragOver={(e)=>e.preventDefault()} onDrop={(e)=>{
+              try{
+                const raw = e.dataTransfer.getData('text/plain');
+                const payload = JSON.parse(raw);
+                if (payload && (payload.from||'').startsWith('slot-')) {
+                  const fromIdx = Number(payload.from.split('-')[1]);
+                  removeFromSlot(fromIdx);
+                }
+              }catch(err){}
+            }} style={{ display: 'flex', gap: 8, overflowX: 'auto', padding: 6, height: 200 }}>
+              {filtered.map((p, index) => (
+                <div key={uid(p.id)} draggable onDragStart={(e)=>e.dataTransfer.setData('text/plain', JSON.stringify({playerId: p.id, from: 'players'}))} style={{ minWidth: 120, background: '#fff', borderRadius: 8, padding: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center' }}>
+                  <img src={p.image_path} alt={p.name} style={{ width: 96, height: 96, objectFit: 'cover', borderRadius: 8 }} />
+                  <div style={{ fontWeight: 700, marginTop: 6 }}>{p.name}</div>
+                  <div style={{ fontSize: 12, color: '#666' }}>{p.position}</div>
+                  <div style={{ marginTop: 6 }}>
+                    <button onClick={() => handleAddButton(p)} disabled={!puedeAñadir(p)}>{esPortero(p.position) ? 'Añadir (GK)' : 'Añadir'}</button>
+                  </div>
                 </div>
-              )}
-            </Droppable>
+              ))}
+            </div>
 
             <div style={{ marginTop: 12 }}>
               <button disabled={miEquipoIdeal.length !== 11} onClick={()=>setMessage({type:'info', text:'Guardado (simulado)'} )}>Guardar Once Ideal</button>
             </div>
           </div>
         </div>
-      </DragDropContext>
+      
     </div>
   );
 }
