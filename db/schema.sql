@@ -107,6 +107,52 @@ CREATE TABLE preguntas_futbol (
     INDEX idx_dificultad (dificultad)
 );
 
+-- Tabla de Salas Multijugador para El Duelazo
+CREATE TABLE salas_duelazo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    codigo VARCHAR(6) NOT NULL UNIQUE,
+    nombre_creador VARCHAR(100) NOT NULL,
+    estado ENUM('esperando', 'jugando_ronda1', 'jugando_final', 'finalizado') DEFAULT 'esperando',
+    max_jugadores INT DEFAULT 10,
+    ganador VARCHAR(100) DEFAULT NULL,
+    fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_fin TIMESTAMP NULL DEFAULT NULL,
+    INDEX idx_codigo (codigo),
+    INDEX idx_estado (estado)
+);
+
+-- Tabla de Jugadores en Sala
+CREATE TABLE jugadores_sala (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sala_id INT NOT NULL,
+    nombre_jugador VARCHAR(100) NOT NULL,
+    socket_id VARCHAR(100) NOT NULL,
+    esta_listo BOOLEAN DEFAULT FALSE,
+    puntuacion_ronda1 INT DEFAULT 0,
+    puntuacion_final INT DEFAULT 0,
+    puntuacion_total INT DEFAULT 0,
+    clasifico_final BOOLEAN DEFAULT FALSE,
+    fecha_union TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (sala_id) REFERENCES salas_duelazo(id) ON DELETE CASCADE,
+    INDEX idx_sala (sala_id)
+);
+
+-- Tabla de Respuestas de Jugadores
+CREATE TABLE respuestas_jugador (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    jugador_sala_id INT NOT NULL,
+    pregunta_id VARCHAR(10) NOT NULL,
+    respuesta VARCHAR(200) NOT NULL,
+    es_correcta BOOLEAN NOT NULL,
+    puntos_ganados INT NOT NULL,
+    tiempo_respuesta INT NOT NULL,
+    ronda ENUM('ronda1', 'final') NOT NULL,
+    fecha_respuesta TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (jugador_sala_id) REFERENCES jugadores_sala(id) ON DELETE CASCADE,
+    FOREIGN KEY (pregunta_id) REFERENCES preguntas_futbol(id),
+    INDEX idx_jugador (jugador_sala_id)
+);
+
 CREATE TABLE DUELAZO (
     id INT AUTO_INCREMENT PRIMARY KEY,
     partido_id INT NOT NULL,

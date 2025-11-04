@@ -1,0 +1,444 @@
+"""
+Módulo de Socket.IO para El Duelazo Multijugador
+Maneja todas las conexiones en tiempo real y lógica de salas
+"""
+import random
+import string
+from datetime import datetime
+from flask import request
+from flask_socketio import emit, join_room, leave_room
+from db_connector import get_db_connection
+
+# Almacenamiento en memoria de salas activas (para mejor rendimiento)
+salas_activas = {}
+
+def generar_codigo_sala():
+    """Genera un código único de 6 caracteres para la sala."""
+    return ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+def registrar_eventos_socket(socketio):
+    """Registra todos los eventos de Socket.IO."""
+    
+    @socketio.on('connect')
+    def handle_connect():
+        """Maneja nueva conexión de cliente."""
+        print(f'🟢 Cliente conectado: {request.sid}')
+        emit('connected', {'message': 'Conectado al servidor'})
+    
+    @socketio.on('disconnect')
+    def handle_disconnect():
+        """Maneja desconexión de cliente."""
+        print(f'🔴 Cliente desconectado: {request.sid}')
+        # Buscar y remover jugador de salas activas
+        for codigo_sala, sala in salas_activas.items():
+            jugadores_actualizados = [j for j in sala['jugadores'] if j['socket_id'] != request.sid]
+            if len(jugadores_actualizados) < len(sala['jugadores']):
+                sala['jugadores'] = jugadores_actualizados
+                socketio.emit('jugador_salio', {
+                    'jugadores': jugadores_actualizados,
+                    'total': len(jugadores_actualizados)
+                }, room=codigo_sala)
+                
+                # Si no quedan jugadores, eliminar sala
+                if len(jugadores_actualizados) == 0:
+                    del salas_activas[codigo_sala]
+                break
+    
+    @socketio.on('crear_sala')
+    def handle_crear_sala(data):
+        """Crea una nueva sala de juego."""
+        try:
+            nombre_creador = data.get('nombre', 'Jugador')
+            max_jugadores = data.get('max_jugadores', 10)
+            
+            # Generar código único
+            codigo = generar_codigo_sala()
+            while codigo in salas_activas:
+                codigo = generar_codigo_sala()
+            
+            # Guardar en base de datos
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO salas_duelazo (codigo, nombre_creador, max_jugadores)
+                VALUES (%s, %s, %s)
+            """, (codigo, nombre_creador, max_jugadores))
+            sala_id = cursor.lastrowid
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+            # Crear sala en memoria
+            salas_activas[codigo] = {
+                'id': sala_id,
+                'codigo': codigo,
+                'creador': nombre_creador,
+                'max_jugadores': max_jugadores,
+                'estado': 'esperando',
+                'jugadores': [],
+                'preguntas_ronda1': [],
+                'preguntas_final': []
+            }
+            
+            print(f'🎮 Sala creada: {codigo} por {nombre_creador}')
+            emit('sala_creada', {
+                'success': True,
+                'codigo': codigo,
+                'sala_id': sala_id
+            })
+            
+        except Exception as e:
+            print(f'❌ Error al crear sala: {str(e)}')
+            emit('error', {'message': f'Error al crear sala: {str(e)}'})
+    
+    @socketio.on('unirse_sala')
+    def handle_unirse_sala(data):
+        """Un jugador se une a una sala existente."""
+        try:
+            codigo = data.get('codigo', '').upper()
+            nombre = data.get('nombre', 'Jugador')
+            
+            if codigo not in salas_activas:
+                emit('error', {'message': 'Sala no encontrada'})
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Verificar si la sala está llena
+            if len(sala['jugadores']) >= sala['max_jugadores']:
+                emit('error', {'message': 'La sala está llena'})
+                return
+            
+            # Verificar si la sala ya empezó
+            if sala['estado'] != 'esperando':
+                emit('error', {'message': 'La partida ya comenzó'})
+                return
+            
+            # Agregar jugador
+            jugador = {
+                'socket_id': request.sid,
+                'nombre': nombre,
+                'esta_listo': False,
+                'puntuacion_ronda1': 0,
+                'puntuacion_final': 0,
+                'puntuacion_total': 0,
+                'clasifico_final': False
+            }
+            
+            sala['jugadores'].append(jugador)
+            
+            # Unir a la sala de Socket.IO
+            join_room(codigo)
+            
+            # Guardar en base de datos
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO jugadores_sala (sala_id, nombre_jugador, socket_id)
+                VALUES (%s, %s, %s)
+            """, (sala['id'], nombre, request.sid))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+            print(f'👤 {nombre} se unió a sala {codigo}')
+            
+            # Notificar al jugador que se unió
+            emit('unido_a_sala', {
+                'success': True,
+                'codigo': codigo,
+                'sala': {
+                    'codigo': codigo,
+                    'creador': sala['creador'],
+                    'jugadores': sala['jugadores'],
+                    'max_jugadores': sala['max_jugadores']
+                }
+            })
+            
+            # Notificar a todos en la sala
+            socketio.emit('jugador_unido', {
+                'jugador': jugador,
+                'jugadores': sala['jugadores'],
+                'total': len(sala['jugadores'])
+            }, room=codigo)
+            
+        except Exception as e:
+            print(f'❌ Error al unirse a sala: {str(e)}')
+            emit('error', {'message': f'Error al unirse: {str(e)}'})
+    
+    @socketio.on('marcar_listo')
+    def handle_marcar_listo(data):
+        """Un jugador marca que está listo para comenzar."""
+        try:
+            codigo = data.get('codigo')
+            
+            if codigo not in salas_activas:
+                emit('error', {'message': 'Sala no encontrada'})
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Marcar jugador como listo
+            for jugador in sala['jugadores']:
+                if jugador['socket_id'] == request.sid:
+                    jugador['esta_listo'] = True
+                    break
+            
+            # Contar jugadores listos
+            listos = sum(1 for j in sala['jugadores'] if j['esta_listo'])
+            total = len(sala['jugadores'])
+            
+            print(f'✅ Jugadores listos en {codigo}: {listos}/{total}')
+            
+            # Notificar a todos
+            socketio.emit('estado_listos', {
+                'listos': listos,
+                'total': total,
+                'jugadores': sala['jugadores']
+            }, room=codigo)
+            
+            # Si todos están listos, iniciar juego
+            if listos == total and total >= 2:
+                iniciar_ronda1(codigo, socketio)
+            
+        except Exception as e:
+            print(f'❌ Error al marcar listo: {str(e)}')
+            emit('error', {'message': f'Error: {str(e)}'})
+    
+    @socketio.on('enviar_respuesta')
+    def handle_enviar_respuesta(data):
+        """Procesa la respuesta de un jugador."""
+        try:
+            codigo = data.get('codigo')
+            pregunta_id = data.get('pregunta_id')
+            respuesta = data.get('respuesta')
+            tiempo = data.get('tiempo', 15)
+            ronda = data.get('ronda', 'ronda1')
+            
+            if codigo not in salas_activas:
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Buscar jugador
+            jugador = None
+            for j in sala['jugadores']:
+                if j['socket_id'] == request.sid:
+                    jugador = j
+                    break
+            
+            if not jugador:
+                return
+            
+            # Verificar respuesta
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            cursor.execute("SELECT respuesta_correcta FROM preguntas_futbol WHERE id = %s", (pregunta_id,))
+            pregunta = cursor.fetchone()
+            
+            es_correcta = pregunta['respuesta_correcta'] == respuesta if pregunta else False
+            
+            # Calcular puntos
+            puntos = 0
+            if es_correcta:
+                puntos_base = 100
+                bono_tiempo = int((tiempo / 15) * 50)
+                puntos = puntos_base + bono_tiempo
+            
+            # Actualizar puntuación
+            if ronda == 'ronda1':
+                jugador['puntuacion_ronda1'] += puntos
+            else:
+                jugador['puntuacion_final'] += puntos
+            
+            jugador['puntuacion_total'] = jugador['puntuacion_ronda1'] + jugador['puntuacion_final']
+            
+            cursor.close()
+            conn.close()
+            
+            # Enviar confirmación al jugador
+            emit('respuesta_procesada', {
+                'es_correcta': es_correcta,
+                'puntos_ganados': puntos,
+                'puntuacion_total': jugador['puntuacion_total']
+            })
+            
+        except Exception as e:
+            print(f'❌ Error al procesar respuesta: {str(e)}')
+    
+    @socketio.on('finalizar_ronda1')
+    def handle_finalizar_ronda1(data):
+        """Finaliza la Ronda 1 y selecciona finalistas."""
+        try:
+            codigo = data.get('codigo')
+            
+            if codigo not in salas_activas:
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Ordenar jugadores por puntuación de ronda 1
+            sala['jugadores'].sort(key=lambda x: x['puntuacion_ronda1'], reverse=True)
+            
+            # Los top 2 avanzan a la final
+            if len(sala['jugadores']) >= 2:
+                sala['jugadores'][0]['clasifico_final'] = True
+                sala['jugadores'][1]['clasifico_final'] = True
+            
+            finalistas = [j for j in sala['jugadores'] if j['clasifico_final']]
+            
+            print(f'🏆 Finalistas de sala {codigo}: {[f["nombre"] for f in finalistas]}')
+            
+            # Notificar resultados de ronda 1
+            socketio.emit('resultados_ronda1', {
+                'jugadores': sala['jugadores'],
+                'finalistas': finalistas
+            }, room=codigo)
+            
+        except Exception as e:
+            print(f'❌ Error al finalizar ronda 1: {str(e)}')
+    
+    @socketio.on('iniciar_final')
+    def handle_iniciar_final(data):
+        """Inicia la ronda final con preguntas más difíciles."""
+        try:
+            codigo = data.get('codigo')
+            
+            if codigo not in salas_activas:
+                return
+            
+            sala = salas_activas[codigo]
+            sala['estado'] = 'jugando_final'
+            
+            # Obtener 10 preguntas más difíciles (más avanzadas)
+            conn = get_db_connection()
+            cursor = conn.cursor(dictionary=True)
+            
+            cursor.execute("""
+                (SELECT * FROM preguntas_futbol WHERE dificultad = 'intermedia' ORDER BY RAND() LIMIT 3)
+                UNION ALL
+                (SELECT * FROM preguntas_futbol WHERE dificultad = 'avanzada' ORDER BY RAND() LIMIT 7)
+            """)
+            
+            preguntas = cursor.fetchall()
+            random.shuffle(preguntas)
+            
+            # Convertir a formato frontend
+            preguntas_formateadas = []
+            for p in preguntas:
+                preguntas_formateadas.append({
+                    'id': p['id'],
+                    'pregunta': p['pregunta'],
+                    'opciones': [p['opcion_a'], p['opcion_b'], p['opcion_c'], p['opcion_d']],
+                    'dificultad': p['dificultad']
+                })
+            
+            sala['preguntas_final'] = preguntas_formateadas
+            
+            cursor.close()
+            conn.close()
+            
+            print(f'🔥 Iniciando Final en sala {codigo}')
+            
+            # Notificar a los finalistas
+            socketio.emit('iniciar_final', {
+                'preguntas': preguntas_formateadas,
+                'total_preguntas': len(preguntas_formateadas)
+            }, room=codigo)
+            
+        except Exception as e:
+            print(f'❌ Error al iniciar final: {str(e)}')
+    
+    @socketio.on('finalizar_partida')
+    def handle_finalizar_partida(data):
+        """Finaliza la partida y declara al ganador."""
+        try:
+            codigo = data.get('codigo')
+            
+            if codigo not in salas_activas:
+                return
+            
+            sala = salas_activas[codigo]
+            sala['estado'] = 'finalizado'
+            
+            # Ordenar todos los jugadores por puntuación total
+            sala['jugadores'].sort(key=lambda x: x['puntuacion_total'], reverse=True)
+            
+            ganador = sala['jugadores'][0] if sala['jugadores'] else None
+            
+            print(f'👑 Ganador de sala {codigo}: {ganador["nombre"] if ganador else "N/A"}')
+            
+            # Notificar resultados finales
+            socketio.emit('resultados_finales', {
+                'ganador': ganador,
+                'ranking': sala['jugadores']
+            }, room=codigo)
+            
+            # Actualizar base de datos
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE salas_duelazo 
+                SET estado = 'finalizado', 
+                    fecha_fin = NOW(),
+                    ganador = %s
+                WHERE codigo = %s
+            """, (ganador['nombre'] if ganador else None, codigo))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+        except Exception as e:
+            print(f'❌ Error al finalizar partida: {str(e)}')
+
+def iniciar_ronda1(codigo, socketio):
+    """Inicia la Ronda 1 de la partida."""
+    try:
+        sala = salas_activas[codigo]
+        sala['estado'] = 'jugando_ronda1'
+        
+        # Obtener 10 preguntas aleatorias (mezcla de dificultades)
+        conn = get_db_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        cursor.execute("""
+            (SELECT * FROM preguntas_futbol WHERE dificultad = 'facil' ORDER BY RAND() LIMIT 3)
+            UNION ALL
+            (SELECT * FROM preguntas_futbol WHERE dificultad = 'intermedia' ORDER BY RAND() LIMIT 4)
+            UNION ALL
+            (SELECT * FROM preguntas_futbol WHERE dificultad = 'avanzada' ORDER BY RAND() LIMIT 3)
+        """)
+        
+        preguntas = cursor.fetchall()
+        random.shuffle(preguntas)  # Mezclar el orden
+        
+        # Convertir a formato frontend
+        preguntas_formateadas = []
+        for p in preguntas:
+            preguntas_formateadas.append({
+                'id': p['id'],
+                'pregunta': p['pregunta'],
+                'opciones': [p['opcion_a'], p['opcion_b'], p['opcion_c'], p['opcion_d']],
+                'dificultad': p['dificultad']
+            })
+        
+        sala['preguntas_ronda1'] = preguntas_formateadas
+        
+        cursor.close()
+        conn.close()
+        
+        print(f'🎯 Iniciando Ronda 1 en sala {codigo}')
+        
+        # Notificar a todos que empieza la ronda 1
+        socketio.emit('iniciar_ronda1', {
+            'preguntas': preguntas_formateadas,
+            'total_preguntas': len(preguntas_formateadas)
+        }, room=codigo)
+        
+    except Exception as e:
+        print(f'❌ Error al iniciar ronda 1: {str(e)}')
+
+# Exportar función para registrar eventos
+def init_socketio_events(socketio):
+    """Inicializa todos los eventos de Socket.IO."""
+    registrar_eventos_socket(socketio)

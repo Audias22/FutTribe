@@ -5,12 +5,26 @@ import requests
 import random
 from flask import Flask, jsonify, send_file, request
 from flask_cors import CORS
+from flask_socketio import SocketIO
 from io import BytesIO
 from db_connector import fetch_all_jugadores, get_db_connection # Importamos las funciones que vamos a usar
+from socket_events import init_socketio_events
 
 # --- 1. INICIALIZACIÓN DE FLASK ---
 app = Flask(__name__) 
-CORS(app) 
+CORS(app, origins="*", supports_credentials=True)
+
+# --- 2. INICIALIZACIÓN DE SOCKET.IO ---
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*",
+    async_mode='eventlet',
+    logger=True,
+    engineio_logger=True
+)
+
+# Registrar eventos de Socket.IO
+init_socketio_events(socketio) 
 
 # --- AÑADIMOS LA RUTA RAÍZ (HOME) ---
 @app.route('/')
@@ -238,4 +252,5 @@ def get_preguntas_mix():
 if __name__ == '__main__':
     # Railway usa la variable PORT del entorno
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    print(f'🚀 Servidor iniciado en puerto {port} con Socket.IO')
+    socketio.run(app, host='0.0.0.0', port=port, debug=False)
