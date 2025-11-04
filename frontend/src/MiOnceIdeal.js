@@ -3,6 +3,8 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "https://futtribe-production.up.railway.app";
 const API_URL = `${API_BASE}/api/v1/jugadores-historicos`;
 
+function MiOnceIdeal({ onVolver }) {
+
 // Diseños de cancha disponibles
 const FIELD_DESIGNS = [
   { 
@@ -91,7 +93,6 @@ function getDetailedPosition(xPercent, yPercent) {
 }
 // ----------------------------------------------------------------------------------
 
-export default function MiOnceIdeal() {
   const [jugadoresDisponibles, setJugadoresDisponibles] = useState([]);
   const [alineacion, setAlineacion] = useState(Array(11).fill(null));
   const [q, setQ] = useState("");
@@ -537,13 +538,41 @@ export default function MiOnceIdeal() {
         {/* Header */}
         <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: 24, marginBottom: 24, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-            <div>
-              <h1 style={{ margin: 0, fontSize: 32, fontWeight: 'bold', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                ⚽ Mi Once Ideal
-              </h1>
-              <p style={{ margin: '8px 0 0', color: '#666', fontSize: 14 }}>
-                Jugadores: {miEquipoIdeal.length}/11 | Defensas: {contarDefensas(miEquipoIdeal)}/5 | Porteros: {contarPorteros(miEquipoIdeal)}/1
-              </p>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+              {onVolver && (
+                <button 
+                  onClick={onVolver}
+                  style={{
+                    background: 'rgba(102, 126, 234, 0.1)',
+                    color: '#667eea',
+                    border: '2px solid #667eea',
+                    padding: '10px 20px',
+                    borderRadius: 25,
+                    cursor: 'pointer',
+                    fontSize: 14,
+                    fontWeight: 'bold',
+                    transition: 'all 0.3s ease'
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.background = '#667eea';
+                    e.target.style.color = 'white';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.background = 'rgba(102, 126, 234, 0.1)';
+                    e.target.style.color = '#667eea';
+                  }}
+                >
+                  ← Volver al Menú
+                </button>
+              )}
+              <div>
+                <h1 style={{ margin: 0, fontSize: 32, fontWeight: 'bold', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  ⚽ Mi Once Ideal
+                </h1>
+                <p style={{ margin: '8px 0 0', color: '#666', fontSize: 14 }}>
+                  Jugadores: {miEquipoIdeal.length}/11 | Defensas: {contarDefensas(miEquipoIdeal)}/5 | Porteros: {contarPorteros(miEquipoIdeal)}/1
+                </p>
+              </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
               <label style={{ fontWeight: 600, color: '#333' }}>Formación:</label>
@@ -944,3 +973,5 @@ export default function MiOnceIdeal() {
     </div>
   );
 }
+
+export default MiOnceIdeal;
