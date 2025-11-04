@@ -10,6 +10,15 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver }) {
   const maxJugadores = 10;
 
   useEffect(() => {
+    // Escuchar cuando se crea la sala (para el creador)
+    socket.on('sala_creada', (data) => {
+      if (data.sala) {
+        console.log('🎮 Sala creada con jugadores:', data.sala);
+        setJugadores(data.sala.jugadores);
+        setTotal(data.sala.jugadores.length);
+      }
+    });
+
     // Actualizar lista de jugadores cuando alguien se une
     socket.on('jugador_unido', (data) => {
       console.log('👤 Jugador unido:', data);
@@ -39,6 +48,7 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver }) {
     });
 
     return () => {
+      socket.off('sala_creada');
       socket.off('jugador_unido');
       socket.off('estado_listos');
       socket.off('iniciar_ronda1');

@@ -68,6 +68,17 @@ def registrar_eventos_socket(socketio):
             cursor.close()
             conn.close()
             
+            # Crear jugador para el creador
+            jugador_creador = {
+                'socket_id': request.sid,
+                'nombre': nombre_creador,
+                'esta_listo': False,
+                'puntuacion_ronda1': 0,
+                'puntuacion_final': 0,
+                'puntuacion_total': 0,
+                'clasifico_final': False
+            }
+            
             # Crear sala en memoria
             salas_activas[codigo] = {
                 'id': sala_id,
@@ -75,16 +86,36 @@ def registrar_eventos_socket(socketio):
                 'creador': nombre_creador,
                 'max_jugadores': max_jugadores,
                 'estado': 'esperando',
-                'jugadores': [],
+                'jugadores': [jugador_creador],  # ← El creador ya está en la sala
                 'preguntas_ronda1': [],
                 'preguntas_final': []
             }
+            
+            # Unir al creador a la sala de Socket.IO
+            join_room(codigo)
+            
+            # Guardar creador en base de datos como jugador
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO jugadores_sala (sala_id, nombre_jugador, socket_id)
+                VALUES (%s, %s, %s)
+            """, (sala_id, nombre_creador, request.sid))
+            conn.commit()
+            cursor.close()
+            conn.close()
             
             print(f'🎮 Sala creada: {codigo} por {nombre_creador}')
             emit('sala_creada', {
                 'success': True,
                 'codigo': codigo,
-                'sala_id': sala_id
+                'sala_id': sala_id,
+                'sala': {
+                    'codigo': codigo,
+                    'creador': nombre_creador,
+                    'jugadores': [jugador_creador],
+                    'max_jugadores': max_jugadores
+                }
             })
             
         except Exception as e:
@@ -330,6 +361,7 @@ def registrar_eventos_socket(socketio):
                     'id': p['id'],
                     'pregunta': p['pregunta'],
                     'opciones': [p['opcion_a'], p['opcion_b'], p['opcion_c'], p['opcion_d']],
+                    'respuesta_correcta': p['respuesta_correcta'],  # ← AGREGADO
                     'dificultad': p['dificultad']
                 })
             
@@ -419,6 +451,7 @@ def iniciar_ronda1(codigo, socketio):
                 'id': p['id'],
                 'pregunta': p['pregunta'],
                 'opciones': [p['opcion_a'], p['opcion_b'], p['opcion_c'], p['opcion_d']],
+                'respuesta_correcta': p['respuesta_correcta'],  # ← AGREGADO
                 'dificultad': p['dificultad']
             })
         
