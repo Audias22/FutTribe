@@ -319,6 +319,71 @@ function getDetailedPosition(xPercent, yPercent) {
       { top: '43%', left: '86%', label: 'MD', type: 'MID' },
       { top: '15%', left: '50%', label: 'DC', type: 'FWD' }
     ],
+    "4-2-1-3": [
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '18%', label: 'LI', type: 'DEF' }, 
+      { top: '68%', left: '38%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '62%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '82%', label: 'LD', type: 'DEF' },
+      { top: '52%', left: '38%', label: 'MCD', type: 'MID' }, 
+      { top: '52%', left: '62%', label: 'MCD', type: 'MID' },
+      { top: '30%', left: '50%', label: 'MP', type: 'MID' },
+      { top: '18%', left: '18%', label: 'EI', type: 'FWD' }, 
+      { top: '15%', left: '50%', label: 'DC', type: 'FWD' },
+      { top: '18%', left: '82%', label: 'ED', type: 'FWD' }
+    ],
+    "4-1-4-1": [
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '18%', label: 'LI', type: 'DEF' }, 
+      { top: '68%', left: '38%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '62%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '82%', label: 'LD', type: 'DEF' },
+      { top: '55%', left: '50%', label: 'MCD', type: 'MID' },
+      { top: '43%', left: '18%', label: 'MI', type: 'MID' }, 
+      { top: '43%', left: '38%', label: 'MC', type: 'MID' }, 
+      { top: '43%', left: '62%', label: 'MC', type: 'MID' }, 
+      { top: '43%', left: '82%', label: 'MD', type: 'MID' },
+      { top: '15%', left: '50%', label: 'DC', type: 'FWD' }
+    ],
+    "3-1-4-2": [
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '28%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '50%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '72%', label: 'DFC', type: 'DEF' },
+      { top: '55%', left: '50%', label: 'MCD', type: 'MID' },
+      { top: '40%', left: '12%', label: 'MI', type: 'MID' }, 
+      { top: '40%', left: '35%', label: 'MC', type: 'MID' }, 
+      { top: '40%', left: '65%', label: 'MC', type: 'MID' }, 
+      { top: '40%', left: '88%', label: 'MD', type: 'MID' },
+      { top: '18%', left: '40%', label: 'DC', type: 'FWD' }, 
+      { top: '18%', left: '60%', label: 'DC', type: 'FWD' }
+    ],
+    "4-1-2-1-2": [
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '18%', label: 'LI', type: 'DEF' }, 
+      { top: '68%', left: '38%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '62%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '82%', label: 'LD', type: 'DEF' },
+      { top: '55%', left: '50%', label: 'MCD', type: 'MID' },
+      { top: '43%', left: '35%', label: 'MC', type: 'MID' }, 
+      { top: '43%', left: '65%', label: 'MC', type: 'MID' },
+      { top: '28%', left: '50%', label: 'MP', type: 'MID' },
+      { top: '15%', left: '40%', label: 'DC', type: 'FWD' }, 
+      { top: '15%', left: '60%', label: 'DC', type: 'FWD' }
+    ],
+    "3-4-1-2": [
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '28%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '50%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '72%', label: 'DFC', type: 'DEF' },
+      { top: '48%', left: '18%', label: 'MI', type: 'MID' }, 
+      { top: '48%', left: '38%', label: 'MC', type: 'MID' }, 
+      { top: '48%', left: '62%', label: 'MC', type: 'MID' }, 
+      { top: '48%', left: '82%', label: 'MD', type: 'MID' },
+      { top: '28%', left: '50%', label: 'MP', type: 'MID' },
+      { top: '15%', left: '40%', label: 'DC', type: 'FWD' }, 
+      { top: '15%', left: '60%', label: 'DC', type: 'FWD' }
+    ],
     "custom": base442.map(pos => ({ ...pos }))
   }), [base442]); 
 
@@ -636,14 +701,27 @@ function getDetailedPosition(xPercent, yPercent) {
                 onChange={(e) => setFormation(e.target.value)}
                 style={{ padding: isMobile ? '6px 8px' : '10px 16px', fontSize: isMobile ? 12 : 16, border: '2px solid #667eea', borderRadius: 6, fontWeight: 'bold', cursor: 'pointer', background: 'white', flex: isMobile ? 1 : 'none' }}
               >
-                <option value="4-4-2">4-4-2</option>
-                <option value="4-3-3">4-3-3</option>
-                <option value="3-5-2">3-5-2</option>
-                <option value="5-3-2">5-3-2</option>
-                <option value="3-4-3">3-4-3</option>
-                <option value="4-2-3-1">4-2-3-1</option>
-                <option value="4-5-1">4-5-1</option>
-                <option value="custom">{isMobile ? '🎨 Custom' : '🎨 Crea tu táctica'}</option>
+                <optgroup label="⚡ Clásicas">
+                  <option value="4-4-2">4-4-2 (Clásica)</option>
+                  <option value="4-3-3">4-3-3 (Ofensiva)</option>
+                  <option value="3-5-2">3-5-2 (Wing-backs)</option>
+                  <option value="5-3-2">5-3-2 (Defensiva)</option>
+                </optgroup>
+                <optgroup label="🔥 Ofensivas">
+                  <option value="3-4-3">3-4-3 (Ultra ofensiva)</option>
+                  <option value="4-2-3-1">4-2-3-1 (Media punta)</option>
+                  <option value="4-2-1-3">4-2-1-3 (Tridente) ⭐</option>
+                  <option value="3-4-1-2">3-4-1-2 (Enganche)</option>
+                </optgroup>
+                <optgroup label="⚖️ Equilibradas">
+                  <option value="4-1-4-1">4-1-4-1 (Pivote)</option>
+                  <option value="4-1-2-1-2">4-1-2-1-2 (Diamante)</option>
+                  <option value="3-1-4-2">3-1-4-2 (Flexible)</option>
+                  <option value="4-5-1">4-5-1 (Control)</option>
+                </optgroup>
+                <optgroup label="🎨 Personalizada">
+                  <option value="custom">{isMobile ? '🎨 Custom' : '🎨 Crea tu táctica'}</option>
+                </optgroup>
               </select>
             </div>
           </div>
