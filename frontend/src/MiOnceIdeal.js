@@ -226,98 +226,98 @@ function getDetailedPosition(xPercent, yPercent) {
 
   // --- Formaciones Fijas (Completo) ---
   const base442 = [
-    { top: '82%', left: '50%', label: 'POR', type: 'GK' },
-    { top: '65%', left: '18%', label: 'LI', type: 'DEF' }, 
-    { top: '65%', left: '38%', label: 'DFC', type: 'DEF' }, 
-    { top: '65%', left: '62%', label: 'DFC', type: 'DEF' }, 
-    { top: '65%', left: '82%', label: 'LD', type: 'DEF' },
-    { top: '45%', left: '18%', label: 'MI', type: 'MID' }, 
-    { top: '45%', left: '38%', label: 'MC', type: 'MID' }, 
-    { top: '45%', left: '62%', label: 'MC', type: 'MID' }, 
-    { top: '45%', left: '82%', label: 'MD', type: 'MID' },
-    { top: '22%', left: '40%', label: 'DC', type: 'FWD' }, 
-    { top: '22%', left: '60%', label: 'DC', type: 'FWD' }
+    { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+    { top: '68%', left: '18%', label: 'LI', type: 'DEF' }, 
+    { top: '68%', left: '38%', label: 'DFC', type: 'DEF' }, 
+    { top: '68%', left: '62%', label: 'DFC', type: 'DEF' }, 
+    { top: '68%', left: '82%', label: 'LD', type: 'DEF' },
+    { top: '47%', left: '18%', label: 'MI', type: 'MID' }, 
+    { top: '47%', left: '38%', label: 'MC', type: 'MID' }, 
+    { top: '47%', left: '62%', label: 'MC', type: 'MID' }, 
+    { top: '47%', left: '82%', label: 'MD', type: 'MID' },
+    { top: '18%', left: '40%', label: 'DC', type: 'FWD' }, 
+    { top: '18%', left: '60%', label: 'DC', type: 'FWD' }
   ];
 
   const formationPositions = useMemo(() => ({
     "4-4-2": base442,
     "4-3-3": [
-      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
-      { top: '65%', left: '18%', label: 'LI', type: 'DEF' }, 
-      { top: '65%', left: '38%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '62%', label: 'DFC', type: 'DEF' },
-      { top: '65%', left: '82%', label: 'LD', type: 'DEF' },
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '18%', label: 'LI', type: 'DEF' }, 
+      { top: '68%', left: '38%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '62%', label: 'DFC', type: 'DEF' },
+      { top: '68%', left: '82%', label: 'LD', type: 'DEF' },
       { top: '50%', left: '32%', label: 'MCD', type: 'MID' }, 
-      { top: '45%', left: '50%', label: 'MC', type: 'MID' }, 
+      { top: '47%', left: '50%', label: 'MC', type: 'MID' }, 
       { top: '50%', left: '68%', label: 'MC', type: 'MID' },
-      { top: '22%', left: '18%', label: 'EI', type: 'FWD' }, 
-      { top: '18%', left: '50%', label: 'DC', type: 'FWD' }, 
-      { top: '22%', left: '82%', label: 'ED', type: 'FWD' }
+      { top: '18%', left: '18%', label: 'EI', type: 'FWD' }, 
+      { top: '15%', left: '50%', label: 'DC', type: 'FWD' }, 
+      { top: '18%', left: '82%', label: 'ED', type: 'FWD' }
     ],
     "3-5-2": [
-      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
-      { top: '65%', left: '28%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '50%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '72%', label: 'DFC', type: 'DEF' },
-      { top: '45%', left: '12%', label: 'MI', type: 'MID' }, 
-      { top: '50%', left: '32%', label: 'MC', type: 'MID' }, 
-      { top: '55%', left: '50%', label: 'MCD', type: 'MID' },
-      { top: '50%', left: '68%', label: 'MC', type: 'MID' }, 
-      { top: '45%', left: '88%', label: 'MD', type: 'MID' },
-      { top: '22%', left: '40%', label: 'DC', type: 'FWD' }, 
-      { top: '22%', left: '60%', label: 'DC', type: 'FWD' }
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '28%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '50%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '72%', label: 'DFC', type: 'DEF' },
+      { top: '43%', left: '12%', label: 'MI', type: 'MID' }, 
+      { top: '48%', left: '32%', label: 'MC', type: 'MID' }, 
+      { top: '52%', left: '50%', label: 'MCD', type: 'MID' },
+      { top: '48%', left: '68%', label: 'MC', type: 'MID' }, 
+      { top: '43%', left: '88%', label: 'MD', type: 'MID' },
+      { top: '18%', left: '40%', label: 'DC', type: 'FWD' }, 
+      { top: '18%', left: '60%', label: 'DC', type: 'FWD' }
     ],
     "5-3-2": [
-      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
-      { top: '68%', left: '12%', label: 'LI', type: 'DEF' }, 
-      { top: '65%', left: '30%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '50%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '70%', label: 'DFC', type: 'DEF' }, 
-      { top: '68%', left: '88%', label: 'LD', type: 'DEF' },
-      { top: '45%', left: '32%', label: 'MC', type: 'MID' }, 
-      { top: '45%', left: '50%', label: 'MCD', type: 'MID' }, 
-      { top: '45%', left: '68%', label: 'MC', type: 'MID' },
-      { top: '22%', left: '40%', label: 'DC', type: 'FWD' }, 
-      { top: '22%', left: '60%', label: 'DC', type: 'FWD' }
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '70%', left: '12%', label: 'LI', type: 'DEF' }, 
+      { top: '68%', left: '30%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '50%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '70%', label: 'DFC', type: 'DEF' }, 
+      { top: '70%', left: '88%', label: 'LD', type: 'DEF' },
+      { top: '47%', left: '32%', label: 'MC', type: 'MID' }, 
+      { top: '47%', left: '50%', label: 'MCD', type: 'MID' }, 
+      { top: '47%', left: '68%', label: 'MC', type: 'MID' },
+      { top: '18%', left: '40%', label: 'DC', type: 'FWD' }, 
+      { top: '18%', left: '60%', label: 'DC', type: 'FWD' }
     ],
     "3-4-3": [
-      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
-      { top: '65%', left: '28%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '50%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '72%', label: 'DFC', type: 'DEF' },
-      { top: '45%', left: '25%', label: 'MI', type: 'MID' }, 
-      { top: '50%', left: '42%', label: 'MCD', type: 'MID' }, 
-      { top: '50%', left: '58%', label: 'MC', type: 'MID' }, 
-      { top: '45%', left: '75%', label: 'MD', type: 'MID' }, 
-      { top: '22%', left: '20%', label: 'EI', type: 'FWD' }, 
-      { top: '18%', left: '50%', label: 'DC', type: 'FWD' },
-      { top: '22%', left: '80%', label: 'ED', type: 'FWD' }
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '28%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '50%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '72%', label: 'DFC', type: 'DEF' },
+      { top: '43%', left: '25%', label: 'MI', type: 'MID' }, 
+      { top: '48%', left: '42%', label: 'MCD', type: 'MID' }, 
+      { top: '48%', left: '58%', label: 'MC', type: 'MID' }, 
+      { top: '43%', left: '75%', label: 'MD', type: 'MID' }, 
+      { top: '18%', left: '20%', label: 'EI', type: 'FWD' }, 
+      { top: '15%', left: '50%', label: 'DC', type: 'FWD' },
+      { top: '18%', left: '80%', label: 'ED', type: 'FWD' }
     ],
     "4-2-3-1": [
-      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
-      { top: '65%', left: '18%', label: 'LI', type: 'DEF' }, 
-      { top: '65%', left: '38%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '62%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '82%', label: 'LD', type: 'DEF' },
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '18%', label: 'LI', type: 'DEF' }, 
+      { top: '68%', left: '38%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '62%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '82%', label: 'LD', type: 'DEF' },
       { top: '52%', left: '38%', label: 'MCD', type: 'MID' }, 
       { top: '52%', left: '62%', label: 'MCD', type: 'MID' },
-      { top: '35%', left: '22%', label: 'MI', type: 'MID' }, 
-      { top: '32%', left: '50%', label: 'MP', type: 'MID' }, 
-      { top: '35%', left: '78%', label: 'MD', type: 'MID' }, 
-      { top: '16%', left: '50%', label: 'DC', type: 'FWD' }
+      { top: '32%', left: '22%', label: 'MI', type: 'MID' }, 
+      { top: '30%', left: '50%', label: 'MP', type: 'MID' }, 
+      { top: '32%', left: '78%', label: 'MD', type: 'MID' }, 
+      { top: '12%', left: '50%', label: 'DC', type: 'FWD' }
     ],
     "4-5-1": [
-      { top: '82%', left: '50%', label: 'POR', type: 'GK' },
-      { top: '65%', left: '18%', label: 'LI', type: 'DEF' }, 
-      { top: '65%', left: '38%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '62%', label: 'DFC', type: 'DEF' }, 
-      { top: '65%', left: '82%', label: 'LD', type: 'DEF' },
-      { top: '45%', left: '14%', label: 'MI', type: 'MID' }, 
-      { top: '45%', left: '32%', label: 'MC', type: 'MID' }, 
-      { top: '50%', left: '50%', label: 'MCD', type: 'MID' }, 
-      { top: '45%', left: '68%', label: 'MC', type: 'MID' }, 
-      { top: '45%', left: '86%', label: 'MD', type: 'MID' },
-      { top: '18%', left: '50%', label: 'DC', type: 'FWD' }
+      { top: '88%', left: '50%', label: 'POR', type: 'GK' },
+      { top: '68%', left: '18%', label: 'LI', type: 'DEF' }, 
+      { top: '68%', left: '38%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '62%', label: 'DFC', type: 'DEF' }, 
+      { top: '68%', left: '82%', label: 'LD', type: 'DEF' },
+      { top: '43%', left: '14%', label: 'MI', type: 'MID' }, 
+      { top: '43%', left: '32%', label: 'MC', type: 'MID' }, 
+      { top: '48%', left: '50%', label: 'MCD', type: 'MID' }, 
+      { top: '43%', left: '68%', label: 'MC', type: 'MID' }, 
+      { top: '43%', left: '86%', label: 'MD', type: 'MID' },
+      { top: '15%', left: '50%', label: 'DC', type: 'FWD' }
     ],
     "custom": base442.map(pos => ({ ...pos }))
   }), [base442]); 
@@ -536,8 +536,15 @@ function getDetailedPosition(xPercent, yPercent) {
     
     // Calcula las coordenadas X/Y como porcentaje
     const fieldRect = fieldRef.current.getBoundingClientRect();
-    const x = ((e.clientX - fieldRect.left) / fieldRect.width) * 100;
-    const y = ((e.clientY - fieldRect.top) / fieldRect.height) * 100;
+    
+    // Soportar tanto mouse como touch
+    const clientX = e.clientX !== undefined ? e.clientX : (e.changedTouches?.[0]?.clientX || e.touches?.[0]?.clientX);
+    const clientY = e.clientY !== undefined ? e.clientY : (e.changedTouches?.[0]?.clientY || e.touches?.[0]?.clientY);
+    
+    if (clientX === undefined || clientY === undefined) return;
+    
+    const x = ((clientX - fieldRect.left) / fieldRect.width) * 100;
+    const y = ((clientY - fieldRect.top) / fieldRect.height) * 100;
 
     // Obtener la nueva posición DETALLADA basada en las coordenadas
     const newDetailedPos = getDetailedPosition(x, y); 
@@ -667,7 +674,7 @@ function getDetailedPosition(xPercent, yPercent) {
         <div ref={fieldRef} style={{ 
           position: 'relative',
           width: isMobile ? '98%' : '80%',
-          paddingBottom: isMobile ? '130%' : '80%',
+          paddingBottom: isMobile ? '145%' : '80%',
           maxWidth: isMobile ? '100%' : 700,
           margin: '0 auto',
           background: selectedDesign.gradient,
@@ -699,15 +706,31 @@ function getDetailedPosition(xPercent, yPercent) {
             {positions.map((pos, idx) => (
               <div
                 key={idx}
-                draggable={formation === 'custom'}
-                onDragEnd={(e) => handleDragPosition(idx, e)}
+                draggable={formation === 'custom' && !isMobile}
+                onDragEnd={(e) => {
+                  if (!isMobile && formation === 'custom') {
+                    handleDragPosition(idx, e);
+                  }
+                }}
+                onTouchMove={(e) => {
+                  if (isMobile && formation === 'custom') {
+                    e.preventDefault();
+                    handleDragPosition(idx, e);
+                  }
+                }}
+                onTouchEnd={(e) => {
+                  if (isMobile && formation === 'custom') {
+                    handleDragPosition(idx, e);
+                  }
+                }}
                 style={{
                   position: 'absolute',
                   left: pos.left,
                   top: pos.top,
                   transform: 'translate(-50%, -50%)',
-                  transition: 'all 0.3s ease',
-                  cursor: formation === 'custom' ? 'move' : 'default'
+                  transition: formation === 'custom' ? 'none' : 'all 0.3s ease',
+                  cursor: formation === 'custom' ? 'move' : 'default',
+                  touchAction: formation === 'custom' && isMobile ? 'none' : 'auto'
                 }}
               >
                 {alineacion[idx] ? (
@@ -763,10 +786,10 @@ function getDetailedPosition(xPercent, yPercent) {
                       }
                     }}
                     style={{
-                      width: isMobile ? 70 : 80,
+                      width: isMobile ? 62 : 80,
                       background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
                       borderRadius: isMobile ? 8 : 10,
-                      padding: isMobile ? 5 : 6,
+                      padding: isMobile ? 4 : 6,
                       boxShadow: draggedSlot === idx ? '0 8px 24px rgba(255,215,0,0.6)' : '0 4px 16px rgba(0,0,0,0.4)',
                       cursor: isMobile ? 'pointer' : 'grab',
                       transition: 'all 0.3s ease',
@@ -817,21 +840,21 @@ function getDetailedPosition(xPercent, yPercent) {
                     alt={alineacion[idx].name}
                     style={{
                         width: '100%',
-                        height: isMobile ? 60 : 70,
+                        height: isMobile ? 52 : 70,
                         objectFit: 'cover',
                         borderRadius: isMobile ? 4 : 6,
-                        marginBottom: isMobile ? 3 : 4
+                        marginBottom: isMobile ? 2 : 4
                     }}
                 />
-                <div style={{ color: 'white', fontSize: isMobile ? 8 : 9, fontWeight: 'bold', textAlign: 'center', marginBottom: isMobile ? 2 : 2 }}>
+                <div style={{ color: 'white', fontSize: isMobile ? 7 : 9, fontWeight: 'bold', textAlign: 'center', marginBottom: isMobile ? 1 : 2 }}>
                     {alineacion[idx].name.split(' ').slice(-1)[0].toUpperCase()}
                 </div>
                 <div style={{
                     background: 'rgba(255,215,0,0.9)',
                     color: '#1e3c72',
-                    fontSize: isMobile ? 7 : 7,
+                    fontSize: isMobile ? 6 : 7,
                     fontWeight: 'bold',
-                    padding: isMobile ? '2px' : '2px',
+                    padding: isMobile ? '1px 2px' : '2px',
                     borderRadius: 3,
                     textAlign: 'center'
                 }}>
@@ -854,8 +877,8 @@ function getDetailedPosition(xPercent, yPercent) {
                     }}
                     className="espacio-vacio"
                     style={{
-                        width: isMobile ? 70 : 80,
-                        height: isMobile ? 88 : 100,
+                        width: isMobile ? 62 : 80,
+                        height: isMobile ? 78 : 100,
                         background: 'rgba(255,255,255,0.2)',
                         backdropFilter: 'blur(8px)',
                         border: '2px dashed rgba(255,255,255,0.5)',
@@ -866,16 +889,16 @@ function getDetailedPosition(xPercent, yPercent) {
                         justifyContent: 'center',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease',
-                        gap: isMobile ? 4 : 6
+                        gap: isMobile ? 3 : 6
                     }}
                 >
-                    <div style={{ fontSize: isMobile ? 24 : 28 }}>➕</div>
+                    <div style={{ fontSize: isMobile ? 20 : 28 }}>➕</div>
                     <div style={{
                         color: 'white',
-                        fontSize: isMobile ? 8 : 10,
+                        fontSize: isMobile ? 7 : 10,
                         fontWeight: 'bold',
                         background: 'rgba(0,0,0,0.5)',
-                        padding: isMobile ? '3px 5px' : '3px 6px',
+                        padding: isMobile ? '2px 4px' : '3px 6px',
                         borderRadius: 4
                     }}>
                         {pos.label} {/* Etiqueta Dinámica: LI, DC, MP, etc. */}
