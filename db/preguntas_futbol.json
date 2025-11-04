@@ -169,7 +169,7 @@
   },
   {
     "id": "qf25",
-    "pregunta": "¿En qué país juega Neymar actualmente? (2023)",
+    "pregunta": "¿En qué país juega Neymar actualmente?",
     "opciones": ["Arabia Saudita", "Francia", "Brasil", "España"],
     "respuesta_correcta": "Arabia Saudita",
     "dificultad": "facil"
@@ -603,9 +603,9 @@
   },
   {
     "id": "qi37",
-    "pregunta": "¿Qué club brasileño tiene más Libertadores?",
-    "opciones": ["Independiente (ARG)", "Boca Juniors", "River Plate", "São Paulo"],
-    "respuesta_correcta": "Independiente (ARG)",
+    "pregunta": "¿Qué club sudamericano tiene más Libertadores?",
+    "opciones": ["Independiente", "Boca Juniors", "River Plate", "São Paulo"],
+    "respuesta_correcta": "Independiente",
     "dificultad": "intermedia"
   },
   {
@@ -624,7 +624,7 @@
   },
   {
     "id": "qi40",
-    "pregunta": "¿Cuántas Champions consecutivas ganó el Real Madrid (2016-2018)?",
+    "pregunta": "¿Cuántas Champions consecutivas ganó el Real Madrid recientemente?",
     "opciones": ["3", "2", "4", "5"],
     "respuesta_correcta": "3",
     "dificultad": "intermedia"
@@ -632,15 +632,15 @@
   {
     "id": "qi41",
     "pregunta": "¿Qué selección africana llegó más lejos en un Mundial?",
-    "opciones": ["Marruecos (semifinales 2022)", "Ghana (cuartos)", "Camerún (cuartos)", "Senegal (cuartos)"],
-    "respuesta_correcta": "Marruecos (semifinales 2022)",
+    "opciones": ["Marruecos", "Ghana", "Camerún", "Senegal"],
+    "respuesta_correcta": "Marruecos",
     "dificultad": "intermedia"
   },
   {
     "id": "qi42",
     "pregunta": "¿Qué club tiene el récord de goles en una temporada de La Liga?",
-    "opciones": ["Barcelona (2011-12)", "Real Madrid", "Athletic Bilbao", "Valencia"],
-    "respuesta_correcta": "Barcelona (2011-12)",
+    "opciones": ["Barcelona", "Real Madrid", "Athletic Bilbao", "Valencia"],
+    "respuesta_correcta": "Barcelona",
     "dificultad": "intermedia"
   },
   {
@@ -674,15 +674,15 @@
   {
     "id": "qi47",
     "pregunta": "¿Qué selección fue subcampeona en dos mundiales consecutivos?",
-    "opciones": ["Países Bajos (1974-1978)", "Alemania", "Argentina", "Italia"],
-    "respuesta_correcta": "Países Bajos (1974-1978)",
+    "opciones": ["Países Bajos", "Alemania", "Argentina", "Italia"],
+    "respuesta_correcta": "Países Bajos",
     "dificultad": "intermedia"
   },
   {
     "id": "qi48",
     "pregunta": "¿Qué jugador marcó más goles en una sola Eurocopa?",
-    "opciones": ["Michel Platini (9 en 1984)", "Cristiano Ronaldo", "Griezmann", "Van Basten"],
-    "respuesta_correcta": "Michel Platini (9 en 1984)",
+    "opciones": ["Michel Platini", "Cristiano Ronaldo", "Antoine Griezmann", "Marco van Basten"],
+    "respuesta_correcta": "Michel Platini",
     "dificultad": "intermedia"
   },
   {
@@ -702,13 +702,13 @@
   {
     "id": "qa1",
     "pregunta": "¿Qué jugador anotó más goles oficiales en su carrera?",
-    "opciones": ["Cristiano Ronaldo (más de 850)", "Pelé", "Messi", "Romário"],
-    "respuesta_correcta": "Cristiano Ronaldo (más de 850)",
+    "opciones": ["Cristiano Ronaldo", "Pelé", "Lionel Messi", "Romário"],
+    "respuesta_correcta": "Cristiano Ronaldo",
     "dificultad": "avanzada"
   },
   {
     "id": "qa2",
-    "pregunta": "¿Qué selección ganó el Mundial de 1954 (Milagro de Berna)?",
+    "pregunta": "¿Qué selección ganó el Mundial de 1954?",
     "opciones": ["Alemania", "Hungría", "Brasil", "Italia"],
     "respuesta_correcta": "Alemania",
     "dificultad": "avanzada"
@@ -716,8 +716,8 @@
   {
     "id": "qa3",
     "pregunta": "¿Quién marcó el gol más rápido en la historia de los mundiales?",
-    "opciones": ["Hakan Şükür (11 seg)", "Pelé", "Maradona", "Rossi"],
-    "respuesta_correcta": "Hakan Şükür (11 seg)",
+    "opciones": ["Hakan Şükür", "Pelé", "Maradona", "Clint Dempsey"],
+    "respuesta_correcta": "Hakan Şükür",
     "dificultad": "avanzada"
   },
   {
@@ -730,8 +730,8 @@
   {
     "id": "qa5",
     "pregunta": "¿Qué entrenador ganó más Champions League?",
-    "opciones": ["Carlo Ancelotti (5)", "Ferguson", "Zidane", "Guardiola"],
-    "respuesta_correcta": "Carlo Ancelotti (5)",
+    "opciones": ["Carlo Ancelotti", "Alex Ferguson", "Zinedine Zidane", "Pep Guardiola"],
+    "respuesta_correcta": "Carlo Ancelotti",
     "dificultad": "avanzada"
   },
   {
@@ -744,8 +744,8 @@
   {
     "id": "qa7",
     "pregunta": "¿Qué club fue fundado primero en el mundo?",
-    "opciones": ["Sheffield FC (1857)", "Real Madrid", "AC Milan", "Barcelona"],
-    "respuesta_correcta": "Sheffield FC (1857)",
+    "opciones": ["Sheffield FC", "Real Madrid", "AC Milan", "Barcelona"],
+    "respuesta_correcta": "Sheffield FC",
     "dificultad": "avanzada"
   },
   {
@@ -828,14 +828,14 @@
   {
     "id": "qa19",
     "pregunta": "¿En qué año se jugó el primer partido internacional de fútbol?",
-    "opciones": ["1872 (Inglaterra vs Escocia)", "1880", "1860", "1900"],
-    "respuesta_correcta": "1872 (Inglaterra vs Escocia)",
+    "opciones": ["1872", "1880", "1860", "1900"],
+    "respuesta_correcta": "1872",
     "dificultad": "avanzada"
   },
   {
     "id": "qa20",
-    "pregunta": "¿Qué club ganó 5 Champions consecutivas (1956-1960)?",
-    "opciones": ["Real Madrid", "AC Milan", "Barcelona", "Bayern"],
+    "pregunta": "¿Qué club ganó 5 Champions League consecutivas en la década de los 50?",
+    "opciones": ["Real Madrid", "AC Milan", "Barcelona", "Bayern Múnich"],
     "respuesta_correcta": "Real Madrid",
     "dificultad": "avanzada"
   },
@@ -877,15 +877,15 @@
   {
     "id": "qa26",
     "pregunta": "¿Qué club tiene el récord de mayor goleada en Champions?",
-    "opciones": ["Barcelona (7-1 vs Bayer)", "Real Madrid", "Bayern", "PSG"],
-    "respuesta_correcta": "Barcelona (7-1 vs Bayer)",
+    "opciones": ["Barcelona", "Real Madrid", "Bayern Múnich", "PSG"],
+    "respuesta_correcta": "Barcelona",
     "dificultad": "avanzada"
   },
   {
     "id": "qa27",
     "pregunta": "¿Qué portero tiene más partidos en la selección española?",
-    "opciones": ["Iker Casillas (167)", "Zubizarreta", "De Gea", "Unai Simón"],
-    "respuesta_correcta": "Iker Casillas (167)",
+    "opciones": ["Iker Casillas", "Andoni Zubizarreta", "David de Gea", "Unai Simón"],
+    "respuesta_correcta": "Iker Casillas",
     "dificultad": "avanzada"
   },
   {
@@ -905,29 +905,29 @@
   {
     "id": "qa30",
     "pregunta": "¿Qué club español tiene más títulos de Copa del Rey?",
-    "opciones": ["Barcelona (31)", "Real Madrid", "Athletic Bilbao", "Atlético Madrid"],
-    "respuesta_correcta": "Barcelona (31)",
+    "opciones": ["Barcelona", "Real Madrid", "Athletic Bilbao", "Atlético Madrid"],
+    "respuesta_correcta": "Barcelona",
     "dificultad": "avanzada"
   },
   {
     "id": "qa31",
     "pregunta": "¿Cuántos jugadores diferentes han marcado en una final de Champions para el mismo club?",
-    "opciones": ["3 (Liverpool 2005)", "2", "4", "5"],
-    "respuesta_correcta": "3 (Liverpool 2005)",
+    "opciones": ["3", "2", "4", "5"],
+    "respuesta_correcta": "3",
     "dificultad": "avanzada"
   },
   {
     "id": "qa32",
     "pregunta": "¿Qué jugador marcó el primer gol olímpico en un Mundial?",
-    "opciones": ["Marcos Coll (Colombia)", "Beckham", "Maradona", "Pelé"],
-    "respuesta_correcta": "Marcos Coll (Colombia)",
+    "opciones": ["Marcos Coll", "David Beckham", "Diego Maradona", "Pelé"],
+    "respuesta_correcta": "Marcos Coll",
     "dificultad": "avanzada"
   },
   {
     "id": "qa33",
     "pregunta": "¿Qué club ganó más Copas Libertadores consecutivas?",
-    "opciones": ["Independiente (4)", "Boca", "River", "Peñarol"],
-    "respuesta_correcta": "Independiente (4)",
+    "opciones": ["Independiente", "Boca Juniors", "River Plate", "Peñarol"],
+    "respuesta_correcta": "Independiente",
     "dificultad": "avanzada"
   },
   {
@@ -954,15 +954,15 @@
   {
     "id": "qa37",
     "pregunta": "¿Qué club inglés fue el primero en ganar la Copa de Europa?",
-    "opciones": ["Manchester United (1968)", "Liverpool", "Nottingham Forest", "Aston Villa"],
-    "respuesta_correcta": "Manchester United (1968)",
+    "opciones": ["Manchester United", "Liverpool", "Nottingham Forest", "Aston Villa"],
+    "respuesta_correcta": "Manchester United",
     "dificultad": "avanzada"
   },
   {
     "id": "qa38",
     "pregunta": "¿Qué selección marcó el primer gol en la historia del Mundial?",
-    "opciones": ["Francia (Lucien Laurent)", "Uruguay", "Argentina", "Brasil"],
-    "respuesta_correcta": "Francia (Lucien Laurent)",
+    "opciones": ["Francia", "Uruguay", "Argentina", "Brasil"],
+    "respuesta_correcta": "Francia",
     "dificultad": "avanzada"
   },
   {
@@ -1038,8 +1038,8 @@
   {
     "id": "qa49",
     "pregunta": "¿Qué jugador ganó el Mundial sub-20, Olímpico y Mundial mayor?",
-    "opciones": ["Varios (Messi, Maradona)", "Solo Messi", "Solo Maradona", "Ninguno"],
-    "respuesta_correcta": "Varios (Messi, Maradona)",
+    "opciones": ["Lionel Messi", "Diego Maradona", "Ronaldo", "Romário"],
+    "respuesta_correcta": "Lionel Messi",
     "dificultad": "avanzada"
   },
   {
@@ -1101,8 +1101,8 @@
   {
     "id": "qa58",
     "pregunta": "¿Qué jugador marcó el gol más rápido en una final de Champions?",
-    "opciones": ["Paolo Maldini (50 seg)", "Di Stéfano", "Raúl", "Messi"],
-    "respuesta_correcta": "Paolo Maldini (50 seg)",
+    "opciones": ["Paolo Maldini", "Alfredo Di Stéfano", "Raúl González", "Lionel Messi"],
+    "respuesta_correcta": "Paolo Maldini",
     "dificultad": "avanzada"
   },
   {
@@ -1114,9 +1114,9 @@
   },
   {
     "id": "qa60",
-    "pregunta": "¿Cuántos clubes han ganado la Triple Corona (Liga, Copa y Champions)?",
-    "opciones": ["8 clubes", "5", "10", "12"],
-    "respuesta_correcta": "8 clubes",
+    "pregunta": "¿Cuántos clubes han ganado la Triple Corona (Liga, Copa nacional y Champions)?",
+    "opciones": ["8", "5", "10", "12"],
+    "respuesta_correcta": "8",
     "dificultad": "avanzada"
   }
 ]
