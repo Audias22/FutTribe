@@ -170,8 +170,8 @@
   {
     "id": "qf25",
     "pregunta": "¿En qué país juega Neymar actualmente?",
-    "opciones": ["Arabia Saudita", "Francia", "Brasil", "España"],
-    "respuesta_correcta": "Arabia Saudita",
+    "opciones": ["Brasil", "Francia", "Arabia Saudita", "Estados Unidos"],
+    "respuesta_correcta": "Brasil",
     "dificultad": "facil"
   },
   {
