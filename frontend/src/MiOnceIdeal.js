@@ -118,8 +118,38 @@ function getDetailedPosition(xPercent, yPercent) {
   const [selectedSlot, setSelectedSlot] = useState(null);
   const [fieldDesign, setFieldDesign] = useState('classic');
   const fieldRef = useRef(null);
+  const [draggedSlot, setDraggedSlot] = useState(null);
+  const [touchStartPos, setTouchStartPos] = useState(null);
 
   const miEquipoIdeal = alineacion.filter(Boolean);
+
+  // Auto-ocultar mensajes después de 3 segundos
+  useEffect(() => {
+    if (message) {
+      const timer = setTimeout(() => {
+        setMessage(null);
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [message]);
+
+  // Manejar el botón "atrás" del navegador para cerrar modal en lugar de salir
+  useEffect(() => {
+    if (!showModal) return;
+    
+    const handlePopState = (e) => {
+      e.preventDefault();
+      setShowModal(false);
+    };
+    
+    // Agregar entrada al historial cuando se abre el modal
+    window.history.pushState({ modalOpen: true }, '');
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [showModal]);
 
   useEffect(() => {
     setLoading(true);
@@ -547,10 +577,10 @@ function getDetailedPosition(xPercent, yPercent) {
   }
 
   return (
-    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '24px 0' }}>
-      <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px' }}>
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: isMobile ? '12px 0' : '24px 0' }}>
+      <div style={{ maxWidth: 1200, margin: '0 auto', padding: isMobile ? '0 8px' : '0 16px' }}>
         {/* Header */}
-        <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: isMobile ? 16 : 24, marginBottom: isMobile ? 16 : 24, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
+        <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: isMobile ? 12 : 16, padding: isMobile ? 10 : 24, marginBottom: isMobile ? 10 : 24, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: isMobile ? 12 : 16 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16, width: isMobile ? '100%' : 'auto' }}>
               {onVolver && (
@@ -580,20 +610,20 @@ function getDetailedPosition(xPercent, yPercent) {
                 </button>
               )}
               <div>
-                <h1 style={{ margin: 0, fontSize: isMobile ? 20 : 32, fontWeight: 'bold', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  ⚽ Mi Once Ideal
+                <h1 style={{ margin: 0, fontSize: isMobile ? 16 : 32, fontWeight: 'bold', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1.2 }}>
+                  ⚽ {isMobile ? 'Once Ideal' : 'Mi Once Ideal'}
                 </h1>
-                <p style={{ margin: '8px 0 0', color: '#666', fontSize: isMobile ? 10 : 14 }}>
-                  {isMobile ? `${miEquipoIdeal.length}/11 | D: ${contarDefensas(miEquipoIdeal)}/5 | P: ${contarPorteros(miEquipoIdeal)}/1` : `Jugadores: ${miEquipoIdeal.length}/11 | Defensas: ${contarDefensas(miEquipoIdeal)}/5 | Porteros: ${contarPorteros(miEquipoIdeal)}/1`}
+                <p style={{ margin: isMobile ? '4px 0 0' : '8px 0 0', color: '#666', fontSize: isMobile ? 9 : 14 }}>
+                  {isMobile ? `${miEquipoIdeal.length}/11 | D:${contarDefensas(miEquipoIdeal)}/5 | P:${contarPorteros(miEquipoIdeal)}/1` : `Jugadores: ${miEquipoIdeal.length}/11 | Defensas: ${contarDefensas(miEquipoIdeal)}/5 | Porteros: ${contarPorteros(miEquipoIdeal)}/1`}
                 </p>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12, width: isMobile ? '100%' : 'auto' }}>
-              <label style={{ fontWeight: 600, color: '#333', fontSize: isMobile ? 12 : 14 }}>Formación:</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 12, width: isMobile ? '100%' : 'auto' }}>
+              <label style={{ fontWeight: 600, color: '#333', fontSize: isMobile ? 10 : 14 }}>Form:</label>
               <select 
                 value={formation} 
                 onChange={(e) => setFormation(e.target.value)}
-                style={{ padding: isMobile ? '8px 12px' : '10px 16px', fontSize: isMobile ? 14 : 16, border: '2px solid #667eea', borderRadius: 8, fontWeight: 'bold', cursor: 'pointer', background: 'white', flex: isMobile ? 1 : 'none' }}
+                style={{ padding: isMobile ? '6px 8px' : '10px 16px', fontSize: isMobile ? 12 : 16, border: '2px solid #667eea', borderRadius: 6, fontWeight: 'bold', cursor: 'pointer', background: 'white', flex: isMobile ? 1 : 'none' }}
               >
                 <option value="4-4-2">4-4-2</option>
                 <option value="4-3-3">4-3-3</option>
@@ -609,18 +639,19 @@ function getDetailedPosition(xPercent, yPercent) {
 
           {message && (
             <div style={{ 
-              marginTop: 16, 
-              padding: 16, 
-              borderRadius: 8, 
+              marginTop: isMobile ? 8 : 16, 
+              padding: isMobile ? 8 : 16, 
+              borderRadius: isMobile ? 6 : 8, 
               background: message.type === 'error' ? '#fee' : message.type === 'success' ? '#efe' : '#eef',
-              border: `2px solid ${message.type === 'error' ? '#f99' : message.type === 'success' ? '#9f9' : '#99f'}`,
+              border: `${isMobile ? 1 : 2}px solid ${message.type === 'error' ? '#f99' : message.type === 'success' ? '#9f9' : '#99f'}`,
               color: message.type === 'error' ? '#c33' : message.type === 'success' ? '#3c3' : '#33c',
               fontWeight: 600,
               display: 'flex',
               alignItems: 'center',
-              gap: 12
+              gap: isMobile ? 8 : 12,
+              fontSize: isMobile ? 11 : 14
             }}>
-              <span style={{ fontSize: 20 }}>
+              <span style={{ fontSize: isMobile ? 14 : 20 }}>
                 {message.type === 'error' ? '❌' : message.type === 'success' ? '✅' : 'ℹ️'}
               </span>
               {message.text}
@@ -677,57 +708,102 @@ function getDetailedPosition(xPercent, yPercent) {
               >
                 {alineacion[idx] ? (
                   <div 
-                    draggable
+                    draggable={!isMobile}
                     onDragStart={(e) => {
+                      if (isMobile) return;
                       e.dataTransfer.effectAllowed = 'move';
                       e.dataTransfer.setData('fromSlot', idx.toString());
                     }}
                     onDragOver={(e) => {
+                      if (isMobile) return;
                       e.preventDefault();
                       e.dataTransfer.dropEffect = 'move';
                     }}
                     onDrop={(e) => {
+                      if (isMobile) return;
                       e.preventDefault();
                       const fromIdx = parseInt(e.dataTransfer.getData('fromSlot'));
                       if (!isNaN(fromIdx)) {
                         swapPlayers(fromIdx, idx);
                       }
                     }}
-                    onClick={() => openModal(idx)}
+                    onTouchStart={(e) => {
+                      if (!isMobile) return;
+                      const touch = e.touches[0];
+                      setTouchStartPos({ x: touch.clientX, y: touch.clientY });
+                      setDraggedSlot(idx);
+                    }}
+                    onTouchMove={(e) => {
+                      if (!isMobile || draggedSlot !== idx || !touchStartPos) return;
+                      e.preventDefault();
+                    }}
+                    onTouchEnd={(e) => {
+                      if (!isMobile || draggedSlot !== idx) return;
+                      const touch = e.changedTouches[0];
+                      const element = document.elementFromPoint(touch.clientX, touch.clientY);
+                      const targetCard = element?.closest('[data-slot-idx]');
+                      if (targetCard) {
+                        const targetIdx = parseInt(targetCard.getAttribute('data-slot-idx'));
+                        if (!isNaN(targetIdx) && targetIdx !== idx) {
+                          swapPlayers(idx, targetIdx);
+                        }
+                      }
+                      setDraggedSlot(null);
+                      setTouchStartPos(null);
+                    }}
+                    data-slot-idx={idx}
+                    onClick={(e) => {
+                      // Solo abrir modal si no es el botón X
+                      if (!e.target.closest('.remove-btn')) {
+                        openModal(idx);
+                      }
+                    }}
                     style={{
                       width: isMobile ? 60 : 80,
                       background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
                       borderRadius: isMobile ? 8 : 10,
                       padding: isMobile ? 4 : 6,
-                      boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-                      cursor: 'grab',
+                      boxShadow: draggedSlot === idx ? '0 8px 24px rgba(255,215,0,0.6)' : '0 4px 16px rgba(0,0,0,0.4)',
+                      cursor: isMobile ? 'pointer' : 'grab',
                       transition: 'all 0.3s ease',
                       border: '2px solid #ffd700',
-                      position: 'relative'
+                      position: 'relative',
+                      opacity: draggedSlot === idx ? 0.7 : 1,
+                      transform: draggedSlot === idx ? 'scale(1.05)' : 'scale(1)'
                     }}
-                    onMouseDown={(e) => e.currentTarget.style.cursor = 'grabbing'}
-                    onMouseUp={(e) => e.currentTarget.style.cursor = 'grab'}
+                    onMouseDown={(e) => !isMobile && (e.currentTarget.style.cursor = 'grabbing')}
+                    onMouseUp={(e) => !isMobile && (e.currentTarget.style.cursor = 'grab')}
                   >
                     <button
+                      className="remove-btn"
                       onClick={(e) => {
                         e.stopPropagation();
                         removeFromSlot(idx);
                       }}
+                      onTouchEnd={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        removeFromSlot(idx);
+                      }}
                       style={{
                         position: 'absolute',
-                        top: isMobile ? -4 : -6,
-                        right: isMobile ? -4 : -6,
-                        width: isMobile ? 18 : 20,
-                        height: isMobile ? 18 : 20,
+                        top: isMobile ? -6 : -6,
+                        right: isMobile ? -6 : -6,
+                        width: isMobile ? 24 : 20,
+                        height: isMobile ? 24 : 20,
                         borderRadius: '50%',
                         border: 'none',
                         background: '#dc3545',
                         color: 'white',
-                        fontSize: isMobile ? 12 : 14,
+                        fontSize: isMobile ? 14 : 14,
                         fontWeight: 'bold',
                         cursor: 'pointer',
                         boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
-                        zIndex: 10
+                        zIndex: 10,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        padding: 0
                     }}
                 >
                     ×
@@ -901,24 +977,66 @@ function getDetailedPosition(xPercent, yPercent) {
 
     {/* Modal de selección de jugador */}
     {showModal && selectedSlot !== null && (
-      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: isMobile ? '10px' : '20px' }}>
-        <div style={{ background: 'white', borderRadius: 12, padding: isMobile ? 16 : 24, width: '100%', maxWidth: 800, maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
+      <div 
+        style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: 0 }}
+        onClick={(e) => {
+          // Cerrar si se hace clic fuera del modal
+          if (e.target === e.currentTarget) {
+            setShowModal(false);
+          }
+        }}
+      >
+        <div style={{ 
+          background: 'white', 
+          borderRadius: isMobile ? 0 : 12, 
+          padding: isMobile ? 12 : 24, 
+          width: isMobile ? '100%' : '90%', 
+          height: isMobile ? '100%' : 'auto',
+          maxWidth: isMobile ? '100%' : 800, 
+          maxHeight: isMobile ? '100%' : '90vh', 
+          overflowY: 'auto', 
+          position: 'relative' 
+        }}>
           <button
             onClick={() => setShowModal(false)}
-            style={{ position: 'absolute', top: 10, right: 10, background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: '#333' }}
+            style={{ 
+              position: 'absolute', 
+              top: isMobile ? 8 : 10, 
+              right: isMobile ? 8 : 10, 
+              background: '#dc3545', 
+              border: 'none', 
+              borderRadius: '50%',
+              width: isMobile ? 32 : 36,
+              height: isMobile ? 32 : 36,
+              fontSize: isMobile ? 20 : 24, 
+              cursor: 'pointer', 
+              color: 'white',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.2)',
+              zIndex: 1
+            }}
           >
             ×
           </button>
-          <h2 style={{ fontSize: isMobile ? 18 : 24, margin: '0 0 16px', color: '#1e3c72' }}>
-            Seleccionar Jugador para <span style={{ color: '#667eea', fontWeight: 'bold' }}>{positions[selectedSlot].label}</span>
+          <h2 style={{ fontSize: isMobile ? 16 : 24, margin: isMobile ? '0 0 12px' : '0 0 16px', color: '#1e3c72', paddingRight: isMobile ? 40 : 0 }}>
+            Seleccionar para <span style={{ color: '#667eea', fontWeight: 'bold' }}>{positions[selectedSlot].label}</span>
           </h2>
-          <div style={{ marginBottom: 16 }}>
+          <div style={{ marginBottom: isMobile ? 12 : 16 }}>
             <input
               type="text"
               placeholder="Buscar jugador..."
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              style={{ width: '100%', padding: isMobile ? 10 : 12, fontSize: isMobile ? 14 : 16, border: '2px solid #ccc', borderRadius: 8 }}
+              style={{ 
+                width: '100%', 
+                padding: isMobile ? 10 : 12, 
+                fontSize: isMobile ? 14 : 16, 
+                border: '2px solid #667eea', 
+                borderRadius: 8,
+                boxSizing: 'border-box'
+              }}
             />
           </div>
 
