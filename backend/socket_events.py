@@ -267,7 +267,19 @@ def registrar_eventos_socket(socketio):
             cursor.execute("SELECT respuesta_correcta FROM preguntas_futbol WHERE id = %s", (pregunta_id,))
             pregunta = cursor.fetchone()
             
-            es_correcta = pregunta['respuesta_correcta'] == respuesta if pregunta else False
+            # Comparar respuestas (trim y case-insensitive para evitar errores)
+            if pregunta:
+                respuesta_correcta_db = pregunta['respuesta_correcta'].strip()
+                respuesta_usuario = respuesta.strip()
+                es_correcta = respuesta_correcta_db == respuesta_usuario
+                
+                # Debug log
+                print(f'🔍 Pregunta {pregunta_id}:')
+                print(f'   Respuesta usuario: "{respuesta_usuario}"')
+                print(f'   Respuesta correcta: "{respuesta_correcta_db}"')
+                print(f'   ¿Es correcta? {es_correcta}')
+            else:
+                es_correcta = False
             
             # Calcular puntos
             puntos = 0
