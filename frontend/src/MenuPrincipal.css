@@ -48,6 +48,24 @@
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
 }
 
+.modo-card.multiplayer {
+  position: relative;
+  border: 3px solid #ffd700;
+}
+
+.badge-nuevo {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
+  color: white;
+  padding: 5px 12px;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: bold;
+  animation: pulse 2s infinite;
+}
+
 .modo-icon {
   font-size: 5rem;
   margin-bottom: 20px;

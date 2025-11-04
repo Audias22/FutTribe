@@ -18,8 +18,16 @@ function MenuPrincipal({ onSelectMode }) {
 
           <div className="modo-card" onClick={() => onSelectMode('duelazo')}>
             <div className="modo-icon">⚡</div>
-            <h2>El Duelazo de la Jornada</h2>
-            <p>Compite respondiendo preguntas de fútbol</p>
+            <h2>El Duelazo</h2>
+            <p>Modo individual - Responde preguntas de fútbol</p>
+            <button className="btn-jugar">Jugar Ahora</button>
+          </div>
+
+          <div className="modo-card multiplayer" onClick={() => onSelectMode('duelazo-multiplayer')}>
+            <div className="modo-icon">🎮</div>
+            <h2>El Duelazo Multijugador</h2>
+            <p>Compite en tiempo real contra otros jugadores</p>
+            <span className="badge-nuevo">¡NUEVO!</span>
             <button className="btn-jugar">Jugar Ahora</button>
           </div>
         </div>
