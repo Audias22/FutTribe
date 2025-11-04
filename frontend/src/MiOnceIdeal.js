@@ -133,12 +133,12 @@ function getDetailedPosition(xPercent, yPercent) {
     }
   }, [message]);
 
-  // Manejar el botón "atrás" del navegador para cerrar modal en lugar de salir
+  // Manejar el botón "atrás" del navegador para cerrar modal
   useEffect(() => {
     if (!showModal) return;
     
-    const handlePopState = (e) => {
-      e.preventDefault();
+    const handlePopState = () => {
+      // Solo cerrar el modal, no prevenir la navegación
       setShowModal(false);
     };
     
@@ -148,6 +148,10 @@ function getDetailedPosition(xPercent, yPercent) {
     
     return () => {
       window.removeEventListener('popstate', handlePopState);
+      // Si el modal se cierra sin usar el botón atrás, retroceder el historial
+      if (window.history.state?.modalOpen) {
+        window.history.back();
+      }
     };
   }, [showModal]);
 
@@ -662,12 +666,12 @@ function getDetailedPosition(xPercent, yPercent) {
         {/* Campo de fútbol */}
         <div ref={fieldRef} style={{ 
           position: 'relative',
-          width: isMobile ? '95%' : '80%',
-          paddingBottom: isMobile ? '95%' : '80%',
-          maxWidth: 700,
+          width: isMobile ? '98%' : '80%',
+          paddingBottom: isMobile ? '130%' : '80%',
+          maxWidth: isMobile ? '100%' : 700,
           margin: '0 auto',
           background: selectedDesign.gradient,
-          borderRadius: 16,
+          borderRadius: isMobile ? 12 : 16,
           boxShadow: '0 12px 48px rgba(0,0,0,0.3)',
           overflow: 'hidden'
         }}>
@@ -759,10 +763,10 @@ function getDetailedPosition(xPercent, yPercent) {
                       }
                     }}
                     style={{
-                      width: isMobile ? 60 : 80,
+                      width: isMobile ? 70 : 80,
                       background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
                       borderRadius: isMobile ? 8 : 10,
-                      padding: isMobile ? 4 : 6,
+                      padding: isMobile ? 5 : 6,
                       boxShadow: draggedSlot === idx ? '0 8px 24px rgba(255,215,0,0.6)' : '0 4px 16px rgba(0,0,0,0.4)',
                       cursor: isMobile ? 'pointer' : 'grab',
                       transition: 'all 0.3s ease',
@@ -813,21 +817,21 @@ function getDetailedPosition(xPercent, yPercent) {
                     alt={alineacion[idx].name}
                     style={{
                         width: '100%',
-                        height: isMobile ? 50 : 70,
+                        height: isMobile ? 60 : 70,
                         objectFit: 'cover',
                         borderRadius: isMobile ? 4 : 6,
-                        marginBottom: isMobile ? 2 : 4
+                        marginBottom: isMobile ? 3 : 4
                     }}
                 />
-                <div style={{ color: 'white', fontSize: isMobile ? 7 : 9, fontWeight: 'bold', textAlign: 'center', marginBottom: isMobile ? 1 : 2 }}>
+                <div style={{ color: 'white', fontSize: isMobile ? 8 : 9, fontWeight: 'bold', textAlign: 'center', marginBottom: isMobile ? 2 : 2 }}>
                     {alineacion[idx].name.split(' ').slice(-1)[0].toUpperCase()}
                 </div>
                 <div style={{
                     background: 'rgba(255,215,0,0.9)',
                     color: '#1e3c72',
-                    fontSize: isMobile ? 6 : 7,
+                    fontSize: isMobile ? 7 : 7,
                     fontWeight: 'bold',
-                    padding: isMobile ? '1px' : '2px',
+                    padding: isMobile ? '2px' : '2px',
                     borderRadius: 3,
                     textAlign: 'center'
                 }}>
@@ -850,8 +854,8 @@ function getDetailedPosition(xPercent, yPercent) {
                     }}
                     className="espacio-vacio"
                     style={{
-                        width: isMobile ? 60 : 80,
-                        height: isMobile ? 75 : 100,
+                        width: isMobile ? 70 : 80,
+                        height: isMobile ? 88 : 100,
                         background: 'rgba(255,255,255,0.2)',
                         backdropFilter: 'blur(8px)',
                         border: '2px dashed rgba(255,255,255,0.5)',
@@ -862,16 +866,16 @@ function getDetailedPosition(xPercent, yPercent) {
                         justifyContent: 'center',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease',
-                        gap: isMobile ? 3 : 6
+                        gap: isMobile ? 4 : 6
                     }}
                 >
-                    <div style={{ fontSize: isMobile ? 20 : 28 }}>➕</div>
+                    <div style={{ fontSize: isMobile ? 24 : 28 }}>➕</div>
                     <div style={{
                         color: 'white',
-                        fontSize: isMobile ? 7 : 10,
+                        fontSize: isMobile ? 8 : 10,
                         fontWeight: 'bold',
                         background: 'rgba(0,0,0,0.5)',
-                        padding: isMobile ? '2px 4px' : '3px 6px',
+                        padding: isMobile ? '3px 5px' : '3px 6px',
                         borderRadius: 4
                     }}>
                         {pos.label} {/* Etiqueta Dinámica: LI, DC, MP, etc. */}
@@ -883,8 +887,8 @@ function getDetailedPosition(xPercent, yPercent) {
                 </div>
                 </div>
                 {/* Selector de diseño de cancha */}
-    <div style={{ marginTop: isMobile ? 16 : 20, textAlign: 'center' }}>
-      <p style={{ color: 'white', fontWeight: 'bold', marginBottom: isMobile ? 8 : 12, fontSize: isMobile ? 12 : 14 }}>🎨 Diseño de Cancha:</p>
+    <div style={{ marginTop: isMobile ? 10 : 20, textAlign: 'center' }}>
+      <p style={{ color: 'white', fontWeight: 'bold', marginBottom: isMobile ? 6 : 12, fontSize: isMobile ? 11 : 14 }}>🎨 Diseño de Cancha:</p>
       <div style={{ display: 'flex', justifyContent: 'center', gap: isMobile ? 8 : 12, flexWrap: 'wrap' }}>
         {FIELD_DESIGNS.map(design => (
           <div
@@ -928,7 +932,7 @@ function getDetailedPosition(xPercent, yPercent) {
     </div>
 
     {/* Botones de acción */}
-    <div style={{ marginTop: isMobile ? 16 : 24, textAlign: 'center', display: 'flex', gap: isMobile ? 8 : 12, justifyContent: 'center', flexWrap: 'wrap', padding: isMobile ? '0 10px' : '0' }}>
+    <div style={{ marginTop: isMobile ? 10 : 24, marginBottom: isMobile ? 10 : 0, textAlign: 'center', display: 'flex', gap: isMobile ? 8 : 12, justifyContent: 'center', flexWrap: 'wrap', padding: isMobile ? '0 10px' : '0' }}>
       <button
         disabled={miEquipoIdeal.length !== 11}
         onClick={downloadAsImage}
