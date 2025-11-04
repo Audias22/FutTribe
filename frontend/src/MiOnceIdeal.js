@@ -24,26 +24,58 @@ const FIELD_DESIGNS = [
   { 
     id: 'classic', 
     name: 'Clásico',
+    emoji: '🌿',
     gradient: 'linear-gradient(180deg, #4a9d4f 0%, #3d8b41 50%, #4a9d4f 100%)',
     pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.03) 50px, rgba(0,0,0,0.03) 100px)'
   },
   { 
-    id: 'dark', 
-    name: 'Oscuro',
-    gradient: 'linear-gradient(180deg, #2d5016 0%, #1e3a0e 50%, #2d5016 100%)',
-    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.1) 50px, rgba(0,0,0,0.1) 100px)'
+    id: 'blue', 
+    name: 'Océano',
+    emoji: '🌊',
+    gradient: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #2563eb 50%, #1e40af 75%, #1e3a8a 100%)',
+    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.05) 50px, rgba(255,255,255,0.05) 100px)'
   },
   { 
-    id: 'blue', 
-    name: 'Azul',
-    gradient: 'linear-gradient(180deg, #1e3a5f 0%, #14283d 50%, #1e3a5f 100%)',
+    id: 'sunset', 
+    name: 'Atardecer',
+    emoji: '🌅',
+    gradient: 'linear-gradient(180deg, #dc2626 0%, #ea580c 20%, #f59e0b 40%, #84cc16 60%, #22c55e 80%, #16a34a 100%)',
     pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.08) 50px, rgba(0,0,0,0.08) 100px)'
   },
   { 
-    id: 'modern', 
-    name: 'Moderno',
-    gradient: 'linear-gradient(180deg, #3a7d44 0%, #2d6236 50%, #3a7d44 100%)',
-    pattern: 'repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255,255,255,0.02) 30px, rgba(255,255,255,0.02) 60px)'
+    id: 'purple', 
+    name: 'Galaxy',
+    emoji: '🌌',
+    gradient: 'linear-gradient(135deg, #581c87 0%, #7c3aed 25%, #a855f7 50%, #7c3aed 75%, #581c87 100%)',
+    pattern: 'repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255,255,255,0.03) 30px, rgba(255,255,255,0.03) 60px)'
+  },
+  { 
+    id: 'mint', 
+    name: 'Menta',
+    emoji: '🍃',
+    gradient: 'linear-gradient(180deg, #059669 0%, #10b981 25%, #34d399 50%, #10b981 75%, #059669 100%)',
+    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.06) 50px, rgba(255,255,255,0.06) 100px)'
+  },
+  { 
+    id: 'fire', 
+    name: 'Fuego',
+    emoji: '🔥',
+    gradient: 'linear-gradient(180deg, #7f1d1d 0%, #991b1b 20%, #dc2626 40%, #ef4444 60%, #dc2626 80%, #991b1b 100%)',
+    pattern: 'repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255,255,0,0.05) 30px, rgba(255,255,0,0.05) 60px)'
+  },
+  { 
+    id: 'neon', 
+    name: 'Neón',
+    emoji: '⚡',
+    gradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #0ea5e9 40%, #06b6d4 60%, #1e293b 80%, #0f172a 100%)',
+    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(6,182,212,0.1) 50px, rgba(6,182,212,0.1) 100px)'
+  },
+  { 
+    id: 'gold', 
+    name: 'Oro',
+    emoji: '👑',
+    gradient: 'linear-gradient(180deg, #713f12 0%, #854d0e 20%, #a16207 40%, #ca8a04 60%, #a16207 80%, #854d0e 100%)',
+    pattern: 'repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(250,204,21,0.08) 30px, rgba(250,204,21,0.08) 60px)'
   }
 ];
 
@@ -695,29 +727,46 @@ function getDetailedPosition(xPercent, yPercent) {
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 6 : 12, width: isMobile ? '100%' : 'auto' }}>
-              <label style={{ fontWeight: 600, color: '#333', fontSize: isMobile ? 10 : 14 }}>Form:</label>
+              <label style={{ fontWeight: 600, color: '#333', fontSize: isMobile ? 10 : 14, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <span style={{ fontSize: isMobile ? 14 : 18 }}>⚽</span> Form:
+              </label>
               <select 
                 value={formation} 
                 onChange={(e) => setFormation(e.target.value)}
-                style={{ padding: isMobile ? '6px 8px' : '10px 16px', fontSize: isMobile ? 12 : 16, border: '2px solid #667eea', borderRadius: 6, fontWeight: 'bold', cursor: 'pointer', background: 'white', flex: isMobile ? 1 : 'none' }}
+                style={{ 
+                  padding: isMobile ? '6px 10px' : '10px 16px', 
+                  fontSize: isMobile ? 12 : 16, 
+                  border: 'none',
+                  borderRadius: 8,
+                  fontWeight: 'bold', 
+                  cursor: 'pointer', 
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  flex: isMobile ? 1 : 'none',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                  outline: 'none',
+                  transition: 'all 0.3s ease'
+                }}
+                onMouseEnter={(e) => !isMobile && (e.target.style.transform = 'translateY(-2px)', e.target.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.6)')}
+                onMouseLeave={(e) => !isMobile && (e.target.style.transform = 'translateY(0)', e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)')}
               >
                 <optgroup label="⚡ Clásicas">
-                  <option value="4-4-2">4-4-2 (Clásica)</option>
-                  <option value="4-3-3">4-3-3 (Ofensiva)</option>
-                  <option value="3-5-2">3-5-2 (Wing-backs)</option>
-                  <option value="5-3-2">5-3-2 (Defensiva)</option>
+                  <option value="4-4-2">4-4-2 • Clásica</option>
+                  <option value="4-3-3">4-3-3 • Ofensiva</option>
+                  <option value="3-5-2">3-5-2 • Wing-backs</option>
+                  <option value="5-3-2">5-3-2 • Defensiva</option>
                 </optgroup>
                 <optgroup label="🔥 Ofensivas">
-                  <option value="3-4-3">3-4-3 (Ultra ofensiva)</option>
-                  <option value="4-2-3-1">4-2-3-1 (Media punta)</option>
-                  <option value="4-2-1-3">4-2-1-3 (Tridente) ⭐</option>
-                  <option value="3-4-1-2">3-4-1-2 (Enganche)</option>
+                  <option value="3-4-3">3-4-3 • Ultra ofensiva</option>
+                  <option value="4-2-3-1">4-2-3-1 • Media punta</option>
+                  <option value="4-2-1-3">4-2-1-3 • Tridente ⭐</option>
+                  <option value="3-4-1-2">3-4-1-2 • Enganche</option>
                 </optgroup>
                 <optgroup label="⚖️ Equilibradas">
-                  <option value="4-1-4-1">4-1-4-1 (Pivote)</option>
-                  <option value="4-1-2-1-2">4-1-2-1-2 (Diamante)</option>
-                  <option value="3-1-4-2">3-1-4-2 (Flexible)</option>
-                  <option value="4-5-1">4-5-1 (Control)</option>
+                  <option value="4-1-4-1">4-1-4-1 • Pivote</option>
+                  <option value="4-1-2-1-2">4-1-2-1-2 • Diamante</option>
+                  <option value="3-1-4-2">3-1-4-2 • Flexible</option>
+                  <option value="4-5-1">4-5-1 • Control</option>
                 </optgroup>
                 <optgroup label="🎨 Personalizada">
                   <option value="custom">{isMobile ? '🎨 Custom' : '🎨 Crea tu táctica'}</option>
@@ -989,44 +1038,90 @@ function getDetailedPosition(xPercent, yPercent) {
                 </div>
                 {/* Selector de diseño de cancha */}
     <div style={{ marginTop: isMobile ? 10 : 20, textAlign: 'center' }}>
-      <p style={{ color: 'white', fontWeight: 'bold', marginBottom: isMobile ? 6 : 12, fontSize: isMobile ? 11 : 14 }}>🎨 Diseño de Cancha:</p>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: isMobile ? 8 : 12, flexWrap: 'wrap' }}>
+      <p style={{ color: 'white', fontWeight: 'bold', marginBottom: isMobile ? 8 : 12, fontSize: isMobile ? 12 : 16, textShadow: '0 2px 4px rgba(0,0,0,0.3)' }}>
+        🎨 Diseño de Cancha
+      </p>
+      <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(4, 1fr)' : 'repeat(auto-fit, minmax(90px, 1fr))', gap: isMobile ? 8 : 12, maxWidth: isMobile ? '100%' : 800, margin: '0 auto', padding: isMobile ? '0 5px' : '0 20px' }}>
         {FIELD_DESIGNS.map(design => (
           <div
             key={design.id}
             onClick={() => setFieldDesign(design.id)}
             style={{
-              width: isMobile ? 60 : 80,
-              height: isMobile ? 60 : 80,
               background: design.gradient,
-              borderRadius: isMobile ? 6 : 8,
+              borderRadius: isMobile ? 10 : 12,
               cursor: 'pointer',
-              border: fieldDesign === design.id ? `${isMobile ? 3 : 4}px solid #ffd700` : `${isMobile ? 2 : 3}px solid rgba(255,255,255,0.3)`,
-              boxShadow: fieldDesign === design.id ? '0 4px 16px rgba(255,215,0,0.5)' : '0 2px 8px rgba(0,0,0,0.2)',
+              border: fieldDesign === design.id ? `${isMobile ? 3 : 4}px solid #ffd700` : `${isMobile ? 2 : 2}px solid rgba(255,255,255,0.4)`,
+              boxShadow: fieldDesign === design.id 
+                ? '0 6px 20px rgba(255,215,0,0.6), 0 0 20px rgba(255,215,0,0.3)' 
+                : '0 3px 10px rgba(0,0,0,0.3)',
               transition: 'all 0.3s ease',
               position: 'relative',
-              overflow: 'hidden'
+              overflow: 'hidden',
+              paddingTop: '100%',
+              transform: fieldDesign === design.id ? 'scale(1.05)' : 'scale(1)'
+            }}
+            onMouseEnter={(e) => {
+              if (!isMobile && fieldDesign !== design.id) {
+                e.currentTarget.style.transform = 'scale(1.03)';
+                e.currentTarget.style.boxShadow = '0 4px 15px rgba(255,255,255,0.3)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isMobile && fieldDesign !== design.id) {
+                e.currentTarget.style.transform = 'scale(1)';
+                e.currentTarget.style.boxShadow = '0 3px 10px rgba(0,0,0,0.3)';
+              }
             }}
           >
             <div style={{
               position: 'absolute',
               inset: 0,
               background: design.pattern,
-              opacity: 0.5
+              opacity: 0.6
             }} />
             <div style={{
               position: 'absolute',
-              bottom: isMobile ? 2 : 4,
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              fontSize: isMobile ? 20 : 28,
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.5))'
+            }}>
+              {design.emoji}
+            </div>
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
               left: 0,
               right: 0,
+              background: 'linear-gradient(to top, rgba(0,0,0,0.8), transparent)',
+              padding: isMobile ? '4px 2px' : '6px 4px',
               textAlign: 'center',
               color: 'white',
-              fontSize: isMobile ? 7 : 9,
+              fontSize: isMobile ? 7 : 10,
               fontWeight: 'bold',
-              textShadow: '0 1px 2px rgba(0,0,0,0.8)'
+              textShadow: '0 1px 3px rgba(0,0,0,0.8)'
             }}>
               {design.name}
             </div>
+            {fieldDesign === design.id && (
+              <div style={{
+                position: 'absolute',
+                top: 4,
+                right: 4,
+                background: '#ffd700',
+                borderRadius: '50%',
+                width: isMobile ? 16 : 20,
+                height: isMobile ? 16 : 20,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: isMobile ? 10 : 12,
+                boxShadow: '0 2px 6px rgba(0,0,0,0.4)'
+              }}>
+                ✓
+              </div>
+            )}
           </div>
         ))}
       </div>
