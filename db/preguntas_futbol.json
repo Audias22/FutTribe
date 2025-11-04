@@ -1,0 +1,1122 @@
+[
+  {
+    "id": "qf1",
+    "pregunta": "¿Qué club tiene más Champions League?",
+    "opciones": ["Real Madrid", "AC Milan", "Barcelona", "Liverpool"],
+    "respuesta_correcta": "Real Madrid",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf2",
+    "pregunta": "¿Qué jugador es conocido como 'El Bicho'?",
+    "opciones": ["Cristiano Ronaldo", "Messi", "Mbappé", "Lewandowski"],
+    "respuesta_correcta": "Cristiano Ronaldo",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf3",
+    "pregunta": "¿Qué selección tiene más Copas del Mundo?",
+    "opciones": ["Brasil", "Alemania", "Italia", "Argentina"],
+    "respuesta_correcta": "Brasil",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf4",
+    "pregunta": "¿Cuántos jugadores hay en el campo por equipo?",
+    "opciones": ["11", "10", "9", "12"],
+    "respuesta_correcta": "11",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf5",
+    "pregunta": "¿En qué país nació Lionel Messi?",
+    "opciones": ["Argentina", "Uruguay", "Brasil", "Chile"],
+    "respuesta_correcta": "Argentina",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf6",
+    "pregunta": "¿Qué país organizó el Mundial 2014?",
+    "opciones": ["Brasil", "Alemania", "Sudáfrica", "Rusia"],
+    "respuesta_correcta": "Brasil",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf7",
+    "pregunta": "¿De qué país es la selección apodada 'La Canarinha'?",
+    "opciones": ["Brasil", "Ecuador", "Colombia", "Bolivia"],
+    "respuesta_correcta": "Brasil",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf8",
+    "pregunta": "¿Qué jugador argentino es apodado 'La Pulga'?",
+    "opciones": ["Messi", "Maradona", "Agüero", "Di María"],
+    "respuesta_correcta": "Messi",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf9",
+    "pregunta": "¿Quién fue el capitán de España en el Mundial 2010?",
+    "opciones": ["Iker Casillas", "Sergio Ramos", "Xavi", "Puyol"],
+    "respuesta_correcta": "Iker Casillas",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf10",
+    "pregunta": "¿Qué selección ganó el Mundial de 2010?",
+    "opciones": ["España", "Brasil", "Italia", "Alemania"],
+    "respuesta_correcta": "España",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf11",
+    "pregunta": "¿Qué país ganó el Mundial 1998?",
+    "opciones": ["Francia", "Brasil", "Alemania", "Italia"],
+    "respuesta_correcta": "Francia",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf12",
+    "pregunta": "¿Qué color de tarjeta expulsa a un jugador?",
+    "opciones": ["Roja", "Amarilla", "Azul", "Verde"],
+    "respuesta_correcta": "Roja",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf13",
+    "pregunta": "¿Cuántos minutos dura un partido de fútbol?",
+    "opciones": ["90", "80", "100", "120"],
+    "respuesta_correcta": "90",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf14",
+    "pregunta": "¿En qué ciudad juega el Barcelona?",
+    "opciones": ["Barcelona", "Madrid", "Valencia", "Sevilla"],
+    "respuesta_correcta": "Barcelona",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf15",
+    "pregunta": "¿Qué jugador brasileño es conocido como 'O Rei'?",
+    "opciones": ["Pelé", "Ronaldo", "Ronaldinho", "Neymar"],
+    "respuesta_correcta": "Pelé",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf16",
+    "pregunta": "¿Qué país ganó el Mundial 2018?",
+    "opciones": ["Francia", "Croacia", "Brasil", "Alemania"],
+    "respuesta_correcta": "Francia",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf17",
+    "pregunta": "¿De qué color es la camiseta del Real Madrid?",
+    "opciones": ["Blanco", "Azul", "Rojo", "Negro"],
+    "respuesta_correcta": "Blanco",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf18",
+    "pregunta": "¿Qué posición defiende el portero?",
+    "opciones": ["El arco", "El centro", "La banda", "La defensa"],
+    "respuesta_correcta": "El arco",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf19",
+    "pregunta": "¿Qué jugador portugués ganó 5 Balones de Oro?",
+    "opciones": ["Cristiano Ronaldo", "Luis Figo", "Eusébio", "Rui Costa"],
+    "respuesta_correcta": "Cristiano Ronaldo",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf20",
+    "pregunta": "¿En qué país se inventó el fútbol moderno?",
+    "opciones": ["Inglaterra", "Brasil", "España", "Italia"],
+    "respuesta_correcta": "Inglaterra",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf21",
+    "pregunta": "¿Cuántos equipos participan en la fase de grupos del Mundial?",
+    "opciones": ["32", "24", "16", "48"],
+    "respuesta_correcta": "32",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf22",
+    "pregunta": "¿Qué club argentino es conocido como 'Los Millonarios'?",
+    "opciones": ["River Plate", "Boca Juniors", "Racing", "Independiente"],
+    "respuesta_correcta": "River Plate",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf23",
+    "pregunta": "¿Qué selección ganó el Mundial 2022?",
+    "opciones": ["Argentina", "Francia", "Brasil", "Croacia"],
+    "respuesta_correcta": "Argentina",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf24",
+    "pregunta": "¿Qué jugador es conocido como 'La Joya'?",
+    "opciones": ["Paulo Dybala", "Messi", "Di María", "Agüero"],
+    "respuesta_correcta": "Paulo Dybala",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf25",
+    "pregunta": "¿En qué país juega Neymar actualmente? (2023)",
+    "opciones": ["Arabia Saudita", "Francia", "Brasil", "España"],
+    "respuesta_correcta": "Arabia Saudita",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf26",
+    "pregunta": "¿Qué significa VAR en el fútbol?",
+    "opciones": ["Video Assistant Referee", "Video Analysis Replay", "Virtual Arbitro Review", "Verification Automatic Rules"],
+    "respuesta_correcta": "Video Assistant Referee",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf27",
+    "pregunta": "¿Qué selección es conocida como 'La Albiceleste'?",
+    "opciones": ["Argentina", "Uruguay", "Chile", "Colombia"],
+    "respuesta_correcta": "Argentina",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf28",
+    "pregunta": "¿Cuántos Balones de Oro ha ganado Lionel Messi?",
+    "opciones": ["8", "7", "6", "5"],
+    "respuesta_correcta": "8",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf29",
+    "pregunta": "¿Qué club italiano juega en el San Siro?",
+    "opciones": ["AC Milan e Inter", "Juventus", "Roma", "Napoli"],
+    "respuesta_correcta": "AC Milan e Inter",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf30",
+    "pregunta": "¿Qué país organizará el Mundial 2026?",
+    "opciones": ["México, USA y Canadá", "Qatar", "Brasil", "España"],
+    "respuesta_correcta": "México, USA y Canadá",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf31",
+    "pregunta": "¿Qué equipo español es conocido como 'El Submarino Amarillo'?",
+    "opciones": ["Villarreal", "Las Palmas", "Cádiz", "Valencia"],
+    "respuesta_correcta": "Villarreal",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf32",
+    "pregunta": "¿En qué ciudad se encuentra el estadio Camp Nou?",
+    "opciones": ["Barcelona", "Madrid", "Sevilla", "Valencia"],
+    "respuesta_correcta": "Barcelona",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf33",
+    "pregunta": "¿Qué jugador francés es conocido como 'Zizou'?",
+    "opciones": ["Zinedine Zidane", "Thierry Henry", "Mbappé", "Benzema"],
+    "respuesta_correcta": "Zinedine Zidane",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf34",
+    "pregunta": "¿Qué club es apodado 'Los Ché'?",
+    "opciones": ["Valencia", "Villarreal", "Getafe", "Levante"],
+    "respuesta_correcta": "Valencia",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf35",
+    "pregunta": "¿Qué selección ganó la Eurocopa 2020?",
+    "opciones": ["Italia", "Inglaterra", "España", "Francia"],
+    "respuesta_correcta": "Italia",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf36",
+    "pregunta": "¿Qué club alemán es conocido como 'Der Klassiker'?",
+    "opciones": ["Bayern Múnich", "Borussia Dortmund", "Ambos", "Schalke"],
+    "respuesta_correcta": "Ambos",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf37",
+    "pregunta": "¿Cuántos equipos juegan en La Liga española?",
+    "opciones": ["20", "18", "22", "16"],
+    "respuesta_correcta": "20",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf38",
+    "pregunta": "¿Qué jugador noruego juega en el Manchester City?",
+    "opciones": ["Erling Haaland", "Ødegaard", "Sørloth", "King"],
+    "respuesta_correcta": "Erling Haaland",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf39",
+    "pregunta": "¿Qué club es conocido como 'Los Colchoneros'?",
+    "opciones": ["Atlético Madrid", "Real Madrid", "Getafe", "Rayo Vallecano"],
+    "respuesta_correcta": "Atlético Madrid",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf40",
+    "pregunta": "¿De qué país es Mohamed Salah?",
+    "opciones": ["Egipto", "Argelia", "Marruecos", "Túnez"],
+    "respuesta_correcta": "Egipto",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf41",
+    "pregunta": "¿Qué club inglés juega en Anfield?",
+    "opciones": ["Liverpool", "Manchester United", "Arsenal", "Chelsea"],
+    "respuesta_correcta": "Liverpool",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf42",
+    "pregunta": "¿Qué jugador es conocido como 'El Kun'?",
+    "opciones": ["Sergio Agüero", "Higuaín", "Tevez", "Batistuta"],
+    "respuesta_correcta": "Sergio Agüero",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf43",
+    "pregunta": "¿Qué selección es conocida como 'Los Ticos'?",
+    "opciones": ["Costa Rica", "México", "Panamá", "Honduras"],
+    "respuesta_correcta": "Costa Rica",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf44",
+    "pregunta": "¿En qué club debutó Cristiano Ronaldo profesionalmente?",
+    "opciones": ["Sporting Lisboa", "Manchester United", "Real Madrid", "Juventus"],
+    "respuesta_correcta": "Sporting Lisboa",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf45",
+    "pregunta": "¿Qué jugador polaco es goleador del Barcelona?",
+    "opciones": ["Robert Lewandowski", "Zieliński", "Milik", "Grosicki"],
+    "respuesta_correcta": "Robert Lewandowski",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf46",
+    "pregunta": "¿Qué club francés juega en el Parque de los Príncipes?",
+    "opciones": ["PSG", "Olympique de Marsella", "Lyon", "Monaco"],
+    "respuesta_correcta": "PSG",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf47",
+    "pregunta": "¿Qué selección sudamericana nunca ha ganado un Mundial?",
+    "opciones": ["Colombia", "Uruguay", "Argentina", "Brasil"],
+    "respuesta_correcta": "Colombia",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf48",
+    "pregunta": "¿Qué jugador belga es conocido como 'KDB'?",
+    "opciones": ["Kevin De Bruyne", "Romelu Lukaku", "Eden Hazard", "Courtois"],
+    "respuesta_correcta": "Kevin De Bruyne",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf49",
+    "pregunta": "¿Qué club es apodado 'Los Merengues'?",
+    "opciones": ["Real Madrid", "Barcelona", "Atlético Madrid", "Sevilla"],
+    "respuesta_correcta": "Real Madrid",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qf50",
+    "pregunta": "¿En qué año se celebró el primer Mundial de fútbol?",
+    "opciones": ["1930", "1920", "1940", "1950"],
+    "respuesta_correcta": "1930",
+    "dificultad": "facil"
+  },
+  {
+    "id": "qi1",
+    "pregunta": "¿Qué selección perdió la final del Mundial 2014?",
+    "opciones": ["Argentina", "Brasil", "Alemania", "Países Bajos"],
+    "respuesta_correcta": "Argentina",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi2",
+    "pregunta": "¿Qué selección ganó la Copa América 2021?",
+    "opciones": ["Argentina", "Brasil", "Chile", "Uruguay"],
+    "respuesta_correcta": "Argentina",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi3",
+    "pregunta": "¿Qué entrenador llevó a España al título mundial en 2010?",
+    "opciones": ["Vicente del Bosque", "Luis Aragonés", "Luis Enrique", "Julen Lopetegui"],
+    "respuesta_correcta": "Vicente del Bosque",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi4",
+    "pregunta": "¿Qué país ganó la Eurocopa 2016?",
+    "opciones": ["Portugal", "Francia", "Alemania", "España"],
+    "respuesta_correcta": "Portugal",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi5",
+    "pregunta": "¿Qué país ganó la primera Copa del Mundo en 1930?",
+    "opciones": ["Uruguay", "Argentina", "Brasil", "Italia"],
+    "respuesta_correcta": "Uruguay",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi6",
+    "pregunta": "¿Quién ganó la Bota de Oro en el Mundial 2018?",
+    "opciones": ["Harry Kane", "Mbappé", "Lukaku", "Griezmann"],
+    "respuesta_correcta": "Harry Kane",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi7",
+    "pregunta": "¿Qué jugador marcó con la 'Mano de Dios'?",
+    "opciones": ["Maradona", "Messi", "Pelé", "Valderrama"],
+    "respuesta_correcta": "Maradona",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi8",
+    "pregunta": "¿Qué club inglés tiene más títulos de Premier League?",
+    "opciones": ["Manchester United", "Liverpool", "Chelsea", "Arsenal"],
+    "respuesta_correcta": "Manchester United",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi9",
+    "pregunta": "¿Qué equipo es apodado 'Los Red Devils'?",
+    "opciones": ["Manchester United", "Liverpool", "Arsenal", "Chelsea"],
+    "respuesta_correcta": "Manchester United",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi10",
+    "pregunta": "¿Quién fue el portero titular de Alemania en el Mundial 2014?",
+    "opciones": ["Neuer", "Kahn", "Lehmann", "Ter Stegen"],
+    "respuesta_correcta": "Neuer",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi11",
+    "pregunta": "¿En qué año debutó Messi con el FC Barcelona?",
+    "opciones": ["2004", "2003", "2005", "2006"],
+    "respuesta_correcta": "2004",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi12",
+    "pregunta": "¿Qué club ganó la primera Champions League en 1956?",
+    "opciones": ["Real Madrid", "AC Milan", "Benfica", "Ajax"],
+    "respuesta_correcta": "Real Madrid",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi13",
+    "pregunta": "¿Cuántas Champions ha ganado el AC Milan?",
+    "opciones": ["7", "5", "6", "8"],
+    "respuesta_correcta": "7",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi14",
+    "pregunta": "¿Qué jugador brasileño ganó el Mundial 2002 lesionado?",
+    "opciones": ["Ronaldo", "Rivaldo", "Ronaldinho", "Cafu"],
+    "respuesta_correcta": "Ronaldo",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi15",
+    "pregunta": "¿En qué año ganó el Barcelona su primera Champions?",
+    "opciones": ["1992", "1989", "1994", "2006"],
+    "respuesta_correcta": "1992",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi16",
+    "pregunta": "¿Qué selección fue subcampeona del Mundial 1998?",
+    "opciones": ["Brasil", "Francia", "Alemania", "Croacia"],
+    "respuesta_correcta": "Brasil",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi17",
+    "pregunta": "¿Cuál fue el primer club profesional de Diego Maradona?",
+    "opciones": ["Argentinos Juniors", "Boca Juniors", "Barcelona", "Napoli"],
+    "respuesta_correcta": "Argentinos Juniors",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi18",
+    "pregunta": "¿Qué jugador anotó el gol del siglo en 1986?",
+    "opciones": ["Diego Maradona", "Pelé", "Zidane", "Cruyff"],
+    "respuesta_correcta": "Diego Maradona",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi19",
+    "pregunta": "¿Qué entrenador ganó la Champions con Porto en 2004?",
+    "opciones": ["José Mourinho", "Ferguson", "Guardiola", "Ancelotti"],
+    "respuesta_correcta": "José Mourinho",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi20",
+    "pregunta": "¿Qué club español nunca ha descendido de Primera?",
+    "opciones": ["Barcelona, Real Madrid y Athletic", "Solo Real Madrid", "Solo Barcelona", "Todos han descendido"],
+    "respuesta_correcta": "Barcelona, Real Madrid y Athletic",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi21",
+    "pregunta": "¿Qué jugador ganó el Balón de Oro 2007?",
+    "opciones": ["Kaká", "Cristiano Ronaldo", "Messi", "Ronaldinho"],
+    "respuesta_correcta": "Kaká",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi22",
+    "pregunta": "¿Qué selección organizó y ganó el Mundial 1978?",
+    "opciones": ["Argentina", "Uruguay", "Brasil", "México"],
+    "respuesta_correcta": "Argentina",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi23",
+    "pregunta": "¿Cuántos goles marcó Ronaldo Nazário en mundiales?",
+    "opciones": ["15", "12", "18", "20"],
+    "respuesta_correcta": "15",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi24",
+    "pregunta": "¿Qué club italiano es conocido como 'La Vecchia Signora'?",
+    "opciones": ["Juventus", "AC Milan", "Inter", "Roma"],
+    "respuesta_correcta": "Juventus",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi25",
+    "pregunta": "¿En qué año ganó Francia su primer Mundial?",
+    "opciones": ["1998", "2000", "1996", "2002"],
+    "respuesta_correcta": "1998",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi26",
+    "pregunta": "¿Qué portero ganó el Balón de Oro en 1963?",
+    "opciones": ["Lev Yashin", "Dino Zoff", "Buffon", "Casillas"],
+    "respuesta_correcta": "Lev Yashin",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi27",
+    "pregunta": "¿Cuántas veces Italia ha ganado el Mundial?",
+    "opciones": ["4", "3", "5", "2"],
+    "respuesta_correcta": "4",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi28",
+    "pregunta": "¿Qué jugador marcó el gol de la final del Mundial 2010?",
+    "opciones": ["Andrés Iniesta", "David Villa", "Xavi", "Torres"],
+    "respuesta_correcta": "Andrés Iniesta",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi29",
+    "pregunta": "¿Qué club ganó la Champions 1999 con remontada histórica?",
+    "opciones": ["Manchester United", "Bayern Múnich", "Real Madrid", "Liverpool"],
+    "respuesta_correcta": "Manchester United",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi30",
+    "pregunta": "¿Qué selección eliminó a Brasil del Mundial 2018?",
+    "opciones": ["Bélgica", "Francia", "Alemania", "Argentina"],
+    "respuesta_correcta": "Bélgica",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi31",
+    "pregunta": "¿Qué jugador español es el máximo goleador de la selección?",
+    "opciones": ["David Villa", "Raúl", "Fernando Torres", "Morata"],
+    "respuesta_correcta": "David Villa",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi32",
+    "pregunta": "¿Qué club inglés es conocido como 'The Gunners'?",
+    "opciones": ["Arsenal", "Chelsea", "Manchester City", "Tottenham"],
+    "respuesta_correcta": "Arsenal",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi33",
+    "pregunta": "¿En qué año Pelé ganó su primer Mundial?",
+    "opciones": ["1958", "1962", "1970", "1954"],
+    "respuesta_correcta": "1958",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi34",
+    "pregunta": "¿Qué club alemán tiene más Bundesligas?",
+    "opciones": ["Bayern Múnich", "Borussia Dortmund", "Hamburgo", "Stuttgart"],
+    "respuesta_correcta": "Bayern Múnich",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi35",
+    "pregunta": "¿Cuántos Balones de Oro ganó Johan Cruyff?",
+    "opciones": ["3", "2", "4", "1"],
+    "respuesta_correcta": "3",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi36",
+    "pregunta": "¿Qué jugador argentino marcó 6 goles en un Mundial?",
+    "opciones": ["Mario Kempes", "Diego Maradona", "Gabriel Batistuta", "Lionel Messi"],
+    "respuesta_correcta": "Mario Kempes",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi37",
+    "pregunta": "¿Qué club brasileño tiene más Libertadores?",
+    "opciones": ["Independiente (ARG)", "Boca Juniors", "River Plate", "São Paulo"],
+    "respuesta_correcta": "Independiente (ARG)",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi38",
+    "pregunta": "¿En qué año se creó la Premier League?",
+    "opciones": ["1992", "1990", "1985", "1995"],
+    "respuesta_correcta": "1992",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi39",
+    "pregunta": "¿Qué jugador italiano marcó en la final del Mundial 2006?",
+    "opciones": ["Marco Materazzi", "Fabio Grosso", "Del Piero", "Totti"],
+    "respuesta_correcta": "Marco Materazzi",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi40",
+    "pregunta": "¿Cuántas Champions consecutivas ganó el Real Madrid (2016-2018)?",
+    "opciones": ["3", "2", "4", "5"],
+    "respuesta_correcta": "3",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi41",
+    "pregunta": "¿Qué selección africana llegó más lejos en un Mundial?",
+    "opciones": ["Marruecos (semifinales 2022)", "Ghana (cuartos)", "Camerún (cuartos)", "Senegal (cuartos)"],
+    "respuesta_correcta": "Marruecos (semifinales 2022)",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi42",
+    "pregunta": "¿Qué club tiene el récord de goles en una temporada de La Liga?",
+    "opciones": ["Barcelona (2011-12)", "Real Madrid", "Athletic Bilbao", "Valencia"],
+    "respuesta_correcta": "Barcelona (2011-12)",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi43",
+    "pregunta": "¿Qué entrenador ganó más Champions League como DT?",
+    "opciones": ["Carlo Ancelotti", "Zinedine Zidane", "Bob Paisley", "Ferguson"],
+    "respuesta_correcta": "Carlo Ancelotti",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi44",
+    "pregunta": "¿Qué jugador francés marcó en dos finales de Mundial?",
+    "opciones": ["Zinedine Zidane", "Thierry Henry", "Mbappé", "Griezmann"],
+    "respuesta_correcta": "Zinedine Zidane",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi45",
+    "pregunta": "¿Qué club ganó la Champions remontando 3-0 en 2005?",
+    "opciones": ["Liverpool", "AC Milan", "Barcelona", "Manchester United"],
+    "respuesta_correcta": "Liverpool",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi46",
+    "pregunta": "¿Cuántos mundiales ganó como jugador Pelé?",
+    "opciones": ["3", "2", "4", "1"],
+    "respuesta_correcta": "3",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi47",
+    "pregunta": "¿Qué selección fue subcampeona en dos mundiales consecutivos?",
+    "opciones": ["Países Bajos (1974-1978)", "Alemania", "Argentina", "Italia"],
+    "respuesta_correcta": "Países Bajos (1974-1978)",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi48",
+    "pregunta": "¿Qué jugador marcó más goles en una sola Eurocopa?",
+    "opciones": ["Michel Platini (9 en 1984)", "Cristiano Ronaldo", "Griezmann", "Van Basten"],
+    "respuesta_correcta": "Michel Platini (9 en 1984)",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi49",
+    "pregunta": "¿En qué club jugó Ronaldinho antes del Barcelona?",
+    "opciones": ["PSG", "AC Milan", "Grêmio", "Flamengo"],
+    "respuesta_correcta": "PSG",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qi50",
+    "pregunta": "¿Qué país organizó el Mundial 1990?",
+    "opciones": ["Italia", "México", "España", "Francia"],
+    "respuesta_correcta": "Italia",
+    "dificultad": "intermedia"
+  },
+  {
+    "id": "qa1",
+    "pregunta": "¿Qué jugador anotó más goles oficiales en su carrera?",
+    "opciones": ["Cristiano Ronaldo (más de 850)", "Pelé", "Messi", "Romário"],
+    "respuesta_correcta": "Cristiano Ronaldo (más de 850)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa2",
+    "pregunta": "¿Qué selección ganó el Mundial de 1954 (Milagro de Berna)?",
+    "opciones": ["Alemania", "Hungría", "Brasil", "Italia"],
+    "respuesta_correcta": "Alemania",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa3",
+    "pregunta": "¿Quién marcó el gol más rápido en la historia de los mundiales?",
+    "opciones": ["Hakan Şükür (11 seg)", "Pelé", "Maradona", "Rossi"],
+    "respuesta_correcta": "Hakan Şükür (11 seg)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa4",
+    "pregunta": "¿Qué país fue subcampeón en el Mundial de 1978?",
+    "opciones": ["Países Bajos", "Alemania", "Brasil", "Italia"],
+    "respuesta_correcta": "Países Bajos",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa5",
+    "pregunta": "¿Qué entrenador ganó más Champions League?",
+    "opciones": ["Carlo Ancelotti (5)", "Ferguson", "Zidane", "Guardiola"],
+    "respuesta_correcta": "Carlo Ancelotti (5)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa6",
+    "pregunta": "¿Qué jugador marcó el gol decisivo en la final del Mundial 1974?",
+    "opciones": ["Gerd Müller", "Cruyff", "Beckenbauer", "Breitner"],
+    "respuesta_correcta": "Gerd Müller",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa7",
+    "pregunta": "¿Qué club fue fundado primero en el mundo?",
+    "opciones": ["Sheffield FC (1857)", "Real Madrid", "AC Milan", "Barcelona"],
+    "respuesta_correcta": "Sheffield FC (1857)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa8",
+    "pregunta": "¿Cuál fue el primer club profesional de Zinedine Zidane?",
+    "opciones": ["AS Cannes", "Bordeaux", "Juventus", "Real Madrid"],
+    "respuesta_correcta": "AS Cannes",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa9",
+    "pregunta": "¿Qué jugador ganó el Balón de Oro en 1999?",
+    "opciones": ["Rivaldo", "Zidane", "Figo", "Owen"],
+    "respuesta_correcta": "Rivaldo",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa10",
+    "pregunta": "¿Qué selección fue eliminada en fase de grupos siendo campeona defensora en 2002?",
+    "opciones": ["Francia", "Brasil", "Alemania", "Italia"],
+    "respuesta_correcta": "Francia",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa11",
+    "pregunta": "¿Qué jugador brasileño nunca ganó el Balón de Oro?",
+    "opciones": ["Neymar", "Ronaldinho", "Ronaldo", "Kaká"],
+    "respuesta_correcta": "Neymar",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa12",
+    "pregunta": "¿En qué año el Bosman cambió las reglas del fútbol europeo?",
+    "opciones": ["1995", "1990", "2000", "1992"],
+    "respuesta_correcta": "1995",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa13",
+    "pregunta": "¿Qué jugador marcó en 3 finales de Champions diferentes?",
+    "opciones": ["Alfredo Di Stéfano", "Cristiano Ronaldo", "Messi", "Puskas"],
+    "respuesta_correcta": "Alfredo Di Stéfano",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa14",
+    "pregunta": "¿Qué portero detuvo el penal decisivo en la final de la Eurocopa 2020?",
+    "opciones": ["Gianluigi Donnarumma", "Pickford", "Courtois", "Neuer"],
+    "respuesta_correcta": "Gianluigi Donnarumma",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa15",
+    "pregunta": "¿Cuántos goles marcó Just Fontaine en el Mundial 1958?",
+    "opciones": ["13", "10", "15", "11"],
+    "respuesta_correcta": "13",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa16",
+    "pregunta": "¿Qué club ganó la primera Copa Intercontinental en 1960?",
+    "opciones": ["Real Madrid", "Peñarol", "Santos", "AC Milan"],
+    "respuesta_correcta": "Real Madrid",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa17",
+    "pregunta": "¿Qué selección eliminó a Italia del Mundial 2018 en repechaje?",
+    "opciones": ["Suecia", "Portugal", "Macedonia", "Ninguna, no clasificó"],
+    "respuesta_correcta": "Suecia",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa18",
+    "pregunta": "¿Qué jugador tiene más asistencias en la historia del fútbol?",
+    "opciones": ["Lionel Messi", "Cristiano Ronaldo", "Xavi", "Özil"],
+    "respuesta_correcta": "Lionel Messi",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa19",
+    "pregunta": "¿En qué año se jugó el primer partido internacional de fútbol?",
+    "opciones": ["1872 (Inglaterra vs Escocia)", "1880", "1860", "1900"],
+    "respuesta_correcta": "1872 (Inglaterra vs Escocia)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa20",
+    "pregunta": "¿Qué club ganó 5 Champions consecutivas (1956-1960)?",
+    "opciones": ["Real Madrid", "AC Milan", "Barcelona", "Bayern"],
+    "respuesta_correcta": "Real Madrid",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa21",
+    "pregunta": "¿Qué jugador marcó el gol 1000 de los mundiales?",
+    "opciones": ["Robbie Rensenbrink", "Gerd Müller", "Pelé", "Maradona"],
+    "respuesta_correcta": "Robbie Rensenbrink",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa22",
+    "pregunta": "¿Qué defensor ganó el Balón de Oro en 2006?",
+    "opciones": ["Fabio Cannavaro", "Paolo Maldini", "Sergio Ramos", "Puyol"],
+    "respuesta_correcta": "Fabio Cannavaro",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa23",
+    "pregunta": "¿Cuántos años tenía Pelé cuando ganó su primer Mundial?",
+    "opciones": ["17", "18", "19", "16"],
+    "respuesta_correcta": "17",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa24",
+    "pregunta": "¿Qué club italiano ganó la Champions sin perder ningún partido?",
+    "opciones": ["Ninguno", "AC Milan", "Juventus", "Inter"],
+    "respuesta_correcta": "Ninguno",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa25",
+    "pregunta": "¿Qué jugador alemán anotó 5 goles en 9 minutos en 2015?",
+    "opciones": ["Robert Lewandowski", "Müller", "Götze", "Klose"],
+    "respuesta_correcta": "Robert Lewandowski",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa26",
+    "pregunta": "¿Qué club tiene el récord de mayor goleada en Champions?",
+    "opciones": ["Barcelona (7-1 vs Bayer)", "Real Madrid", "Bayern", "PSG"],
+    "respuesta_correcta": "Barcelona (7-1 vs Bayer)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa27",
+    "pregunta": "¿Qué portero tiene más partidos en la selección española?",
+    "opciones": ["Iker Casillas (167)", "Zubizarreta", "De Gea", "Unai Simón"],
+    "respuesta_correcta": "Iker Casillas (167)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa28",
+    "pregunta": "¿En qué año Ajax ganó su última Champions?",
+    "opciones": ["1995", "1996", "1992", "2000"],
+    "respuesta_correcta": "1995",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa29",
+    "pregunta": "¿Qué jugador argentino marcó el gol más rápido en un Mundial?",
+    "opciones": ["Gonzalo Higuaín", "Messi", "Batistuta", "Maradona"],
+    "respuesta_correcta": "Gonzalo Higuaín",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa30",
+    "pregunta": "¿Qué club español tiene más títulos de Copa del Rey?",
+    "opciones": ["Barcelona (31)", "Real Madrid", "Athletic Bilbao", "Atlético Madrid"],
+    "respuesta_correcta": "Barcelona (31)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa31",
+    "pregunta": "¿Cuántos jugadores diferentes han marcado en una final de Champions para el mismo club?",
+    "opciones": ["3 (Liverpool 2005)", "2", "4", "5"],
+    "respuesta_correcta": "3 (Liverpool 2005)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa32",
+    "pregunta": "¿Qué jugador marcó el primer gol olímpico en un Mundial?",
+    "opciones": ["Marcos Coll (Colombia)", "Beckham", "Maradona", "Pelé"],
+    "respuesta_correcta": "Marcos Coll (Colombia)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa33",
+    "pregunta": "¿Qué club ganó más Copas Libertadores consecutivas?",
+    "opciones": ["Independiente (4)", "Boca", "River", "Peñarol"],
+    "respuesta_correcta": "Independiente (4)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa34",
+    "pregunta": "¿Qué entrenador ganó Champions con dos clubes diferentes?",
+    "opciones": ["Todos: Mourinho, Ancelotti, Heynckes", "Solo Mourinho", "Solo Ancelotti", "Ninguno"],
+    "respuesta_correcta": "Todos: Mourinho, Ancelotti, Heynckes",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa35",
+    "pregunta": "¿Qué jugador húngaro marcó más de 84 goles en 85 partidos?",
+    "opciones": ["Ferenc Puskas", "Kocsis", "Czibor", "Hidegkuti"],
+    "respuesta_correcta": "Ferenc Puskas",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa36",
+    "pregunta": "¿Cuántos Balones de Oro ganó Michel Platini?",
+    "opciones": ["3", "2", "4", "1"],
+    "respuesta_correcta": "3",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa37",
+    "pregunta": "¿Qué club inglés fue el primero en ganar la Copa de Europa?",
+    "opciones": ["Manchester United (1968)", "Liverpool", "Nottingham Forest", "Aston Villa"],
+    "respuesta_correcta": "Manchester United (1968)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa38",
+    "pregunta": "¿Qué selección marcó el primer gol en la historia del Mundial?",
+    "opciones": ["Francia (Lucien Laurent)", "Uruguay", "Argentina", "Brasil"],
+    "respuesta_correcta": "Francia (Lucien Laurent)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa39",
+    "pregunta": "¿Qué jugador tiene el récord de más hat-tricks en La Liga?",
+    "opciones": ["Lionel Messi", "Cristiano Ronaldo", "Di Stéfano", "Hugo Sánchez"],
+    "respuesta_correcta": "Lionel Messi",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa40",
+    "pregunta": "¿En qué año se introdujo la regla del pase atrás al portero?",
+    "opciones": ["1992", "1990", "1995", "1988"],
+    "respuesta_correcta": "1992",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa41",
+    "pregunta": "¿Qué club alemán ganó la Champions como equipo revelación en 1997?",
+    "opciones": ["Borussia Dortmund", "Bayern Múnich", "Hamburgo", "Stuttgart"],
+    "respuesta_correcta": "Borussia Dortmund",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa42",
+    "pregunta": "¿Qué jugador brasileño nunca jugó en Europa?",
+    "opciones": ["Zico", "Romário", "Ronaldo", "Rivaldo"],
+    "respuesta_correcta": "Zico",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa43",
+    "pregunta": "¿Cuántos goles marcó Gerd Müller en mundiales?",
+    "opciones": ["14", "13", "16", "12"],
+    "respuesta_correcta": "14",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa44",
+    "pregunta": "¿Qué club francés ganó la Champions en 1993?",
+    "opciones": ["Olympique de Marsella", "PSG", "Monaco", "Lyon"],
+    "respuesta_correcta": "Olympique de Marsella",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa45",
+    "pregunta": "¿Qué jugador neerlandés ganó el Balón de Oro en 1987?",
+    "opciones": ["Ruud Gullit", "Marco van Basten", "Frank Rijkaard", "Cruyff"],
+    "respuesta_correcta": "Ruud Gullit",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa46",
+    "pregunta": "¿Qué selección llegó a semifinales del Mundial 2002 siendo revelación?",
+    "opciones": ["Corea del Sur", "Senegal", "Turquía", "EE.UU."],
+    "respuesta_correcta": "Corea del Sur",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa47",
+    "pregunta": "¿Cuántos penales atajó Sergio Goycochea en el Mundial 1990?",
+    "opciones": ["4", "3", "5", "2"],
+    "respuesta_correcta": "4",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa48",
+    "pregunta": "¿Qué club portugués ganó dos Champions consecutivas?",
+    "opciones": ["Ninguno", "Porto", "Benfica", "Sporting"],
+    "respuesta_correcta": "Ninguno",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa49",
+    "pregunta": "¿Qué jugador ganó el Mundial sub-20, Olímpico y Mundial mayor?",
+    "opciones": ["Varios (Messi, Maradona)", "Solo Messi", "Solo Maradona", "Ninguno"],
+    "respuesta_correcta": "Varios (Messi, Maradona)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa50",
+    "pregunta": "¿En qué año Nottingham Forest ganó su primera Champions?",
+    "opciones": ["1979", "1980", "1978", "1981"],
+    "respuesta_correcta": "1979",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa51",
+    "pregunta": "¿Qué portero español detuvo un penal a Messi en el Mundial 2018?",
+    "opciones": ["David de Gea", "Iker Casillas", "Kepa", "Unai Simón"],
+    "respuesta_correcta": "David de Gea",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa52",
+    "pregunta": "¿Cuántos clubes diferentes han ganado la Champions/Copa de Europa?",
+    "opciones": ["23", "20", "25", "30"],
+    "respuesta_correcta": "23",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa53",
+    "pregunta": "¿Qué jugador marcó el gol 10,000 en la historia de La Liga?",
+    "opciones": ["Lionel Messi", "Cristiano Ronaldo", "Hugo Sánchez", "Raúl"],
+    "respuesta_correcta": "Lionel Messi",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa54",
+    "pregunta": "¿Qué equipo inglés fue campeón de Europa en 1979 y 1980?",
+    "opciones": ["Nottingham Forest", "Liverpool", "Aston Villa", "Manchester United"],
+    "respuesta_correcta": "Nottingham Forest",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa55",
+    "pregunta": "¿Qué jugador fue expulsado en la final del Mundial 2006?",
+    "opciones": ["Zinedine Zidane", "Materazzi", "Buffon", "Henry"],
+    "respuesta_correcta": "Zinedine Zidane",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa56",
+    "pregunta": "¿Qué club español nunca ha ganado La Liga?",
+    "opciones": ["Rayo Vallecano", "Getafe", "Ambos", "Todos han ganado"],
+    "respuesta_correcta": "Ambos",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa57",
+    "pregunta": "¿Cuántos años tenía Roger Milla cuando jugó el Mundial 1994?",
+    "opciones": ["42", "40", "38", "44"],
+    "respuesta_correcta": "42",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa58",
+    "pregunta": "¿Qué jugador marcó el gol más rápido en una final de Champions?",
+    "opciones": ["Paolo Maldini (50 seg)", "Di Stéfano", "Raúl", "Messi"],
+    "respuesta_correcta": "Paolo Maldini (50 seg)",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa59",
+    "pregunta": "¿Qué entrenador llevó a Grecia a ganar la Eurocopa 2004?",
+    "opciones": ["Otto Rehhagel", "Mourinho", "Del Bosque", "Trapattoni"],
+    "respuesta_correcta": "Otto Rehhagel",
+    "dificultad": "avanzada"
+  },
+  {
+    "id": "qa60",
+    "pregunta": "¿Cuántos clubes han ganado la Triple Corona (Liga, Copa y Champions)?",
+    "opciones": ["8 clubes", "5", "10", "12"],
+    "respuesta_correcta": "8 clubes",
+    "dificultad": "avanzada"
+  }
+]

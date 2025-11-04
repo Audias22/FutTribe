@@ -94,6 +94,19 @@ CREATE TABLE PREDICCION (
 -- 4. Módulo Duelazo de la Jornada (Grupos)
 -- --------------------------------------------------------------------
 
+-- Tabla de Preguntas de Fútbol para el Duelazo
+CREATE TABLE preguntas_futbol (
+    id VARCHAR(10) PRIMARY KEY,
+    pregunta TEXT NOT NULL,
+    opcion_a VARCHAR(200) NOT NULL,
+    opcion_b VARCHAR(200) NOT NULL,
+    opcion_c VARCHAR(200) NOT NULL,
+    opcion_d VARCHAR(200) NOT NULL,
+    respuesta_correcta VARCHAR(200) NOT NULL,
+    dificultad ENUM('facil', 'intermedia', 'avanzada') NOT NULL,
+    INDEX idx_dificultad (dificultad)
+);
+
 CREATE TABLE DUELAZO (
     id INT AUTO_INCREMENT PRIMARY KEY,
     partido_id INT NOT NULL,
