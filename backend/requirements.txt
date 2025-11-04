@@ -1,5 +1,8 @@
 Flask==3.0.0
 Flask-CORS==4.0.0
+Flask-SocketIO==5.4.1
+python-socketio==5.12.0
+eventlet==0.37.0
 mysql-connector-python==8.2.0
 python-dotenv==1.0.0
 gunicorn==21.2.0
