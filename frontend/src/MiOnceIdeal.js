@@ -30,17 +30,17 @@ const FIELD_DESIGNS = [
   },
   { 
     id: 'blue', 
-    name: 'Océano',
-    emoji: '🌊',
-    gradient: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #2563eb 50%, #1e40af 75%, #1e3a8a 100%)',
-    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.05) 50px, rgba(255,255,255,0.05) 100px)'
+    name: 'Azul Clásico',
+    emoji: '💙',
+    gradient: 'linear-gradient(180deg, #3b82f6 0%, #2563eb 50%, #3b82f6 100%)',
+    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.1) 50px, rgba(255,255,255,0.1) 100px)'
   },
   { 
-    id: 'sunset', 
-    name: 'Atardecer',
-    emoji: '🌅',
-    gradient: 'linear-gradient(180deg, #dc2626 0%, #ea580c 20%, #f59e0b 40%, #84cc16 60%, #22c55e 80%, #16a34a 100%)',
-    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(0,0,0,0.08) 50px, rgba(0,0,0,0.08) 100px)'
+    id: 'ocean', 
+    name: 'Océano',
+    emoji: '�',
+    gradient: 'linear-gradient(135deg, #1e3a8a 0%, #1e40af 25%, #2563eb 50%, #1e40af 75%, #1e3a8a 100%)',
+    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.05) 50px, rgba(255,255,255,0.05) 100px)'
   },
   { 
     id: 'purple', 
@@ -48,27 +48,6 @@ const FIELD_DESIGNS = [
     emoji: '🌌',
     gradient: 'linear-gradient(135deg, #581c87 0%, #7c3aed 25%, #a855f7 50%, #7c3aed 75%, #581c87 100%)',
     pattern: 'repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255,255,255,0.03) 30px, rgba(255,255,255,0.03) 60px)'
-  },
-  { 
-    id: 'mint', 
-    name: 'Menta',
-    emoji: '🍃',
-    gradient: 'linear-gradient(180deg, #059669 0%, #10b981 25%, #34d399 50%, #10b981 75%, #059669 100%)',
-    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(255,255,255,0.06) 50px, rgba(255,255,255,0.06) 100px)'
-  },
-  { 
-    id: 'fire', 
-    name: 'Fuego',
-    emoji: '🔥',
-    gradient: 'linear-gradient(180deg, #7f1d1d 0%, #991b1b 20%, #dc2626 40%, #ef4444 60%, #dc2626 80%, #991b1b 100%)',
-    pattern: 'repeating-linear-gradient(45deg, transparent, transparent 30px, rgba(255,255,0,0.05) 30px, rgba(255,255,0,0.05) 60px)'
-  },
-  { 
-    id: 'neon', 
-    name: 'Neón',
-    emoji: '⚡',
-    gradient: 'linear-gradient(135deg, #0f172a 0%, #1e293b 20%, #0ea5e9 40%, #06b6d4 60%, #1e293b 80%, #0f172a 100%)',
-    pattern: 'repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(6,182,212,0.1) 50px, rgba(6,182,212,0.1) 100px)'
   },
   { 
     id: 'gold', 
@@ -736,40 +715,40 @@ function getDetailedPosition(xPercent, yPercent) {
                 style={{ 
                   padding: isMobile ? '6px 10px' : '10px 16px', 
                   fontSize: isMobile ? 12 : 16, 
-                  border: 'none',
+                  border: '2px solid #667eea',
                   borderRadius: 8,
                   fontWeight: 'bold', 
                   cursor: 'pointer', 
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                  color: 'white',
+                  background: 'white',
+                  color: '#333',
                   flex: isMobile ? 1 : 'none',
-                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                  boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
                   outline: 'none',
                   transition: 'all 0.3s ease'
                 }}
-                onMouseEnter={(e) => !isMobile && (e.target.style.transform = 'translateY(-2px)', e.target.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.6)')}
-                onMouseLeave={(e) => !isMobile && (e.target.style.transform = 'translateY(0)', e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)')}
+                onMouseEnter={(e) => !isMobile && (e.target.style.boxShadow = '0 6px 16px rgba(102, 126, 234, 0.5)', e.target.style.borderColor = '#764ba2')}
+                onMouseLeave={(e) => !isMobile && (e.target.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)', e.target.style.borderColor = '#667eea')}
               >
-                <optgroup label="⚡ Clásicas">
-                  <option value="4-4-2">4-4-2 • Clásica</option>
-                  <option value="4-3-3">4-3-3 • Ofensiva</option>
-                  <option value="3-5-2">3-5-2 • Wing-backs</option>
-                  <option value="5-3-2">5-3-2 • Defensiva</option>
+                <optgroup label="⚡ Clásicas" style={{ color: '#333', background: 'white' }}>
+                  <option value="4-4-2" style={{ color: '#333', background: 'white' }}>4-4-2 • Clásica</option>
+                  <option value="4-3-3" style={{ color: '#333', background: 'white' }}>4-3-3 • Ofensiva</option>
+                  <option value="3-5-2" style={{ color: '#333', background: 'white' }}>3-5-2 • Wing-backs</option>
+                  <option value="5-3-2" style={{ color: '#333', background: 'white' }}>5-3-2 • Defensiva</option>
                 </optgroup>
-                <optgroup label="🔥 Ofensivas">
-                  <option value="3-4-3">3-4-3 • Ultra ofensiva</option>
-                  <option value="4-2-3-1">4-2-3-1 • Media punta</option>
-                  <option value="4-2-1-3">4-2-1-3 • Tridente ⭐</option>
-                  <option value="3-4-1-2">3-4-1-2 • Enganche</option>
+                <optgroup label="🔥 Ofensivas" style={{ color: '#333', background: 'white' }}>
+                  <option value="3-4-3" style={{ color: '#333', background: 'white' }}>3-4-3 • Ultra ofensiva</option>
+                  <option value="4-2-3-1" style={{ color: '#333', background: 'white' }}>4-2-3-1 • Media punta</option>
+                  <option value="4-2-1-3" style={{ color: '#333', background: 'white' }}>4-2-1-3 • Tridente ⭐</option>
+                  <option value="3-4-1-2" style={{ color: '#333', background: 'white' }}>3-4-1-2 • Enganche</option>
                 </optgroup>
-                <optgroup label="⚖️ Equilibradas">
-                  <option value="4-1-4-1">4-1-4-1 • Pivote</option>
-                  <option value="4-1-2-1-2">4-1-2-1-2 • Diamante</option>
-                  <option value="3-1-4-2">3-1-4-2 • Flexible</option>
-                  <option value="4-5-1">4-5-1 • Control</option>
+                <optgroup label="⚖️ Equilibradas" style={{ color: '#333', background: 'white' }}>
+                  <option value="4-1-4-1" style={{ color: '#333', background: 'white' }}>4-1-4-1 • Pivote</option>
+                  <option value="4-1-2-1-2" style={{ color: '#333', background: 'white' }}>4-1-2-1-2 • Diamante</option>
+                  <option value="3-1-4-2" style={{ color: '#333', background: 'white' }}>3-1-4-2 • Flexible</option>
+                  <option value="4-5-1" style={{ color: '#333', background: 'white' }}>4-5-1 • Control</option>
                 </optgroup>
-                <optgroup label="🎨 Personalizada">
-                  <option value="custom">{isMobile ? '🎨 Custom' : '🎨 Crea tu táctica'}</option>
+                <optgroup label="🎨 Personalizada" style={{ color: '#333', background: 'white' }}>
+                  <option value="custom" style={{ color: '#333', background: 'white' }}>{isMobile ? '🎨 Custom' : '🎨 Crea tu táctica'}</option>
                 </optgroup>
               </select>
             </div>
