@@ -3,7 +3,21 @@ import React, { useEffect, useState, useMemo, useRef } from "react";
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "https://futtribe-production.up.railway.app";
 const API_URL = `${API_BASE}/api/v1/jugadores-historicos`;
 
+// Media query hook para detectar móvil
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+  
+  return isMobile;
+}
+
 function MiOnceIdeal({ onVolver }) {
+  const isMobile = useIsMobile();
 
 // Diseños de cancha disponibles
 const FIELD_DESIGNS = [
@@ -536,9 +550,9 @@ function getDetailedPosition(xPercent, yPercent) {
     <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', padding: '24px 0' }}>
       <div style={{ maxWidth: 1200, margin: '0 auto', padding: '0 16px' }}>
         {/* Header */}
-        <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: 24, marginBottom: 24, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+        <div style={{ background: 'rgba(255,255,255,0.95)', borderRadius: 16, padding: isMobile ? 16 : 24, marginBottom: isMobile ? 16 : 24, boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: isMobile ? 12 : 16 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 16, width: isMobile ? '100%' : 'auto' }}>
               {onVolver && (
                 <button 
                   onClick={onVolver}
@@ -546,10 +560,10 @@ function getDetailedPosition(xPercent, yPercent) {
                     background: 'rgba(102, 126, 234, 0.1)',
                     color: '#667eea',
                     border: '2px solid #667eea',
-                    padding: '10px 20px',
+                    padding: isMobile ? '8px 14px' : '10px 20px',
                     borderRadius: 25,
                     cursor: 'pointer',
-                    fontSize: 14,
+                    fontSize: isMobile ? 12 : 14,
                     fontWeight: 'bold',
                     transition: 'all 0.3s ease'
                   }}
@@ -562,24 +576,24 @@ function getDetailedPosition(xPercent, yPercent) {
                     e.target.style.color = '#667eea';
                   }}
                 >
-                  ← Volver al Menú
+                  ← {isMobile ? 'Menú' : 'Volver al Menú'}
                 </button>
               )}
               <div>
-                <h1 style={{ margin: 0, fontSize: 32, fontWeight: 'bold', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                <h1 style={{ margin: 0, fontSize: isMobile ? 20 : 32, fontWeight: 'bold', background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                   ⚽ Mi Once Ideal
                 </h1>
-                <p style={{ margin: '8px 0 0', color: '#666', fontSize: 14 }}>
-                  Jugadores: {miEquipoIdeal.length}/11 | Defensas: {contarDefensas(miEquipoIdeal)}/5 | Porteros: {contarPorteros(miEquipoIdeal)}/1
+                <p style={{ margin: '8px 0 0', color: '#666', fontSize: isMobile ? 10 : 14 }}>
+                  {isMobile ? `${miEquipoIdeal.length}/11 | D: ${contarDefensas(miEquipoIdeal)}/5 | P: ${contarPorteros(miEquipoIdeal)}/1` : `Jugadores: ${miEquipoIdeal.length}/11 | Defensas: ${contarDefensas(miEquipoIdeal)}/5 | Porteros: ${contarPorteros(miEquipoIdeal)}/1`}
                 </p>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <label style={{ fontWeight: 600, color: '#333' }}>Formación:</label>
+            <div style={{ display: 'flex', alignItems: 'center', gap: isMobile ? 8 : 12, width: isMobile ? '100%' : 'auto' }}>
+              <label style={{ fontWeight: 600, color: '#333', fontSize: isMobile ? 12 : 14 }}>Formación:</label>
               <select 
                 value={formation} 
                 onChange={(e) => setFormation(e.target.value)}
-                style={{ padding: '10px 16px', fontSize: 16, border: '2px solid #667eea', borderRadius: 8, fontWeight: 'bold', cursor: 'pointer', background: 'white' }}
+                style={{ padding: isMobile ? '8px 12px' : '10px 16px', fontSize: isMobile ? 14 : 16, border: '2px solid #667eea', borderRadius: 8, fontWeight: 'bold', cursor: 'pointer', background: 'white', flex: isMobile ? 1 : 'none' }}
               >
                 <option value="4-4-2">4-4-2</option>
                 <option value="4-3-3">4-3-3</option>
@@ -588,7 +602,7 @@ function getDetailedPosition(xPercent, yPercent) {
                 <option value="3-4-3">3-4-3</option>
                 <option value="4-2-3-1">4-2-3-1</option>
                 <option value="4-5-1">4-5-1</option>
-                <option value="custom">🎨 Crea tu táctica</option>
+                <option value="custom">{isMobile ? '🎨 Custom' : '🎨 Crea tu táctica'}</option>
               </select>
             </div>
           </div>
@@ -617,8 +631,8 @@ function getDetailedPosition(xPercent, yPercent) {
         {/* Campo de fútbol */}
         <div ref={fieldRef} style={{ 
           position: 'relative',
-          width: '60%',
-          paddingBottom: '60%',
+          width: isMobile ? '95%' : '80%',
+          paddingBottom: isMobile ? '95%' : '80%',
           maxWidth: 700,
           margin: '0 auto',
           background: selectedDesign.gradient,
@@ -681,10 +695,10 @@ function getDetailedPosition(xPercent, yPercent) {
                     }}
                     onClick={() => openModal(idx)}
                     style={{
-                      width: 80,
+                      width: isMobile ? 60 : 80,
                       background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                      borderRadius: 10,
-                      padding: 6,
+                      borderRadius: isMobile ? 8 : 10,
+                      padding: isMobile ? 4 : 6,
                       boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
                       cursor: 'grab',
                       transition: 'all 0.3s ease',
@@ -701,15 +715,15 @@ function getDetailedPosition(xPercent, yPercent) {
                       }}
                       style={{
                         position: 'absolute',
-                        top: -6,
-                        right: -6,
-                        width: 20,
-                        height: 20,
+                        top: isMobile ? -4 : -6,
+                        right: isMobile ? -4 : -6,
+                        width: isMobile ? 18 : 20,
+                        height: isMobile ? 18 : 20,
                         borderRadius: '50%',
                         border: 'none',
                         background: '#dc3545',
                         color: 'white',
-                        fontSize: 14,
+                        fontSize: isMobile ? 12 : 14,
                         fontWeight: 'bold',
                         cursor: 'pointer',
                         boxShadow: '0 2px 6px rgba(0,0,0,0.3)',
@@ -723,21 +737,21 @@ function getDetailedPosition(xPercent, yPercent) {
                     alt={alineacion[idx].name}
                     style={{
                         width: '100%',
-                        height: 70,
+                        height: isMobile ? 50 : 70,
                         objectFit: 'cover',
-                        borderRadius: 6,
-                        marginBottom: 4
+                        borderRadius: isMobile ? 4 : 6,
+                        marginBottom: isMobile ? 2 : 4
                     }}
                 />
-                <div style={{ color: 'white', fontSize: 9, fontWeight: 'bold', textAlign: 'center', marginBottom: 2 }}>
+                <div style={{ color: 'white', fontSize: isMobile ? 7 : 9, fontWeight: 'bold', textAlign: 'center', marginBottom: isMobile ? 1 : 2 }}>
                     {alineacion[idx].name.split(' ').slice(-1)[0].toUpperCase()}
                 </div>
                 <div style={{
                     background: 'rgba(255,215,0,0.9)',
                     color: '#1e3c72',
-                    fontSize: 7,
+                    fontSize: isMobile ? 6 : 7,
                     fontWeight: 'bold',
-                    padding: '2px',
+                    padding: isMobile ? '1px' : '2px',
                     borderRadius: 3,
                     textAlign: 'center'
                 }}>
@@ -760,28 +774,28 @@ function getDetailedPosition(xPercent, yPercent) {
                     }}
                     className="espacio-vacio"
                     style={{
-                        width: 80,
-                        height: 100,
+                        width: isMobile ? 60 : 80,
+                        height: isMobile ? 75 : 100,
                         background: 'rgba(255,255,255,0.2)',
                         backdropFilter: 'blur(8px)',
                         border: '2px dashed rgba(255,255,255,0.5)',
-                        borderRadius: 10,
+                        borderRadius: isMobile ? 8 : 10,
                         display: 'flex',
                         flexDirection: 'column',
                         alignItems: 'center',
                         justifyContent: 'center',
                         cursor: 'pointer',
                         transition: 'all 0.3s ease',
-                        gap: 6
+                        gap: isMobile ? 3 : 6
                     }}
                 >
-                    <div style={{ fontSize: 28 }}>➕</div>
+                    <div style={{ fontSize: isMobile ? 20 : 28 }}>➕</div>
                     <div style={{
                         color: 'white',
-                        fontSize: 10,
+                        fontSize: isMobile ? 7 : 10,
                         fontWeight: 'bold',
                         background: 'rgba(0,0,0,0.5)',
-                        padding: '3px 6px',
+                        padding: isMobile ? '2px 4px' : '3px 6px',
                         borderRadius: 4
                     }}>
                         {pos.label} {/* Etiqueta Dinámica: LI, DC, MP, etc. */}
@@ -793,20 +807,20 @@ function getDetailedPosition(xPercent, yPercent) {
                 </div>
                 </div>
                 {/* Selector de diseño de cancha */}
-    <div style={{ marginTop: 20, textAlign: 'center' }}>
-      <p style={{ color: 'white', fontWeight: 'bold', marginBottom: 12 }}>🎨 Diseño de Cancha:</p>
-      <div style={{ display: 'flex', justifyContent: 'center', gap: 12, flexWrap: 'wrap' }}>
+    <div style={{ marginTop: isMobile ? 16 : 20, textAlign: 'center' }}>
+      <p style={{ color: 'white', fontWeight: 'bold', marginBottom: isMobile ? 8 : 12, fontSize: isMobile ? 12 : 14 }}>🎨 Diseño de Cancha:</p>
+      <div style={{ display: 'flex', justifyContent: 'center', gap: isMobile ? 8 : 12, flexWrap: 'wrap' }}>
         {FIELD_DESIGNS.map(design => (
           <div
             key={design.id}
             onClick={() => setFieldDesign(design.id)}
             style={{
-              width: 80,
-              height: 80,
+              width: isMobile ? 60 : 80,
+              height: isMobile ? 60 : 80,
               background: design.gradient,
-              borderRadius: 8,
+              borderRadius: isMobile ? 6 : 8,
               cursor: 'pointer',
-              border: fieldDesign === design.id ? '4px solid #ffd700' : '3px solid rgba(255,255,255,0.3)',
+              border: fieldDesign === design.id ? `${isMobile ? 3 : 4}px solid #ffd700` : `${isMobile ? 2 : 3}px solid rgba(255,255,255,0.3)`,
               boxShadow: fieldDesign === design.id ? '0 4px 16px rgba(255,215,0,0.5)' : '0 2px 8px rgba(0,0,0,0.2)',
               transition: 'all 0.3s ease',
               position: 'relative',
@@ -821,12 +835,12 @@ function getDetailedPosition(xPercent, yPercent) {
             }} />
             <div style={{
               position: 'absolute',
-              bottom: 4,
+              bottom: isMobile ? 2 : 4,
               left: 0,
               right: 0,
               textAlign: 'center',
               color: 'white',
-              fontSize: 9,
+              fontSize: isMobile ? 7 : 9,
               fontWeight: 'bold',
               textShadow: '0 1px 2px rgba(0,0,0,0.8)'
             }}>
@@ -838,24 +852,25 @@ function getDetailedPosition(xPercent, yPercent) {
     </div>
 
     {/* Botones de acción */}
-    <div style={{ marginTop: 24, textAlign: 'center', display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+    <div style={{ marginTop: isMobile ? 16 : 24, textAlign: 'center', display: 'flex', gap: isMobile ? 8 : 12, justifyContent: 'center', flexWrap: 'wrap', padding: isMobile ? '0 10px' : '0' }}>
       <button
         disabled={miEquipoIdeal.length !== 11}
         onClick={downloadAsImage}
         style={{
-          padding: '14px 32px',
-          fontSize: 16,
+          padding: isMobile ? '10px 16px' : '14px 32px',
+          fontSize: isMobile ? 12 : 16,
           fontWeight: 'bold',
           background: miEquipoIdeal.length === 11 ? 'linear-gradient(135deg, #28a745 0%, #20c997 100%)' : '#ccc',
           color: 'white',
           border: 'none',
-          borderRadius: 10,
+          borderRadius: isMobile ? 8 : 10,
           cursor: miEquipoIdeal.length === 11 ? 'pointer' : 'not-allowed',
           boxShadow: miEquipoIdeal.length === 11 ? '0 6px 20px rgba(40,167,69,0.4)' : 'none',
-          transition: 'all 0.3s ease'
+          transition: 'all 0.3s ease',
+          flex: isMobile ? '1' : 'none'
         }}
       >
-        📸 Descargar como Imagen
+        📸 {isMobile ? 'Descargar' : 'Descargar como Imagen'}
       </button>
 
       <button
@@ -867,33 +882,34 @@ function getDetailedPosition(xPercent, yPercent) {
             setMessage({ type: 'info', text: 'El equipo ha sido vaciado.' });
         }}
         style={{
-          padding: '14px 32px',
-          fontSize: 16,
+          padding: isMobile ? '10px 16px' : '14px 32px',
+          fontSize: isMobile ? 12 : 16,
           fontWeight: 'bold',
           background: 'linear-gradient(135deg, #dc3545 0%, #e85e71 100%)',
           color: 'white',
           border: 'none',
-          borderRadius: 10,
+          borderRadius: isMobile ? 8 : 10,
           cursor: 'pointer',
           boxShadow: '0 6px 20px rgba(220,53,69,0.4)',
-          transition: 'all 0.3s ease'
+          transition: 'all 0.3s ease',
+          flex: isMobile ? '1' : 'none'
         }}
       >
-        🗑️ Vaciar Equipo
+        🗑️ {isMobile ? 'Vaciar' : 'Vaciar Equipo'}
       </button>
     </div>
 
     {/* Modal de selección de jugador */}
     {showModal && selectedSlot !== null && (
-      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-        <div style={{ background: 'white', borderRadius: 12, padding: 24, width: '90%', maxWidth: 800, maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
+      <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', background: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: isMobile ? '10px' : '20px' }}>
+        <div style={{ background: 'white', borderRadius: 12, padding: isMobile ? 16 : 24, width: '100%', maxWidth: 800, maxHeight: '90vh', overflowY: 'auto', position: 'relative' }}>
           <button
             onClick={() => setShowModal(false)}
             style={{ position: 'absolute', top: 10, right: 10, background: 'none', border: 'none', fontSize: 24, cursor: 'pointer', color: '#333' }}
           >
             ×
           </button>
-          <h2 style={{ fontSize: 24, margin: '0 0 16px', color: '#1e3c72' }}>
+          <h2 style={{ fontSize: isMobile ? 18 : 24, margin: '0 0 16px', color: '#1e3c72' }}>
             Seleccionar Jugador para <span style={{ color: '#667eea', fontWeight: 'bold' }}>{positions[selectedSlot].label}</span>
           </h2>
           <div style={{ marginBottom: 16 }}>
@@ -902,24 +918,24 @@ function getDetailedPosition(xPercent, yPercent) {
               placeholder="Buscar jugador..."
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              style={{ width: '100%', padding: 12, fontSize: 16, border: '2px solid #ccc', borderRadius: 8 }}
+              style={{ width: '100%', padding: isMobile ? 10 : 12, fontSize: isMobile ? 14 : 16, border: '2px solid #ccc', borderRadius: 8 }}
             />
           </div>
 
           {filtered.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: 40, color: '#999' }}>
+            <div style={{ textAlign: 'center', padding: isMobile ? 20 : 40, color: '#999', fontSize: isMobile ? 12 : 14 }}>
               No se encontraron jugadores que coincidan con el tipo de posición **{positions[selectedSlot].type}** o la búsqueda.
             </div>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 16 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(auto-fill, minmax(90px, 1fr))' : 'repeat(auto-fill, minmax(150px, 1fr))', gap: isMobile ? 10 : 16 }}>
               {filtered.map((player) => (
                 <div
                   key={player.id}
                   onClick={() => addPlayerToSlot(player, selectedSlot)}
                   style={{
                     background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 100%)',
-                    borderRadius: 10,
-                    padding: 8,
+                    borderRadius: isMobile ? 8 : 10,
+                    padding: isMobile ? 6 : 8,
                     cursor: 'pointer',
                     boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
                     transition: 'all 0.2s ease',
@@ -927,14 +943,18 @@ function getDetailedPosition(xPercent, yPercent) {
                     border: '2px solid transparent'
                   }}
                   onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'translateY(-3px)';
-                    e.currentTarget.style.borderColor = '#ffd700';
-                    e.currentTarget.style.boxShadow = '0 12px 24px rgba(255,215,0,0.4)';
+                    if (!isMobile) {
+                      e.currentTarget.style.transform = 'translateY(-3px)';
+                      e.currentTarget.style.borderColor = '#ffd700';
+                      e.currentTarget.style.boxShadow = '0 12px 24px rgba(255,215,0,0.4)';
+                    }
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'translateY(0)';
-                    e.currentTarget.style.borderColor = 'transparent';
-                    e.currentTarget.style.boxShadow = 'none';
+                    if (!isMobile) {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.borderColor = 'transparent';
+                      e.currentTarget.style.boxShadow = 'none';
+                    }
                   }}
                 >
                   <img 
@@ -942,22 +962,22 @@ function getDetailedPosition(xPercent, yPercent) {
                     alt={player.name}
                     style={{
                       width: '100%',
-                      height: 140,
+                      height: isMobile ? 80 : 140,
                       objectFit: 'cover',
-                      borderRadius: 8,
-                      marginBottom: 8
+                      borderRadius: isMobile ? 6 : 8,
+                      marginBottom: isMobile ? 4 : 8
                     }}
                   />
-                  <div style={{ color: 'white', fontWeight: 'bold', fontSize: 13, textAlign: 'center', marginBottom: 4 }}>
+                  <div style={{ color: 'white', fontWeight: 'bold', fontSize: isMobile ? 9 : 13, textAlign: 'center', marginBottom: isMobile ? 2 : 4, lineHeight: 1.2 }}>
                     {player.name}
                   </div>
                   <div style={{ 
                     background: 'rgba(255,215,0,0.9)', 
                     color: '#1e3c72', 
-                    fontSize: 11, 
+                    fontSize: isMobile ? 8 : 11, 
                     fontWeight: 'bold', 
-                    padding: '4px 6px', 
-                    borderRadius: 6, 
+                    padding: isMobile ? '2px 4px' : '4px 6px', 
+                    borderRadius: isMobile ? 4 : 6, 
                     textAlign: 'center' 
                   }}>
                     {player.position}
