@@ -98,14 +98,66 @@
 }
 
 .btn-crear-sala:disabled,
-.btn-unirse-sala:disabled {
+.btn-unirse-sala:disabled,
+.btn-unirse-sala-directa:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
 .btn-crear-sala .icono,
-.btn-unirse-sala .icono {
+.btn-unirse-sala .icono,
+.btn-unirse-sala-directa .icono {
   font-size: 2.5rem;
+}
+
+/* Estilos para sala directa */
+.alerta-sala-directa {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.codigo-invitacion {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 10px 15px;
+  border-radius: 25px;
+  margin-top: 10px;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.btn-unirse-sala-directa {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  padding: 20px 40px;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.btn-unirse-sala-directa:hover:not(:disabled) {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(76, 175, 80, 0.4);
+}
+
+.btn-unirse-sala-directa:disabled,
+.btn-unirse-sala-directa.disabled {
+  background: linear-gradient(135deg, #6c757d, #495057);
+  cursor: not-allowed;
+  opacity: 0.7;
+  transform: none;
 }
 
 .info-torneos {

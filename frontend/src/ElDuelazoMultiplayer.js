@@ -13,18 +13,33 @@ import './EsperaFinal.css';
 function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
   const { isAuthenticated, actualizarEstadisticas } = useAuth();
   const [pantalla, setPantalla] = useState('inicio'); // inicio, crear, unirse, espera, jugando_ronda1, resultados_ronda1, espera_final, jugando_final, resultados_finales
-  const [nombreJugador, setNombreJugador] = useState('');
+  const [nombreJugador, setNombreJugador] = useState(() => {
+    // Cargar nombre guardado o usar vacío
+    return localStorage.getItem('futtribe_nombre_jugador') || '';
+  });
   const [codigoSala, setCodigoSala] = useState('');
   const [datosJuego, setDatosJuego] = useState(null);
   const [esHost, setEsHost] = useState(false);
+
+  // Guardar nombre en localStorage cuando cambie
+  useEffect(() => {
+    if (nombreJugador.trim()) {
+      localStorage.setItem('futtribe_nombre_jugador', nombreJugador.trim());
+    }
+  }, [nombreJugador]);
 
   // Manejar enlace directo a sala
   useEffect(() => {
     if (codigoSalaDirecto) {
       setCodigoSala(codigoSalaDirecto);
-      setPantalla('unirse');
+      // Si no hay nombre guardado, ir a inicio para pedirlo
+      if (!nombreJugador.trim()) {
+        setPantalla('inicio');
+      } else {
+        setPantalla('unirse');
+      }
     }
-  }, [codigoSalaDirecto]);
+  }, [codigoSalaDirecto, nombreJugador]);
 
   // Manejar navegación del navegador (botón atrás)
   useEffect(() => {
@@ -66,39 +81,76 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
           </button>
           
           <h1 className="titulo-multiplayer">🏆 El Duelazo Multijugador</h1>
-          <p className="subtitulo-multiplayer">
-            Compite contra otros jugadores en tiempo real
-          </p>
+          {codigoSalaDirecto ? (
+            <div className="alerta-sala-directa">
+              <p className="subtitulo-multiplayer">
+                🎯 ¡Te han invitado a una sala!
+              </p>
+              <div className="codigo-invitacion">
+                Sala: <strong>{codigoSalaDirecto}</strong>
+              </div>
+            </div>
+          ) : (
+            <p className="subtitulo-multiplayer">
+              Compite contra otros jugadores en tiempo real
+            </p>
+          )}
 
           <div className="nombre-jugador-input">
-            <label>Tu nombre:</label>
+            <label>
+              {codigoSalaDirecto ? '👤 Ingresa tu nombre para unirte:' : 'Tu nombre:'}
+            </label>
             <input
               type="text"
-              placeholder="Ingresa tu nombre"
+              placeholder={codigoSalaDirecto ? "Nombre requerido para unirse" : "Ingresa tu nombre"}
               value={nombreJugador}
               onChange={(e) => setNombreJugador(e.target.value)}
               maxLength={20}
+              autoFocus={codigoSalaDirecto && !nombreJugador.trim()}
             />
+            {codigoSalaDirecto && !nombreJugador.trim() && (
+              <small style={{color: '#ff6b6b', fontSize: '14px', marginTop: '5px', display: 'block'}}>
+                ⚠️ Necesitas ingresar tu nombre para unirte a la sala
+              </small>
+            )}
           </div>
 
           <div className="botones-modo">
-            <button
-              className="btn-crear-sala"
-              onClick={() => setPantalla('crear')}
-              disabled={!nombreJugador.trim()}
-            >
-              <span className="icono">➕</span>
-              Crear Sala
-            </button>
+            {codigoSalaDirecto ? (
+              <button
+                className={`btn-unirse-sala-directa ${!nombreJugador.trim() ? 'disabled' : ''}`}
+                onClick={() => {
+                  if (!nombreJugador.trim()) {
+                    return;
+                  }
+                  setPantalla('unirse');
+                }}
+                disabled={!nombreJugador.trim()}
+              >
+                <span className="icono">🚀</span>
+                {!nombreJugador.trim() ? 'Ingresa tu nombre' : `Unirse a la Sala ${codigoSalaDirecto}`}
+              </button>
+            ) : (
+              <>
+                <button
+                  className="btn-crear-sala"
+                  onClick={() => setPantalla('crear')}
+                  disabled={!nombreJugador.trim()}
+                >
+                  <span className="icono">➕</span>
+                  Crear Sala
+                </button>
 
-            <button
-              className="btn-unirse-sala"
-              onClick={() => setPantalla('unirse')}
-              disabled={!nombreJugador.trim()}
-            >
-              <span className="icono">🔗</span>
-              Unirse a Sala
-            </button>
+                <button
+                  className="btn-unirse-sala"
+                  onClick={() => setPantalla('unirse')}
+                  disabled={!nombreJugador.trim()}
+                >
+                  <span className="icono">🔗</span>
+                  Unirse a Sala
+                </button>
+              </>
+            )}
           </div>
 
           <div className="info-torneos">
