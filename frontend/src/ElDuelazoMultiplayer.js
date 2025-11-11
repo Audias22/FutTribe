@@ -1,5 +1,5 @@
 // frontend/src/ElDuelazoMultiplayer.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CrearSala from './CrearSala';
 import UnirseSala from './UnirseSala';
 import SalaEspera from './SalaEspera';
@@ -14,6 +14,30 @@ function ElDuelazoMultiplayer({ onVolver }) {
   const [nombreJugador, setNombreJugador] = useState('');
   const [codigoSala, setCodigoSala] = useState('');
   const [datosJuego, setDatosJuego] = useState(null);
+
+  // Manejar navegación del navegador (botón atrás)
+  useEffect(() => {
+    // Agregar una entrada al historial cuando entramos
+    window.history.pushState({ page: 'duelazo-multiplayer' }, '', '');
+
+    const handlePopState = (event) => {
+      // Si estamos en la pantalla de inicio, volver al menú principal
+      if (pantalla === 'inicio') {
+        onVolver();
+      } else {
+        // Si estamos en otra pantalla, volver a inicio de multiplayer
+        handleVolverInicio();
+        // Agregar nueva entrada para mantener el historial
+        window.history.pushState({ page: 'duelazo-multiplayer' }, '', '');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [pantalla, onVolver]);
 
   const handleVolverInicio = () => {
     setPantalla('inicio');

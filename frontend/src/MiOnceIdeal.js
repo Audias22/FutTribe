@@ -134,6 +134,31 @@ function getDetailedPosition(xPercent, yPercent) {
 
   const miEquipoIdeal = alineacion.filter(Boolean);
 
+  // Manejar navegación del navegador (botón atrás)
+  useEffect(() => {
+    // Agregar una entrada al historial cuando entramos
+    window.history.pushState({ page: 'mi-once-ideal' }, '', '');
+
+    const handlePopState = (event) => {
+      // Si hay modal abierto, cerrarlo
+      if (showModal) {
+        setShowModal(false);
+        setSelectedSlot(null);
+        // Agregar nueva entrada para mantener el historial
+        window.history.pushState({ page: 'mi-once-ideal' }, '', '');
+      } else {
+        // Si no hay modal, volver al menú principal
+        onVolver();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [showModal, onVolver]);
+
   // Auto-ocultar mensajes después de 3 segundos
   useEffect(() => {
     if (message) {
@@ -143,28 +168,6 @@ function getDetailedPosition(xPercent, yPercent) {
       return () => clearTimeout(timer);
     }
   }, [message]);
-
-  // Manejar el botón "atrás" del navegador para cerrar modal
-  useEffect(() => {
-    if (!showModal) return;
-    
-    const handlePopState = () => {
-      // Solo cerrar el modal, no prevenir la navegación
-      setShowModal(false);
-    };
-    
-    // Agregar entrada al historial cuando se abre el modal
-    window.history.pushState({ modalOpen: true }, '');
-    window.addEventListener('popstate', handlePopState);
-    
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-      // Si el modal se cierra sin usar el botón atrás, retroceder el historial
-      if (window.history.state?.modalOpen) {
-        window.history.back();
-      }
-    };
-  }, [showModal]);
 
   useEffect(() => {
     setLoading(true);

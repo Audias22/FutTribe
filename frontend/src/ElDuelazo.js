@@ -14,6 +14,30 @@ function ElDuelazo({ onVolver }) {
 
   const API_BASE_URL = 'https://futtribe-production.up.railway.app';
 
+  // Manejar navegación del navegador (botón atrás)
+  useEffect(() => {
+    // Agregar una entrada al historial cuando entramos
+    window.history.pushState({ page: 'duelazo' }, '', '');
+
+    const handlePopState = (event) => {
+      // Si estamos en la pantalla de inicio, volver al menú principal
+      if (pantalla === 'inicio') {
+        onVolver();
+      } else {
+        // Si estamos jugando o en resultados, volver a inicio de duelazo
+        setPantalla('inicio');
+        // Agregar nueva entrada para mantener el historial
+        window.history.pushState({ page: 'duelazo' }, '', '');
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [pantalla, onVolver]);
+
   // Cargar preguntas
   const cargarPreguntas = async () => {
     setLoading(true);
