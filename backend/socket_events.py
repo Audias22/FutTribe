@@ -580,6 +580,74 @@ def iniciar_ronda1(codigo, socketio):
                 
         except Exception as e:
             print(f'❌ Error al marcar finalista listo: {str(e)}')
+    
+    @socketio.on('cerrar_sala')
+    def handle_cerrar_sala(data):
+        """El host cierra la sala para todos."""
+        try:
+            codigo = data.get('codigo')
+            
+            if codigo not in salas_activas:
+                emit('error', {'message': 'Sala no encontrada'})
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Verificar que el que cierra sea el host (primer jugador)
+            if sala['jugadores'] and sala['jugadores'][0]['socket_id'] == request.sid:
+                print(f'🚪 Host cerrando sala: {codigo}')
+                
+                # Notificar a todos los jugadores que la sala se cerró
+                socketio.emit('sala_cerrada', {
+                    'message': 'La sala ha sido cerrada por el host'
+                }, room=codigo)
+                
+                # Remover jugadores de la sala
+                for jugador in sala['jugadores']:
+                    leave_room(codigo, sid=jugador['socket_id'])
+                
+                # Eliminar sala
+                del salas_activas[codigo]
+            else:
+                emit('error', {'message': 'Solo el host puede cerrar la sala'})
+                
+        except Exception as e:
+            print(f'❌ Error al cerrar sala: {str(e)}')
+    
+    @socketio.on('salir_sala')
+    def handle_salir_sala(data):
+        """Un jugador abandona la sala."""
+        try:
+            codigo = data.get('codigo')
+            
+            if codigo not in salas_activas:
+                emit('error', {'message': 'Sala no encontrada'})
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Remover jugador de la sala
+            jugadores_actualizados = [j for j in sala['jugadores'] if j['socket_id'] != request.sid]
+            sala['jugadores'] = jugadores_actualizados
+            
+            # Salir de la room de Socket.IO
+            leave_room(codigo)
+            
+            print(f'🚪 Jugador salió de sala {codigo}. Jugadores restantes: {len(jugadores_actualizados)}')
+            
+            # Si no quedan jugadores, eliminar sala
+            if len(jugadores_actualizados) == 0:
+                del salas_activas[codigo]
+                print(f'🗑️ Sala {codigo} eliminada (sin jugadores)')
+            else:
+                # Notificar a los jugadores restantes
+                socketio.emit('jugador_salio', {
+                    'jugadores': jugadores_actualizados,
+                    'total': len(jugadores_actualizados)
+                }, room=codigo)
+                
+        except Exception as e:
+            print(f'❌ Error al salir de sala: {str(e)}')
 
 # Exportar función para registrar eventos
 def init_socketio_events(socketio):

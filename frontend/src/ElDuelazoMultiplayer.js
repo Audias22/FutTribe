@@ -10,12 +10,21 @@ import EsperaFinal from './EsperaFinal';
 import './ElDuelazoMultiplayer.css';
 import './EsperaFinal.css';
 
-function ElDuelazoMultiplayer({ onVolver }) {
+function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
   const { isAuthenticated, actualizarEstadisticas } = useAuth();
   const [pantalla, setPantalla] = useState('inicio'); // inicio, crear, unirse, espera, jugando_ronda1, resultados_ronda1, espera_final, jugando_final, resultados_finales
   const [nombreJugador, setNombreJugador] = useState('');
   const [codigoSala, setCodigoSala] = useState('');
   const [datosJuego, setDatosJuego] = useState(null);
+  const [esHost, setEsHost] = useState(false);
+
+  // Manejar enlace directo a sala
+  useEffect(() => {
+    if (codigoSalaDirecto) {
+      setCodigoSala(codigoSalaDirecto);
+      setPantalla('unirse');
+    }
+  }, [codigoSalaDirecto]);
 
   // Manejar navegación del navegador (botón atrás)
   useEffect(() => {
@@ -45,6 +54,7 @@ function ElDuelazoMultiplayer({ onVolver }) {
     setPantalla('inicio');
     setCodigoSala('');
     setDatosJuego(null);
+    setEsHost(false);
   };
 
   return (
@@ -110,6 +120,7 @@ function ElDuelazoMultiplayer({ onVolver }) {
           nombreJugador={nombreJugador}
           onSalaCreada={(codigo) => {
             setCodigoSala(codigo);
+            setEsHost(true);
             setPantalla('espera');
           }}
           onVolver={handleVolverInicio}
@@ -119,8 +130,10 @@ function ElDuelazoMultiplayer({ onVolver }) {
       {pantalla === 'unirse' && (
         <UnirseSala
           nombreJugador={nombreJugador}
+          codigoPredefinido={codigoSalaDirecto}
           onUnido={(codigo) => {
             setCodigoSala(codigo);
+            setEsHost(false);
             setPantalla('espera');
           }}
           onVolver={handleVolverInicio}
@@ -131,6 +144,7 @@ function ElDuelazoMultiplayer({ onVolver }) {
         <SalaEspera
           codigoSala={codigoSala}
           nombreJugador={nombreJugador}
+          esHost={esHost}
           onIniciarJuego={(datos) => {
             setDatosJuego(datos);
             setPantalla('jugando_ronda1');

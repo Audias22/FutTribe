@@ -2,8 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import socket from './socket';
 
-function UnirseSala({ nombreJugador, onUnido, onVolver }) {
-  const [codigo, setCodigo] = useState('');
+function UnirseSala({ nombreJugador, onUnido, onVolver, codigoPredefinido }) {
+  const [codigo, setCodigo] = useState(codigoPredefinido || '');
   const [cargando, setCargando] = useState(false);
   const [error, setError] = useState('');
 

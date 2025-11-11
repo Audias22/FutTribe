@@ -289,6 +289,71 @@
   background: #45a049;
 }
 
+.link-compartir {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.link-compartir label {
+  display: block;
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+.link-box {
+  display: flex;
+  justify-content: center;
+}
+
+.btn-copiar-link {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-copiar-link:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.btn-copiar-link.copiado {
+  background: #4caf50;
+  transform: scale(1.05);
+}
+
+.controles-sala {
+  margin-top: 30px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+  text-align: center;
+}
+
+.btn-cerrar-sala,
+.btn-abandonar-sala {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 25px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-cerrar-sala:hover,
+.btn-abandonar-sala:hover {
+  background: #ff3742;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+}
+
 .contador-listos {
   text-align: center;
   margin-bottom: 30px;

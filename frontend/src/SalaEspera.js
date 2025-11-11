@@ -2,11 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import socket from './socket';
 
-function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver }) {
+function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHost = false }) {
   const [jugadores, setJugadores] = useState([]);
   const [listos, setListos] = useState(0);
   const [total, setTotal] = useState(0);
   const [estoyListo, setEstoyListo] = useState(false);
+  const [linkCopiado, setLinkCopiado] = useState(false);
   const maxJugadores = 10;
 
   useEffect(() => {
@@ -47,12 +48,19 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver }) {
       setTotal(data.total);
     });
 
+    // Cuando la sala se cierra
+    socket.on('sala_cerrada', () => {
+      console.log('🚪 Sala cerrada por el host');
+      onVolver();
+    });
+
     return () => {
       socket.off('sala_creada');
       socket.off('jugador_unido');
       socket.off('estado_listos');
       socket.off('iniciar_ronda1');
       socket.off('jugador_salio');
+      socket.off('sala_cerrada');
     };
   }, [onIniciarJuego]);
 
@@ -68,6 +76,31 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver }) {
     alert('✅ Código copiado al portapapeles');
   };
 
+  const copiarLink = async () => {
+    const link = `${window.location.origin}/?sala=${codigoSala}`;
+    try {
+      await navigator.clipboard.writeText(link);
+      setLinkCopiado(true);
+      setTimeout(() => setLinkCopiado(false), 2000);
+    } catch (err) {
+      alert('❌ Error al copiar link');
+    }
+  };
+
+  const cerrarSala = () => {
+    if (esHost && window.confirm('¿Estás seguro de que quieres cerrar la sala para todos?')) {
+      socket.emit('cerrar_sala', { codigo: codigoSala });
+      onVolver();
+    }
+  };
+
+  const abandonarSala = () => {
+    if (window.confirm('¿Estás seguro de que quieres salir de la sala?')) {
+      socket.emit('salir_sala', { codigo: codigoSala });
+      onVolver();
+    }
+  };
+
   return (
     <div className="sala-espera-container">
       <button className="btn-volver" onClick={onVolver}>
@@ -81,8 +114,20 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver }) {
         <div className="codigo-box">
           <span className="codigo">{codigoSala}</span>
           <button className="btn-copiar" onClick={copiarCodigo}>
-            📋 Copiar
+            📋 Copiar Código
           </button>
+        </div>
+        
+        <div className="link-compartir">
+          <label>🔗 Compartir link directo:</label>
+          <div className="link-box">
+            <button 
+              className={`btn-copiar-link ${linkCopiado ? 'copiado' : ''}`}
+              onClick={copiarLink}
+            >
+              {linkCopiado ? '✅ ¡Copiado!' : '📱 Copiar Link'}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -132,6 +177,18 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver }) {
           <p>⚠️ Se necesitan al menos 2 jugadores para comenzar</p>
         </div>
       )}
+
+      <div className="controles-sala">
+        {esHost ? (
+          <button className="btn-cerrar-sala" onClick={cerrarSala}>
+            🚪 Cerrar Sala
+          </button>
+        ) : (
+          <button className="btn-abandonar-sala" onClick={abandonarSala}>
+            🚪 Abandonar Sala
+          </button>
+        )}
+      </div>
     </div>
   );
 }
