@@ -2,20 +2,15 @@
 import React from 'react';
 import socket from './socket';
 
-function ResultadosMultiplayer({ codigoSala, datos, esFinal, onContinuar }) {
+function ResultadosMultiplayer({ codigoSala, datos, esFinal, onContinuar, onIrEsperaFinal }) {
   const handleContinuar = () => {
     if (esFinal) {
       // Finalizar y volver al inicio
       socket.disconnect();
       onContinuar(null);
     } else {
-      // Iniciar la final
-      socket.emit('iniciar_final', { codigo: codigoSala });
-      
-      socket.once('iniciar_final', (data) => {
-        console.log('🔥 Datos de la final:', data);
-        onContinuar(data);
-      });
+      // Ir a la pantalla de espera de la final
+      onIrEsperaFinal();
     }
   };
 

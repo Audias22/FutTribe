@@ -483,6 +483,89 @@ def iniciar_ronda1(codigo, socketio):
     except Exception as e:
         print(f'❌ Error al iniciar ronda 1: {str(e)}')
 
+    @socketio.on('finalista_listo')
+    def handle_finalista_listo(data):
+        """Maneja cuando un finalista marca que está listo para la final."""
+        try:
+            codigo = data.get('codigo')
+            
+            if codigo not in salas_activas:
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Inicializar lista de finalistas listos si no existe
+            if 'finalistas_listos' not in sala:
+                sala['finalistas_listos'] = []
+            
+            # Agregar finalista a la lista si no está ya
+            socket_id = request.sid
+            if socket_id not in [f['socket_id'] for f in sala['finalistas_listos']]:
+                # Buscar datos del finalista
+                finalista = None
+                for f in sala.get('finalistas', []):
+                    if f['socket_id'] == socket_id:
+                        finalista = f
+                        break
+                
+                if finalista:
+                    sala['finalistas_listos'].append(finalista)
+                    print(f'✅ Finalista {finalista["nombre"]} listo en sala {codigo}')
+            
+            # Notificar actualización a todos en la sala
+            socketio.emit('finalistas_listos_update', {
+                'finalistas_listos': sala['finalistas_listos'],
+                'total_finalistas': len(sala.get('finalistas', []))
+            }, room=codigo)
+            
+            # Si ambos finalistas están listos, iniciar la final
+            if len(sala['finalistas_listos']) == 2:
+                print(f'🔥 Ambos finalistas listos, iniciando final en sala {codigo}')
+                
+                # Cambiar estado de la sala
+                sala['estado'] = 'jugando_final'
+                
+                # Obtener preguntas difíciles para la final
+                conn = get_db_connection()
+                cursor = conn.cursor(dictionary=True)
+                
+                cursor.execute("""
+                    (SELECT * FROM preguntas_futbol WHERE dificultad = 'intermedia' ORDER BY RAND() LIMIT 3)
+                    UNION ALL
+                    (SELECT * FROM preguntas_futbol WHERE dificultad = 'avanzada' ORDER BY RAND() LIMIT 7)
+                """)
+                
+                preguntas = cursor.fetchall()
+                random.shuffle(preguntas)
+                
+                # Convertir a formato frontend
+                preguntas_formateadas = []
+                for p in preguntas:
+                    preguntas_formateadas.append({
+                        'id': p['id'],
+                        'pregunta': p['pregunta'],
+                        'opciones': [p['opcion_a'], p['opcion_b'], p['opcion_c'], p['opcion_d']],
+                        'respuesta_correcta': p['respuesta_correcta'],
+                        'dificultad': p['dificultad']
+                    })
+                
+                sala['preguntas_final'] = preguntas_formateadas
+                
+                cursor.close()
+                conn.close()
+                
+                # Notificar que la final está iniciando
+                socketio.emit('finalistas_listos_update', {
+                    'finalistas_listos': sala['finalistas_listos'],
+                    'datos_final': {
+                        'preguntas': preguntas_formateadas,
+                        'total_preguntas': len(preguntas_formateadas)
+                    }
+                }, room=codigo)
+                
+        except Exception as e:
+            print(f'❌ Error al marcar finalista listo: {str(e)}')
+
 # Exportar función para registrar eventos
 def init_socketio_events(socketio):
     """Inicializa todos los eventos de Socket.IO."""

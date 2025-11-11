@@ -1,0 +1,262 @@
+/* Espera Final Styles */
+.espera-final {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.espera-final-container {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.titulo-espera-final {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.finalistas-container h2 {
+  color: #667eea;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+
+.finalistas-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+.finalista-card {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8eaff 100%);
+  border-radius: 15px;
+  padding: 25px;
+  border: 3px solid transparent;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.finalista-card:nth-child(1) {
+  border-color: #ff6b6b;
+}
+
+.finalista-card:nth-child(2) {
+  border-color: #4ecdc4;
+}
+
+.finalista-avatar {
+  font-size: 3rem;
+  margin-bottom: 15px;
+}
+
+.finalista-nombre {
+  font-size: 1.4rem;
+  color: #333;
+  margin: 10px 0;
+  font-weight: bold;
+}
+
+.finalista-puntos {
+  color: #666;
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+}
+
+.estado-listo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #27ae60;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.estado-esperando {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #f39c12;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.loading-dots {
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.accion-container {
+  margin: 30px 0;
+}
+
+.instrucciones {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 20px;
+}
+
+.instrucciones p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+}
+
+.btn-listo-final {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 25px;
+  font-size: 1.3rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+}
+
+.btn-listo-final:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
+}
+
+.esperando-rival {
+  background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+  color: white;
+  padding: 25px;
+  border-radius: 15px;
+  position: relative;
+}
+
+.esperando-rival p {
+  margin: 10px 0;
+  font-size: 1.1rem;
+}
+
+.loading-animation {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  margin: 20px auto;
+}
+
+.pulse-ring {
+  position: absolute;
+  border: 3px solid rgba(255, 255, 255, 0.6);
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  animation: pulse 2s infinite;
+}
+
+.pulse-ring.delay-1 {
+  animation-delay: 0.5s;
+}
+
+.pulse-ring.delay-2 {
+  animation-delay: 1s;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.espectador-container {
+  background: rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  border-radius: 10px;
+  color: #666;
+}
+
+.iniciando-final {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.9);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  color: white;
+}
+
+.iniciando-final h2 {
+  font-size: 3rem;
+  margin-bottom: 30px;
+  color: #ffd700;
+}
+
+.countdown-final {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #ff6b6b;
+  animation: countdown 3s ease-in-out;
+}
+
+@keyframes countdown {
+  0%, 33% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  16%, 50% {
+    transform: scale(1.2);
+    opacity: 0.7;
+  }
+  66%, 100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .espera-final-container {
+    padding: 20px;
+    margin: 10px;
+  }
+  
+  .titulo-espera-final {
+    font-size: 2rem;
+  }
+  
+  .finalistas-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .finalista-card {
+    padding: 20px;
+  }
+  
+  .btn-listo-final {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+  }
+}

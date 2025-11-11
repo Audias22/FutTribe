@@ -5,10 +5,12 @@ import UnirseSala from './UnirseSala';
 import SalaEspera from './SalaEspera';
 import JuegoMultiplayer from './JuegoMultiplayer';
 import ResultadosMultiplayer from './ResultadosMultiplayer';
+import EsperaFinal from './EsperaFinal';
 import './ElDuelazoMultiplayer.css';
+import './EsperaFinal.css';
 
 function ElDuelazoMultiplayer({ onVolver }) {
-  const [pantalla, setPantalla] = useState('inicio'); // inicio, crear, unirse, espera, jugando_ronda1, resultados_ronda1, jugando_final, resultados_finales
+  const [pantalla, setPantalla] = useState('inicio'); // inicio, crear, unirse, espera, jugando_ronda1, resultados_ronda1, espera_final, jugando_final, resultados_finales
   const [nombreJugador, setNombreJugador] = useState('');
   const [codigoSala, setCodigoSala] = useState('');
   const [datosJuego, setDatosJuego] = useState(null);
@@ -130,12 +132,23 @@ function ElDuelazoMultiplayer({ onVolver }) {
           datos={datosJuego}
           esFinal={pantalla === 'resultados_finales'}
           onContinuar={(datos) => {
-            if (pantalla === 'resultados_ronda1') {
-              setDatosJuego(datos);
-              setPantalla('jugando_final');
-            } else {
+            if (pantalla === 'resultados_finales') {
               handleVolverInicio();
             }
+          }}
+          onIrEsperaFinal={() => {
+            setPantalla('espera_final');
+          }}
+        />
+      )}
+
+      {pantalla === 'espera_final' && (
+        <EsperaFinal
+          codigoSala={codigoSala}
+          finalistas={datosJuego?.finalistas}
+          onIniciarFinal={(datosFinales) => {
+            setDatosJuego(datosFinales);
+            setPantalla('jugando_final');
           }}
         />
       )}
