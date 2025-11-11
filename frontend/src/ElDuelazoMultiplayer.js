@@ -223,7 +223,8 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
           actualizarEstadisticas={actualizarEstadisticas}
           onContinuar={(datos) => {
             if (pantalla === 'resultados_finales') {
-              handleVolverInicio();
+              // Volver a la sala de espera en lugar del inicio
+              setPantalla('sala_espera');
             }
           }}
           onIrEsperaFinal={() => {

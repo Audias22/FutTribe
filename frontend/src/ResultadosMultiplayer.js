@@ -22,8 +22,7 @@ function ResultadosMultiplayer({ codigoSala, datos, esFinal, isAuthenticated, ac
 
   const handleContinuar = () => {
     if (esFinal) {
-      // Finalizar y volver al inicio
-      socket.disconnect();
+      // Volver a la sala de espera en lugar de desconectarse
       onContinuar(null);
     } else {
       // Ir a la pantalla de espera de la final
@@ -67,8 +66,8 @@ function ResultadosMultiplayer({ codigoSala, datos, esFinal, isAuthenticated, ac
             <div className="mensaje-clasificacion eliminado">
               <h2>😔 No clasificaste a la final</h2>
               <p>¡Sigue practicando para la próxima!</p>
-              <button className="btn-continuar" onClick={() => { socket.disconnect(); onContinuar(null); }}>
-                🏠 Volver al Menú
+              <button className="btn-continuar" onClick={() => onContinuar(null)}>
+                🏠 Volver a la Sala
               </button>
             </div>
           )}
@@ -126,7 +125,7 @@ function ResultadosMultiplayer({ codigoSala, datos, esFinal, isAuthenticated, ac
 
           <div className="acciones-finales">
             <button className="btn-continuar" onClick={handleContinuar}>
-              🏠 Volver al Menú
+              🔄 Volver a la Sala
             </button>
           </div>
         </>
