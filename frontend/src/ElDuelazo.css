@@ -228,19 +228,23 @@
   right: 15px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.8rem;
-  font-weight: bold;
+  padding: 4px 10px;
+  border-radius: 15px;
+  font-size: 0.75rem;
+  font-weight: 600;
   z-index: 10;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .pregunta-texto {
   font-size: 1.8rem;
   color: #333;
-  line-height: 1.5;
+  line-height: 1.4;
   margin: 0;
   padding-right: 120px;
+  word-wrap: break-word;
+  hyphens: auto;
 }
 
 .opciones-grid {
@@ -475,8 +479,12 @@
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
+  .duelazo-container {
+    padding: 10px;
+  }
+  
   .duelazo-titulo {
-    font-size: 2rem;
+    font-size: 2.2rem;
   }
   
   .duelazo-descripcion {
@@ -485,30 +493,57 @@
   
   .dificultad-opciones {
     flex-direction: column;
+    gap: 10px;
   }
   
   .btn-dificultad {
     width: 100%;
+    padding: 12px 20px;
+  }
+  
+  .pregunta-card {
+    padding: 25px 20px;
+    margin-bottom: 20px;
+  }
+  
+  .pregunta-texto {
+    font-size: 1.3rem;
+    padding-right: 70px;
+    line-height: 1.3;
+  }
+  
+  .dificultad-badge {
+    top: 8px;
+    right: 8px;
+    padding: 3px 8px;
+    font-size: 0.65rem;
+    border-radius: 12px;
   }
   
   .opciones-grid {
     grid-template-columns: 1fr;
+    gap: 15px;
   }
   
-  .pregunta-texto {
-    font-size: 1.4rem;
-    padding-right: 90px;
+  .opcion-btn {
+    padding: 18px 15px;
+    gap: 12px;
   }
   
-  .dificultad-badge {
-    top: 10px;
-    right: 10px;
-    padding: 4px 8px;
-    font-size: 0.7rem;
+  .opcion-letra {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+  
+  .opcion-texto {
+    font-size: 1.1rem;
+    line-height: 1.3;
   }
   
   .resultado-stats {
     grid-template-columns: 1fr;
+    gap: 15px;
   }
   
   .resultado-titulo {
@@ -517,10 +552,47 @@
   
   .resultado-botones {
     flex-direction: column;
+    gap: 15px;
   }
   
   .btn-reintentar,
   .btn-menu {
     width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .duelazo-titulo {
+    font-size: 1.8rem;
+  }
+  
+  .pregunta-card {
+    padding: 20px 15px;
+  }
+  
+  .pregunta-texto {
+    font-size: 1.2rem;
+    padding-right: 60px;
+  }
+  
+  .dificultad-badge {
+    top: 5px;
+    right: 5px;
+    padding: 2px 6px;
+    font-size: 0.6rem;
+  }
+  
+  .opcion-btn {
+    padding: 15px 12px;
+  }
+  
+  .opcion-letra {
+    width: 35px;
+    height: 35px;
+    font-size: 1rem;
+  }
+  
+  .opcion-texto {
+    font-size: 1rem;
   }
 }
