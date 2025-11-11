@@ -225,7 +225,19 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
           onContinuar={(datos) => {
             if (pantalla === 'resultados_finales') {
               // Volver a la sala de espera y solicitar estado actual
-              socket.emit('obtener_estado_sala', { codigoSala });
+              console.log('🔄 Volviendo a sala, código:', codigoSala);
+              
+              // Primero unirse a la sala nuevamente
+              socket.emit('unirse_sala', {
+                codigo: codigoSala,
+                nombre: nombreJugador
+              });
+              
+              // Luego solicitar estado actual
+              setTimeout(() => {
+                socket.emit('obtener_estado_sala', { codigoSala });
+              }, 500);
+              
               setPantalla('sala_espera');
             }
           }}

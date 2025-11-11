@@ -140,39 +140,58 @@ def registrar_eventos_socket(socketio):
                 emit('error', {'message': 'La sala está llena'})
                 return
             
-            # Verificar si la sala ya empezó
-            if sala['estado'] != 'esperando':
-                emit('error', {'message': 'La partida ya comenzó'})
-                return
+            # Verificar si el jugador ya está en la sala (reuniéndose)
+            jugador_existente = None
+            for j in sala['jugadores']:
+                if j['nombre'] == nombre:
+                    jugador_existente = j
+                    break
             
-            # Agregar jugador
-            jugador = {
-                'socket_id': request.sid,
-                'nombre': nombre,
-                'esta_listo': False,
-                'puntuacion_ronda1': 0,
-                'puntuacion_final': 0,
-                'puntuacion_total': 0,
-                'clasifico_final': False
-            }
-            
-            sala['jugadores'].append(jugador)
+            if jugador_existente:
+                # Actualizar socket_id del jugador existente
+                jugador_existente['socket_id'] = request.sid
+                jugador_existente['esta_listo'] = False  # Resetear estado listo
+                jugador = jugador_existente
+                print(f'🔄 {nombre} se reunió a sala {codigo}')
+            else:
+                # Verificar si la sala está llena (solo para jugadores nuevos)
+                if len(sala['jugadores']) >= sala['max_jugadores']:
+                    emit('error', {'message': 'La sala está llena'})
+                    return
+                
+                # Verificar si la sala ya empezó (solo para jugadores nuevos)
+                if sala['estado'] != 'esperando':
+                    emit('error', {'message': 'La partida ya comenzó'})
+                    return
+                
+                # Agregar jugador nuevo
+                jugador = {
+                    'socket_id': request.sid,
+                    'nombre': nombre,
+                    'esta_listo': False,
+                    'puntuacion_ronda1': 0,
+                    'puntuacion_final': 0,
+                    'puntuacion_total': 0,
+                    'clasifico_final': False
+                }
+                
+                sala['jugadores'].append(jugador)
+                print(f'👤 {nombre} se unió a sala {codigo} (nuevo)')
             
             # Unir a la sala de Socket.IO
             join_room(codigo)
             
-            # Guardar en base de datos
-            conn = get_db_connection()
-            cursor = conn.cursor()
-            cursor.execute("""
-                INSERT INTO jugadores_sala (sala_id, nombre_jugador, socket_id)
-                VALUES (%s, %s, %s)
-            """, (sala['id'], nombre, request.sid))
-            conn.commit()
-            cursor.close()
-            conn.close()
-            
-            print(f'👤 {nombre} se unió a sala {codigo}')
+            # Solo guardar en base de datos si es jugador nuevo
+            if not jugador_existente:
+                conn = get_db_connection()
+                cursor = conn.cursor()
+                cursor.execute("""
+                    INSERT INTO jugadores_sala (sala_id, nombre_jugador, socket_id)
+                    VALUES (%s, %s, %s)
+                """, (sala['id'], nombre, request.sid))
+                conn.commit()
+                cursor.close()
+                conn.close()
             
             # Notificar al jugador que se unió
             emit('unido_a_sala', {
