@@ -1,0 +1,265 @@
+/* Registro.css - Estilos para el componente de registro */
+.registro-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 20px;
+}
+
+.registro-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    width: 100%;
+    max-width: 500px;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.registro-header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.registro-header h2 {
+    color: #333;
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.registro-header p {
+    color: #666;
+    margin: 0;
+    font-size: 16px;
+}
+
+.registro-form .form-row {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.registro-form .form-group {
+    flex: 1;
+    margin-bottom: 20px;
+}
+
+.registro-form .form-row .form-group {
+    margin-bottom: 0;
+}
+
+.registro-form label {
+    display: block;
+    margin-bottom: 8px;
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.registro-form input,
+.registro-form select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e1e5e9;
+    border-radius: 12px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    background: white;
+    box-sizing: border-box;
+}
+
+.registro-form input:focus,
+.registro-form select:focus {
+    outline: none;
+    border-color: #f093fb;
+    box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.1);
+}
+
+.registro-form input.error,
+.registro-form select.error {
+    border-color: #ff4757;
+    box-shadow: 0 0 0 3px rgba(255, 71, 87, 0.1);
+}
+
+.error-text {
+    color: #ff4757;
+    font-size: 12px;
+    margin-top: 5px;
+    display: block;
+}
+
+.avatar-selection {
+    margin-bottom: 20px;
+}
+
+.avatar-selection label {
+    display: block;
+    margin-bottom: 12px;
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.avatar-options {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+}
+
+.avatar-option {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #e1e5e9;
+    border-radius: 50%;
+    background: white;
+    font-size: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.avatar-option:hover:not(:disabled) {
+    border-color: #f093fb;
+    transform: scale(1.1);
+}
+
+.avatar-option.selected {
+    border-color: #f093fb;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    transform: scale(1.1);
+}
+
+.avatar-option:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.message {
+    padding: 12px 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+}
+
+.message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.registro-button {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.registro-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(240, 147, 251, 0.2);
+}
+
+.registro-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.registro-footer {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #e1e5e9;
+}
+
+.registro-footer p {
+    color: #666;
+    margin: 0;
+    font-size: 14px;
+}
+
+.switch-button {
+    background: none;
+    border: none;
+    color: #f093fb;
+    cursor: pointer;
+    font-weight: 600;
+    text-decoration: underline;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.switch-button:hover:not(:disabled) {
+    color: #f5576c;
+}
+
+.switch-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Responsivo */
+@media (max-width: 600px) {
+    .registro-container {
+        padding: 10px;
+    }
+    
+    .registro-card {
+        padding: 30px 20px;
+    }
+    
+    .registro-form .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .registro-form .form-row .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .registro-header h2 {
+        font-size: 24px;
+    }
+    
+    .avatar-options {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .avatar-option {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+}

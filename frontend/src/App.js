@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import './App.css';
+import { AuthProvider } from './AuthContext';
 import LoadingScreen from './LoadingScreen';
 import MenuPrincipal from './MenuPrincipal';
 import MiOnceIdeal from './MiOnceIdeal';
@@ -30,12 +31,14 @@ function App() {
   }
 
   return (
-    <div className="App">
-      {modoActual === 'menu' && <MenuPrincipal onSelectMode={handleSelectMode} />}
-      {modoActual === 'once-ideal' && <MiOnceIdeal onVolver={handleVolver} />}
-      {modoActual === 'duelazo' && <ElDuelazo onVolver={handleVolver} />}
-      {modoActual === 'duelazo-multiplayer' && <ElDuelazoMultiplayer onVolver={handleVolver} />}
-    </div>
+    <AuthProvider>
+      <div className="App">
+        {modoActual === 'menu' && <MenuPrincipal onSelectMode={handleSelectMode} />}
+        {modoActual === 'once-ideal' && <MiOnceIdeal onVolver={handleVolver} />}
+        {modoActual === 'duelazo' && <ElDuelazo onVolver={handleVolver} />}
+        {modoActual === 'duelazo-multiplayer' && <ElDuelazoMultiplayer onVolver={handleVolver} />}
+      </div>
+    </AuthProvider>
   );
 }
 

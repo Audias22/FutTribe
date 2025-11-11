@@ -9,6 +9,7 @@ from flask_socketio import SocketIO
 from io import BytesIO
 from db_connector import fetch_all_jugadores, get_db_connection # Importamos las funciones que vamos a usar
 from socket_events import init_socketio_events
+from auth_routes import auth_bp  # Importar rutas de autenticación
 
 # --- 1. INICIALIZACIÓN DE FLASK ---
 app = Flask(__name__) 
@@ -25,6 +26,9 @@ socketio = SocketIO(
 
 # Registrar eventos de Socket.IO
 init_socketio_events(socketio) 
+
+# Registrar rutas de autenticación
+app.register_blueprint(auth_bp)
 
 # --- AÑADIMOS LA RUTA RAÍZ (HOME) ---
 @app.route('/')

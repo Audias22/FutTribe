@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 import './ElDuelazo.css';
 
 function ElDuelazo({ onVolver }) {
+  const { isAuthenticated, actualizarEstadisticas } = useAuth();
   const [pantalla, setPantalla] = useState('inicio'); // inicio, jugando, resultado
   const [preguntas, setPreguntas] = useState([]);
   const [preguntaActual, setPreguntaActual] = useState(0);
@@ -116,7 +118,12 @@ function ElDuelazo({ onVolver }) {
         setTiempoRestante(15);
       }, 1500);
     } else {
-      setTimeout(() => {
+      setTimeout(async () => {
+        // Actualizar estadísticas si el usuario está autenticado
+        if (isAuthenticated) {
+          const puntosGanados = puntuacion;
+          await actualizarEstadisticas(puntosGanados, false);
+        }
         setPantalla('resultado');
       }, 1500);
     }
@@ -278,6 +285,7 @@ function ElDuelazo({ onVolver }) {
             <div className="stat-card">
               <div className="stat-valor">{puntuacion}</div>
               <div className="stat-label">Puntos Totales</div>
+              {isAuthenticated && <div className="stat-badge">✅ Guardado</div>}
             </div>
             <div className="stat-card">
               <div className="stat-valor">{correctas}/{respuestas.length}</div>
@@ -288,6 +296,12 @@ function ElDuelazo({ onVolver }) {
               <div className="stat-label">Precisión</div>
             </div>
           </div>
+
+          {isAuthenticated && (
+            <div className="stats-saved-message">
+              🎯 <strong>+{puntuacion} puntos</strong> agregados a tu perfil
+            </div>
+          )}
           
           <div className="resultado-mensaje">
             {porcentaje >= 90 && '🌟 ¡Eres una leyenda del fútbol!'}

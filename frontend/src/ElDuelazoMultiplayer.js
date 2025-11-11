@@ -1,5 +1,6 @@
 // frontend/src/ElDuelazoMultiplayer.js
 import React, { useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
 import CrearSala from './CrearSala';
 import UnirseSala from './UnirseSala';
 import SalaEspera from './SalaEspera';
@@ -10,6 +11,7 @@ import './ElDuelazoMultiplayer.css';
 import './EsperaFinal.css';
 
 function ElDuelazoMultiplayer({ onVolver }) {
+  const { isAuthenticated, actualizarEstadisticas } = useAuth();
   const [pantalla, setPantalla] = useState('inicio'); // inicio, crear, unirse, espera, jugando_ronda1, resultados_ronda1, espera_final, jugando_final, resultados_finales
   const [nombreJugador, setNombreJugador] = useState('');
   const [codigoSala, setCodigoSala] = useState('');
@@ -155,6 +157,8 @@ function ElDuelazoMultiplayer({ onVolver }) {
           codigoSala={codigoSala}
           datos={datosJuego}
           esFinal={pantalla === 'resultados_finales'}
+          isAuthenticated={isAuthenticated}
+          actualizarEstadisticas={actualizarEstadisticas}
           onContinuar={(datos) => {
             if (pantalla === 'resultados_finales') {
               handleVolverInicio();

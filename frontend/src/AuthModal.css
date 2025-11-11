@@ -1,0 +1,99 @@
+/* AuthModal.css - Estilos para el modal de autenticación */
+.auth-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.auth-modal-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideInModal 0.3s ease-out;
+}
+
+@keyframes slideInModal {
+    from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.auth-modal-close {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #ff4757;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 71, 87, 0.3);
+}
+
+.auth-modal-close:hover {
+    background: #ff3742;
+    transform: rotate(90deg) scale(1.1);
+}
+
+/* Ajustes para los componentes dentro del modal */
+.auth-modal-content .login-container,
+.auth-modal-content .registro-container {
+    min-height: auto;
+    background: none;
+    padding: 0;
+}
+
+.auth-modal-content .login-card,
+.auth-modal-content .registro-card {
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+    margin: 0;
+}
+
+/* Responsivo */
+@media (max-width: 480px) {
+    .auth-modal-overlay {
+        padding: 10px;
+    }
+    
+    .auth-modal-close {
+        top: -5px;
+        right: -5px;
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
+    }
+}

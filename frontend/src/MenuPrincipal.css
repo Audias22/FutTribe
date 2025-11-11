@@ -13,6 +13,112 @@
   text-align: center;
 }
 
+/* Header con autenticación */
+.menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.header-left {
+  flex: 1;
+  text-align: left;
+}
+
+.header-right {
+  flex-shrink: 0;
+}
+
+/* Botones de autenticación */
+.auth-buttons {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.btn-login,
+.btn-register {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 25px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 14px;
+}
+
+.btn-login {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.btn-login:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.btn-register {
+  background: white;
+  color: #667eea;
+  border: 2px solid white;
+}
+
+.btn-register:hover {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+}
+
+/* Sección de usuario */
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 15px 20px;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.user-section:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-2px);
+}
+
+.user-avatar {
+  width: 50px;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.user-info {
+  text-align: left;
+}
+
+.user-name {
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 2px;
+}
+
+.user-points {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 14px;
+}
+
 .titulo-principal {
   font-size: 4rem;
   color: white;
@@ -128,6 +234,14 @@
   }
 }
 
+/* Mensaje de bienvenida */
+.welcome-message {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  margin-top: 15px;
+  font-weight: 500;
+}
+
 @media (max-width: 768px) {
   .titulo-principal {
     font-size: 2.5rem;
@@ -143,5 +257,34 @@
   
   .modo-card {
     padding: 30px 20px;
+  }
+
+  /* Responsive para header */
+  .menu-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 30px;
+  }
+
+  .header-left {
+    text-align: center;
+  }
+
+  .auth-buttons {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .btn-login,
+  .btn-register {
+    width: 100%;
+    max-width: 200px;
+  }
+
+  .user-section {
+    justify-content: center;
+    width: 100%;
+    max-width: 300px;
   }
 }

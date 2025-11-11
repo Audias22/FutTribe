@@ -1,8 +1,25 @@
 // frontend/src/ResultadosMultiplayer.js
-import React from 'react';
+import React, { useEffect } from 'react';
 import socket from './socket';
 
-function ResultadosMultiplayer({ codigoSala, datos, esFinal, onContinuar, onIrEsperaFinal }) {
+function ResultadosMultiplayer({ codigoSala, datos, esFinal, isAuthenticated, actualizarEstadisticas, onContinuar, onIrEsperaFinal }) {
+  
+  // Actualizar estadísticas cuando el componente se monta (solo para finales)
+  useEffect(() => {
+    if (esFinal && isAuthenticated && actualizarEstadisticas && datos?.jugadores) {
+      // Encontrar mi puntuación
+      const miJugador = datos.jugadores.find(j => j.socket_id === socket.id);
+      if (miJugador) {
+        const puntuacion = miJugador.puntuacion || 0;
+        // Verificar si gané (primer lugar)
+        const gane = datos.jugadores[0]?.socket_id === socket.id;
+        
+        // Actualizar estadísticas
+        actualizarEstadisticas(puntuacion, gane);
+      }
+    }
+  }, [esFinal, isAuthenticated, actualizarEstadisticas, datos]);
+
   const handleContinuar = () => {
     if (esFinal) {
       // Finalizar y volver al inicio
@@ -72,6 +89,20 @@ function ResultadosMultiplayer({ codigoSala, datos, esFinal, onContinuar, onIrEs
               </div>
             )}
           </div>
+
+          {isAuthenticated && (() => {
+            const miJugador = datos?.jugadores?.find(j => j.socket_id === socket.id);
+            const gane = datos?.jugadores?.[0]?.socket_id === socket.id;
+            if (miJugador) {
+              return (
+                <div className="stats-saved-message-multiplayer">
+                  🎯 <strong>+{miJugador.puntuacion || 0} puntos</strong> agregados a tu perfil
+                  {gane && <div className="victoria-badge">🏆 +1 victoria multijugador</div>}
+                </div>
+              );
+            }
+            return null;
+          })()}
 
           <div className="ranking-final">
             <h3>📋 Clasificación Final</h3>
