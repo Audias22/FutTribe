@@ -330,6 +330,9 @@ def registrar_eventos_socket(socketio):
             
             finalistas = [j for j in sala['jugadores'] if j['clasifico_final']]
             
+            # Guardar finalistas en la sala para uso posterior
+            sala['finalistas'] = finalistas
+            
             print(f'🏆 Finalistas de sala {codigo}: {[f["nombre"] for f in finalistas]}')
             
             # Notificar resultados de ronda 1
@@ -488,11 +491,15 @@ def iniciar_ronda1(codigo, socketio):
         """Maneja cuando un finalista marca que está listo para la final."""
         try:
             codigo = data.get('codigo')
+            print(f'🎯 Recibido finalista_listo para sala {codigo}')
             
             if codigo not in salas_activas:
+                print(f'❌ Sala {codigo} no encontrada')
                 return
             
             sala = salas_activas[codigo]
+            print(f'📊 Estado actual de la sala: {sala.get("estado", "sin_estado")}')
+            print(f'👥 Finalistas en sala: {len(sala.get("finalistas", []))}')
             
             # Inicializar lista de finalistas listos si no existe
             if 'finalistas_listos' not in sala:
@@ -500,6 +507,8 @@ def iniciar_ronda1(codigo, socketio):
             
             # Agregar finalista a la lista si no está ya
             socket_id = request.sid
+            print(f'🔍 Buscando finalista con socket_id: {socket_id}')
+            
             if socket_id not in [f['socket_id'] for f in sala['finalistas_listos']]:
                 # Buscar datos del finalista
                 finalista = None
@@ -511,6 +520,12 @@ def iniciar_ronda1(codigo, socketio):
                 if finalista:
                     sala['finalistas_listos'].append(finalista)
                     print(f'✅ Finalista {finalista["nombre"]} listo en sala {codigo}')
+                    print(f'📋 Total finalistas listos: {len(sala["finalistas_listos"])}/2')
+                else:
+                    print(f'❌ No se encontró finalista con socket_id: {socket_id}')
+                    print(f'🔍 Finalistas disponibles: {[f.get("socket_id") for f in sala.get("finalistas", [])]}')
+            else:
+                print(f'⚠️ Finalista ya estaba listo: {socket_id}')
             
             # Notificar actualización a todos en la sala
             socketio.emit('finalistas_listos_update', {
