@@ -11,6 +11,16 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
   const maxJugadores = 10;
 
   useEffect(() => {
+    // Limpiar listeners existentes PRIMERO
+    socket.off('sala_creada');
+    socket.off('jugador_unido');
+    socket.off('unido_a_sala');
+    socket.off('estado_listos');
+    socket.off('iniciar_ronda1');
+    socket.off('jugador_salio');
+    socket.off('sala_cerrada');
+    socket.off('estado_sala_actual');
+
     // Al montar el componente, reconectarse a la sala
     console.log('🔄 SalaEspera montada, reconectando a:', codigoSala, 'con nombre:', nombreJugador);
     console.log('📊 Estado inicial - Jugadores:', jugadores.length, 'Total:', total);
@@ -105,9 +115,21 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
     }
   };
 
-  const copiarCodigo = () => {
-    navigator.clipboard.writeText(codigoSala);
-    alert('✅ Código copiado al portapapeles');
+  const copiarCodigo = async () => {
+    try {
+      await navigator.clipboard.writeText(codigoSala);
+      alert('✅ Código copiado al portapapeles');
+    } catch (err) {
+      console.error('Error al copiar:', err);
+      // Fallback
+      const textArea = document.createElement('textarea');
+      textArea.value = codigoSala;
+      document.body.appendChild(textArea);
+      textArea.select();
+      document.execCommand('copy');
+      document.body.removeChild(textArea);
+      alert('✅ Código copiado al portapapeles');
+    }
   };
 
   const copiarLink = async () => {
