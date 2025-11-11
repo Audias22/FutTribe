@@ -32,14 +32,10 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
   useEffect(() => {
     if (codigoSalaDirecto) {
       setCodigoSala(codigoSalaDirecto);
-      // Si no hay nombre guardado, ir a inicio para pedirlo
-      if (!nombreJugador.trim()) {
-        setPantalla('inicio');
-      } else {
-        setPantalla('unirse');
-      }
+      // Siempre ir a inicio para que pueda ingresar/editar su nombre
+      setPantalla('inicio');
     }
-  }, [codigoSalaDirecto, nombreJugador]);
+  }, [codigoSalaDirecto]);
 
   // Manejar navegación del navegador (botón atrás)
   useEffect(() => {
