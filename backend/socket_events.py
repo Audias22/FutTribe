@@ -648,6 +648,37 @@ def iniciar_ronda1(codigo, socketio):
                 
         except Exception as e:
             print(f'❌ Error al salir de sala: {str(e)}')
+    
+    @socketio.on('obtener_estado_sala')
+    def handle_obtener_estado_sala(data):
+        """Obtiene el estado actual de una sala."""
+        try:
+            codigo = data.get('codigoSala')
+            
+            if codigo not in salas_activas:
+                emit('error', {'message': 'Sala no encontrada'})
+                return
+            
+            sala = salas_activas[codigo]
+            
+            print(f'📊 Enviando estado de sala {codigo} a {request.sid}')
+            
+            # Enviar estado actual de la sala
+            emit('estado_sala_actual', {
+                'sala': {
+                    'codigo': codigo,
+                    'creador': sala['creador'],
+                    'jugadores': sala['jugadores'],
+                    'max_jugadores': sala['max_jugadores'],
+                    'estado': sala['estado']
+                },
+                'jugadores': sala['jugadores'],
+                'total': len(sala['jugadores'])
+            })
+                
+        except Exception as e:
+            print(f'❌ Error al obtener estado de sala: {str(e)}')
+            emit('error', {'message': f'Error al obtener estado: {str(e)}'})
 
 # Exportar función para registrar eventos
 def init_socketio_events(socketio):

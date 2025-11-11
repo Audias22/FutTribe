@@ -54,6 +54,15 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
       onVolver();
     });
 
+    // Cuando se obtiene el estado actual de la sala
+    socket.on('estado_sala_actual', (data) => {
+      console.log('📊 Estado actual de sala recibido:', data);
+      setJugadores(data.jugadores);
+      setTotal(data.total);
+      // Resetear estado listo al volver
+      setEstoyListo(false);
+    });
+
     return () => {
       socket.off('sala_creada');
       socket.off('jugador_unido');
@@ -61,6 +70,7 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
       socket.off('iniciar_ronda1');
       socket.off('jugador_salio');
       socket.off('sala_cerrada');
+      socket.off('estado_sala_actual');
     };
   }, [onIniciarJuego]);
 

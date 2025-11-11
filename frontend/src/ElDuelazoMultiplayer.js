@@ -1,6 +1,7 @@
 // frontend/src/ElDuelazoMultiplayer.js
 import React, { useState, useEffect } from 'react';
 import { useAuth } from './AuthContext';
+import socket from './socket';
 import CrearSala from './CrearSala';
 import UnirseSala from './UnirseSala';
 import SalaEspera from './SalaEspera';
@@ -223,7 +224,8 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
           actualizarEstadisticas={actualizarEstadisticas}
           onContinuar={(datos) => {
             if (pantalla === 'resultados_finales') {
-              // Volver a la sala de espera en lugar del inicio
+              // Volver a la sala de espera y solicitar estado actual
+              socket.emit('obtener_estado_sala', { codigoSala });
               setPantalla('sala_espera');
             }
           }}
