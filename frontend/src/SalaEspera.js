@@ -12,12 +12,17 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
 
   useEffect(() => {
     // Al montar el componente, reconectarse a la sala
-    console.log('🔄 SalaEspera montada, reconectando a:', codigoSala);
+    console.log('🔄 SalaEspera montada, reconectando a:', codigoSala, 'con nombre:', nombreJugador);
+    console.log('📊 Estado inicial - Jugadores:', jugadores.length, 'Total:', total);
+    
     if (codigoSala && nombreJugador) {
+      console.log('📤 Emitiendo unirse_sala...');
       socket.emit('unirse_sala', {
         codigo: codigoSala,
         nombre: nombreJugador
       });
+    } else {
+      console.error('❌ Faltan datos - código:', codigoSala, 'nombre:', nombreJugador);
     }
 
     // Escuchar cuando se crea la sala (para el creador)

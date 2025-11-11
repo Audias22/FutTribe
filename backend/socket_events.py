@@ -129,16 +129,29 @@ def registrar_eventos_socket(socketio):
             codigo = data.get('codigo', '').upper()
             nombre = data.get('nombre', 'Jugador')
             
+            print(f'🔍 Intento unirse_sala - Código: {codigo}, Nombre: {nombre}')
+            print(f'📋 Salas activas disponibles: {list(salas_activas.keys())}')
+            
             if codigo not in salas_activas:
+                print(f'❌ Sala {codigo} NO encontrada en salas activas')
                 emit('error', {'message': 'Sala no encontrada'})
                 return
             
-            sala = salas_activas[codigo]
+            print(f'✅ Sala {codigo} encontrada, procesando...')
             
-            # Verificar si la sala está llena
-            if len(sala['jugadores']) >= sala['max_jugadores']:
-                emit('error', {'message': 'La sala está llena'})
-                return
+            sala = salas_activas[codigo]
+            print(f'📊 Estado actual de la sala: {sala.get("estado", "sin_estado")}')
+            
+            # Si la sala está finalizada, resetear para nueva partida
+            if sala.get('estado') == 'finalizado':
+                print(f'🔄 Reseteando sala finalizada {codigo} para nueva partida')
+                sala['estado'] = 'esperando'
+                # Resetear estado de jugadores
+                for j in sala['jugadores']:
+                    j['esta_listo'] = False
+            
+            # Verificar si la sala está llena (solo para jugadores nuevos)
+            # Ya lo manejaremos más abajo
             
             # Verificar si el jugador ya está en la sala (reuniéndose)
             jugador_existente = None
@@ -194,6 +207,7 @@ def registrar_eventos_socket(socketio):
                 conn.close()
             
             # Notificar al jugador que se unió
+            print(f'✅ Enviando unido_a_sala a {nombre} con {len(sala["jugadores"])} jugadores')
             emit('unido_a_sala', {
                 'success': True,
                 'codigo': codigo,
