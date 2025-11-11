@@ -284,7 +284,11 @@ function ElDuelazo({ onVolver }) {
                   <p className="respuesta-pregunta">{resp.pregunta}</p>
                   <p className="respuesta-info">
                     {resp.esCorrecta ? (
-                      <span className="correcto">✅ Correcto (+{resp.puntos} pts en {resp.tiempo}s)</span>
+                      <span className="correcto">
+                        ✅ Correcto (+{resp.puntos} pts en {resp.tiempo}s)
+                        {resp.respuestaUsuario && `
+(Tu respuesta: ${resp.respuestaUsuario})`}
+                      </span>
                     ) : (
                       <span className="incorrecto">
                         ❌ Incorrecto 

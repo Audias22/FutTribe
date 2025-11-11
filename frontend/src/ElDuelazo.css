@@ -224,14 +224,15 @@
 
 .dificultad-badge {
   position: absolute;
-  top: 20px;
-  right: 20px;
+  top: 15px;
+  right: 15px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: white;
-  padding: 8px 15px;
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   font-weight: bold;
+  z-index: 10;
 }
 
 .pregunta-texto {
@@ -239,6 +240,7 @@
   color: #333;
   line-height: 1.5;
   margin: 0;
+  padding-right: 120px;
 }
 
 .opciones-grid {
@@ -471,6 +473,14 @@
   
   .pregunta-texto {
     font-size: 1.4rem;
+    padding-right: 90px;
+  }
+  
+  .dificultad-badge {
+    top: 10px;
+    right: 10px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
   }
   
   .resultado-stats {
