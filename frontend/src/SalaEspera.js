@@ -131,6 +131,13 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
     }
   };
 
+  const handleDetenerListo = () => {
+    if (estoyListo) {
+      socket.emit('desmarcar_listo', { codigo: codigoSala });
+      setEstoyListo(false);
+    }
+  };
+
   const copiarCodigo = async () => {
     try {
       await navigator.clipboard.writeText(codigoSala);
@@ -261,6 +268,9 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
         <div className="mensaje-esperando">
           <p>✅ Marcado como listo</p>
           <p>⏳ Esperando a los demás jugadores...</p>
+          <button className="btn-detener" onClick={handleDetenerListo}>
+            ❌ DETENER
+          </button>
         </div>
       )}
 

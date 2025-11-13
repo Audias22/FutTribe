@@ -374,3 +374,69 @@ def actualizar_estadisticas():
         if 'connection' in locals() and connection.is_connected():
             cursor.close()
             connection.close()
+
+@auth_bp.route('/api/guardar-once-ideal', methods=['POST'])
+def guardar_once_ideal():
+    """Guarda el once ideal del usuario autenticado"""
+    try:
+        # Verificar token
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return jsonify({
+                'success': False,
+                'message': 'Token no proporcionado'
+            }), 401
+        
+        token = auth_header.split(' ')[1]
+        payload = verificar_token_jwt(token)
+        
+        if not payload:
+            return jsonify({
+                'success': False,
+                'message': 'Token inválido'
+            }), 401
+        
+        data = request.get_json()
+        once_ideal = data.get('once_ideal')
+        
+        if not once_ideal:
+            return jsonify({
+                'success': False,
+                'message': 'No se proporcionó el once ideal'
+            }), 400
+        
+        # Validar que sea un array de 11 jugadores
+        if not isinstance(once_ideal, list) or len(once_ideal) != 11:
+            return jsonify({
+                'success': False,
+                'message': 'El once ideal debe contener exactamente 11 jugadores'
+            }), 400
+        
+        # Actualizar en base de datos
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        
+        query = """
+        UPDATE usuarios 
+        SET once_ideal = %s
+        WHERE id = %s
+        """
+        
+        cursor.execute(query, (json.dumps(once_ideal), payload['user_id']))
+        connection.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': '¡Once ideal guardado exitosamente!'
+        }), 200
+        
+    except Exception as e:
+        print(f"Error guardando once ideal: {e}")
+        return jsonify({
+            'success': False,
+            'message': 'Error interno del servidor'
+        }), 500
+    finally:
+        if 'connection' in locals() and connection.is_connected():
+            cursor.close()
+            connection.close()

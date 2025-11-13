@@ -272,6 +272,41 @@ def registrar_eventos_socket(socketio):
             print(f'❌ Error al marcar listo: {str(e)}')
             emit('error', {'message': f'Error: {str(e)}'})
     
+    @socketio.on('desmarcar_listo')
+    def handle_desmarcar_listo(data):
+        """Un jugador desmarca que está listo (cancela su estado listo)."""
+        try:
+            codigo = data.get('codigo')
+            
+            if codigo not in salas_activas:
+                emit('error', {'message': 'Sala no encontrada'})
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Desmarcar jugador como no listo
+            for jugador in sala['jugadores']:
+                if jugador['socket_id'] == request.sid:
+                    jugador['esta_listo'] = False
+                    break
+            
+            # Contar jugadores listos
+            listos = sum(1 for j in sala['jugadores'] if j['esta_listo'])
+            total = len(sala['jugadores'])
+            
+            print(f'❌ Jugador desmarcado en {codigo}: {listos}/{total} listos')
+            
+            # Notificar a todos
+            socketio.emit('estado_listos', {
+                'listos': listos,
+                'total': total,
+                'jugadores': sala['jugadores']
+            }, room=codigo)
+            
+        except Exception as e:
+            print(f'❌ Error al desmarcar listo: {str(e)}')
+            emit('error', {'message': f'Error: {str(e)}'})
+    
     @socketio.on('enviar_respuesta')
     def handle_enviar_respuesta(data):
         """Procesa la respuesta de un jugador."""

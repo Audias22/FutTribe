@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo, useRef, useContext } from "react";
+import { AuthContext } from './AuthContext';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "https://futtribe-production.up.railway.app";
 const API_URL = `${API_BASE}/api/v1/jugadores-historicos`;
@@ -18,6 +19,7 @@ function useIsMobile() {
 
 function MiOnceIdeal({ onVolver }) {
   const isMobile = useIsMobile();
+  const { user, token } = useContext(AuthContext);
 
 // Diseños de cancha disponibles
 const FIELD_DESIGNS = [
@@ -607,6 +609,57 @@ function getDetailedPosition(xPercent, yPercent) {
     }
   }
 
+  async function guardarOnceIdeal() {
+    if (miEquipoIdeal.length !== 11) {
+      setMessage({ type: 'error', text: 'Completa tu once ideal primero.' });
+      return;
+    }
+
+    if (!user || !token) {
+      setMessage({ type: 'error', text: 'Debes iniciar sesión para guardar tu once ideal.' });
+      return;
+    }
+
+    try {
+      setMessage({ type: 'info', text: 'Guardando once ideal... ⏳' });
+      
+      // Preparar datos para enviar
+      const onceIdealData = alineacion.map((jugador, index) => {
+        if (!jugador) return null;
+        return {
+          posicion: index,
+          jugador_id: jugador.id,
+          nombre: jugador.name,
+          posicion_campo: positions[index].label,
+          formacion: formation
+        };
+      });
+
+      const response = await fetch(`${API_BASE}/api/guardar-once-ideal`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          once_ideal: onceIdealData
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessage({ type: 'success', text: '¡Once ideal guardado exitosamente! ⚽✅' });
+      } else {
+        setMessage({ type: 'error', text: data.message || 'Error al guardar el once ideal.' });
+      }
+      
+    } catch (err) {
+      console.error('Error al guardar once ideal:', err);
+      setMessage({ type: 'error', text: 'Error de conexión. Intenta de nuevo.' });
+    }
+  }
+
   // ----------------------------------------------------------------------------------
   // Manejo de Arrastre en Modo Custom
   // ----------------------------------------------------------------------------------
@@ -1111,6 +1164,26 @@ function getDetailedPosition(xPercent, yPercent) {
 
     {/* Botones de acción */}
     <div style={{ marginTop: isMobile ? 10 : 24, marginBottom: isMobile ? 10 : 0, textAlign: 'center', display: 'flex', gap: isMobile ? 8 : 12, justifyContent: 'center', flexWrap: 'wrap', padding: isMobile ? '0 10px' : '0' }}>
+      <button
+        disabled={miEquipoIdeal.length !== 11}
+        onClick={guardarOnceIdeal}
+        style={{
+          padding: isMobile ? '10px 16px' : '14px 32px',
+          fontSize: isMobile ? 12 : 16,
+          fontWeight: 'bold',
+          background: miEquipoIdeal.length === 11 ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' : '#ccc',
+          color: 'white',
+          border: 'none',
+          borderRadius: isMobile ? 8 : 10,
+          cursor: miEquipoIdeal.length === 11 ? 'pointer' : 'not-allowed',
+          boxShadow: miEquipoIdeal.length === 11 ? '0 6px 20px rgba(102, 126, 234, 0.4)' : 'none',
+          transition: 'all 0.3s ease',
+          flex: isMobile ? '1' : 'none'
+        }}
+      >
+        💾 {isMobile ? 'Guardar' : 'Guardar Once Ideal'}
+      </button>
+
       <button
         disabled={miEquipoIdeal.length !== 11}
         onClick={downloadAsImage}
