@@ -25,14 +25,30 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
     console.log('🔄 SalaEspera montada, reconectando a:', codigoSala, 'con nombre:', nombreJugador);
     console.log('📊 Estado inicial - Jugadores:', jugadores.length, 'Total:', total);
     
-    if (codigoSala && nombreJugador) {
-      console.log('📤 Emitiendo unirse_sala...');
+    // Intentar recuperar código de localStorage si no está disponible
+    let codigoParaUsar = codigoSala;
+    let nombreParaUsar = nombreJugador;
+    
+    if (!codigoParaUsar.trim()) {
+      codigoParaUsar = localStorage.getItem('futtribe_codigo_sala') || '';
+      console.log('📁 Recuperando código de localStorage:', codigoParaUsar);
+    }
+    
+    if (!nombreParaUsar.trim()) {
+      nombreParaUsar = localStorage.getItem('futtribe_nombre_jugador') || '';
+      console.log('📁 Recuperando nombre de localStorage:', nombreParaUsar);
+    }
+    
+    if (codigoParaUsar && nombreParaUsar) {
+      console.log('📤 Emitiendo unirse_sala con:', codigoParaUsar, nombreParaUsar);
       socket.emit('unirse_sala', {
-        codigo: codigoSala,
-        nombre: nombreJugador
+        codigo: codigoParaUsar,
+        nombre: nombreParaUsar
       });
     } else {
-      console.error('❌ Faltan datos - código:', codigoSala, 'nombre:', nombreJugador);
+      console.error('❌ Faltan datos - código:', codigoParaUsar, 'nombre:', nombreParaUsar);
+      console.error('❌ localStorage - código:', localStorage.getItem('futtribe_codigo_sala'));
+      console.error('❌ localStorage - nombre:', localStorage.getItem('futtribe_nombre_jugador'));
     }
 
     // Escuchar cuando se crea la sala (para el creador)
@@ -157,6 +173,27 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
     }
   };
 
+  // Si no hay código, mostrar loading
+  if (!codigoSala.trim()) {
+    const codigoGuardado = localStorage.getItem('futtribe_codigo_sala');
+    if (!codigoGuardado) {
+      return (
+        <div className="sala-espera-container">
+          <button className="btn-volver" onClick={onVolver}>
+            ← Salir de la Sala
+          </button>
+          <div style={{textAlign: 'center', padding: '50px', color: '#fff'}}>
+            <h2>❌ Sin código de sala</h2>
+            <p>No se encontró información de la sala.</p>
+            <button onClick={onVolver} style={{padding: '10px 20px', fontSize: '16px'}}>
+              Volver al Menú
+            </button>
+          </div>
+        </div>
+      );
+    }
+  }
+
   return (
     <div className="sala-espera-container">
       <button className="btn-volver" onClick={onVolver}>
@@ -164,6 +201,12 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
       </button>
 
       <h2>⏳ Sala de Espera</h2>
+      
+      {total === 0 && (
+        <div style={{textAlign: 'center', padding: '20px', color: '#ffd700'}}>
+          <p>🔄 Reconectando a la sala...</p>
+        </div>
+      )}
 
       <div className="codigo-sala-display">
         <label>Código de la sala:</label>

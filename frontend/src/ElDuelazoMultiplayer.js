@@ -241,8 +241,22 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
           actualizarEstadisticas={actualizarEstadisticas}
           onContinuar={(datos) => {
             if (pantalla === 'resultados_finales') {
-              // Simplificar: solo cambiar pantalla y que SalaEspera maneje la reconexión
-              console.log('🔄 Volviendo a sala:', codigoSala);
+              // Debugging para ver el estado
+              console.log('🔄 Volviendo a sala. Estado actual:');
+              console.log('  - codigoSala:', codigoSala);
+              console.log('  - nombreJugador:', nombreJugador);
+              console.log('  - localStorage codigo:', localStorage.getItem('futtribe_codigo_sala'));
+              console.log('  - localStorage nombre:', localStorage.getItem('futtribe_nombre_jugador'));
+              
+              // Si no hay código, recuperar de localStorage
+              if (!codigoSala.trim()) {
+                const codigoGuardado = localStorage.getItem('futtribe_codigo_sala');
+                if (codigoGuardado) {
+                  console.log('📁 Recuperando código de localStorage:', codigoGuardado);
+                  setCodigoSala(codigoGuardado);
+                }
+              }
+              
               setPantalla('sala_espera');
             }
           }}
