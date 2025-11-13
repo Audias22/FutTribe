@@ -18,7 +18,10 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
     // Cargar nombre guardado o usar vacío
     return localStorage.getItem('futtribe_nombre_jugador') || '';
   });
-  const [codigoSala, setCodigoSala] = useState('');
+  const [codigoSala, setCodigoSala] = useState(() => {
+    // Cargar código de sala guardado para reconexión
+    return localStorage.getItem('futtribe_codigo_sala') || '';
+  });
   const [datosJuego, setDatosJuego] = useState(null);
   const [esHost, setEsHost] = useState(false);
 
@@ -28,6 +31,13 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
       localStorage.setItem('futtribe_nombre_jugador', nombreJugador.trim());
     }
   }, [nombreJugador]);
+
+  // Guardar código de sala en localStorage cuando cambie
+  useEffect(() => {
+    if (codigoSala.trim()) {
+      localStorage.setItem('futtribe_codigo_sala', codigoSala.trim());
+    }
+  }, [codigoSala]);
 
   // Manejar enlace directo a sala
   useEffect(() => {
@@ -47,6 +57,11 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
       // Si estamos en la pantalla de inicio, volver al menú principal
       if (pantalla === 'inicio') {
         onVolver();
+      } else if (pantalla === 'sala_espera' && codigoSala) {
+        // Si estamos en sala_espera con código, NO resetear - mantener sala activa
+        setPantalla('inicio');
+        // Agregar nueva entrada para mantener el historial
+        window.history.pushState({ page: 'duelazo-multiplayer' }, '', '');
       } else {
         // Si estamos en otra pantalla, volver a inicio de multiplayer
         handleVolverInicio();
@@ -67,6 +82,8 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
     setCodigoSala('');
     setDatosJuego(null);
     setEsHost(false);
+    // Limpiar código guardado cuando realmente sale del multiplayer
+    localStorage.removeItem('futtribe_codigo_sala');
   };
 
   return (

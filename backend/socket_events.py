@@ -39,9 +39,12 @@ def registrar_eventos_socket(socketio):
                     'total': len(jugadores_actualizados)
                 }, room=codigo_sala)
                 
-                # Si no quedan jugadores, eliminar sala
-                if len(jugadores_actualizados) == 0:
+                # Solo eliminar sala si NO está finalizada (permite reconexión)
+                if len(jugadores_actualizados) == 0 and sala.get('estado') != 'finalizado':
                     del salas_activas[codigo_sala]
+                    print(f'🗑️ Sala {codigo_sala} eliminada (sin jugadores)')
+                elif len(jugadores_actualizados) == 0:
+                    print(f'🔄 Sala {codigo_sala} finalizada preservada para reconexión')
                 break
     
     @socketio.on('crear_sala')
