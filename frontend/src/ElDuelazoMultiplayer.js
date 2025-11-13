@@ -57,8 +57,8 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
       // Si estamos en la pantalla de inicio, volver al menú principal
       if (pantalla === 'inicio') {
         onVolver();
-      } else if (pantalla === 'sala_espera' && codigoSala) {
-        // Si estamos en sala_espera con código, NO resetear - mantener sala activa
+      } else if (pantalla === 'espera' && codigoSala) {
+        // Si estamos en espera con código, NO resetear - mantener sala activa
         setPantalla('inicio');
         // Agregar nueva entrada para mantener el historial
         window.history.pushState({ page: 'duelazo-multiplayer' }, '', '');
@@ -257,7 +257,7 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
                 }
               }
               
-              setPantalla('sala_espera');
+              setPantalla('espera');
             }
           }}
           onIrEsperaFinal={() => {
