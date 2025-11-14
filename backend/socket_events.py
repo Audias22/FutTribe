@@ -307,6 +307,75 @@ def registrar_eventos_socket(socketio):
             print(f'❌ Error al desmarcar listo: {str(e)}')
             emit('error', {'message': f'Error: {str(e)}'})
     
+    @socketio.on('jugador_termino_ronda1')
+    def handle_jugador_termino_ronda1(data):
+        """Un jugador terminó la ronda 1 - verificar si todos terminaron"""
+        try:
+            codigo = data.get('codigo')
+            resultados = data.get('resultados', {})
+            
+            if codigo not in salas_activas:
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Inicializar lista de jugadores que terminaron si no existe
+            if 'jugadores_terminaron_r1' not in sala:
+                sala['jugadores_terminaron_r1'] = []
+            
+            # Agregar jugador a la lista de terminados
+            if request.sid not in sala['jugadores_terminaron_r1']:
+                sala['jugadores_terminaron_r1'].append(request.sid)
+                print(f'✅ Jugador terminó ronda 1 en {codigo}: {len(sala["jugadores_terminaron_r1"])}/{len(sala["jugadores"])}')
+            
+            # Si TODOS terminaron, procesar resultados
+            if len(sala['jugadores_terminaron_r1']) >= len(sala['jugadores']):
+                print(f'🎯 Todos terminaron ronda 1 en {codigo}, procesando resultados...')
+                # Llamar a la función original de finalizar ronda 1
+                handle_finalizar_ronda1(data)
+                # Limpiar lista para próxima ronda
+                sala['jugadores_terminaron_r1'] = []
+            
+        except Exception as e:
+            print(f'❌ Error al manejar jugador terminó ronda 1: {str(e)}')
+    
+    @socketio.on('jugador_termino_final')
+    def handle_jugador_termino_final(data):
+        """Un jugador terminó la final - verificar si todos terminaron"""
+        try:
+            codigo = data.get('codigo')
+            resultados = data.get('resultados', {})
+            
+            if codigo not in salas_activas:
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Solo finalistas pueden terminar la final
+            finalistas = sala.get('finalistas', [])
+            if not any(f['socket_id'] == request.sid for f in finalistas):
+                return
+            
+            # Inicializar lista de finalistas que terminaron si no existe
+            if 'finalistas_terminaron' not in sala:
+                sala['finalistas_terminaron'] = []
+            
+            # Agregar finalista a la lista de terminados
+            if request.sid not in sala['finalistas_terminaron']:
+                sala['finalistas_terminaron'].append(request.sid)
+                print(f'✅ Finalista terminó en {codigo}: {len(sala["finalistas_terminaron"])}/{len(finalistas)}')
+            
+            # Si TODOS los finalistas terminaron, procesar resultados
+            if len(sala['finalistas_terminaron']) >= len(finalistas):
+                print(f'🏆 Todos los finalistas terminaron en {codigo}, procesando resultados...')
+                # Llamar a la función original de finalizar partida
+                handle_finalizar_partida(data)
+                # Limpiar lista
+                sala['finalistas_terminaron'] = []
+            
+        except Exception as e:
+            print(f'❌ Error al manejar finalista terminó: {str(e)}')
+    
     @socketio.on('enviar_respuesta')
     def handle_enviar_respuesta(data):
         """Procesa la respuesta de un jugador."""

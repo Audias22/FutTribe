@@ -109,13 +109,24 @@ function JuegoMultiplayer({ codigoSala, nombreJugador, preguntas, ronda, onFinal
       total: preguntas.length
     };
 
+    // NUEVO: Solo notificar que este jugador terminó
     if (ronda === 'ronda1') {
-      socket.emit('finalizar_ronda1', { codigo: codigoSala });
+      socket.emit('jugador_termino_ronda1', { 
+        codigo: codigoSala,
+        resultados: resultados
+      });
+      
+      // Esperar a que TODOS terminen
       socket.once('resultados_ronda1', (data) => {
         onFinalizarRonda({ ...resultados, ...data });
       });
     } else {
-      socket.emit('finalizar_partida', { codigo: codigoSala });
+      socket.emit('jugador_termino_final', { 
+        codigo: codigoSala,
+        resultados: resultados
+      });
+      
+      // Esperar a que TODOS terminen
       socket.once('resultados_finales', (data) => {
         onFinalizarRonda({ ...resultados, ...data });
       });
