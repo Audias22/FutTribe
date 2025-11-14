@@ -68,6 +68,9 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
       console.log('👤 Jugador unido:', data);
       setJugadores(data.jugadores);
       setTotal(data.total);
+      if (data.max_jugadores) {
+        setMaxJugadores(data.max_jugadores);
+      }
     });
 
     // Cuando nos unimos exitosamente a una sala

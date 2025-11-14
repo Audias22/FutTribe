@@ -152,6 +152,28 @@ def registrar_eventos_socket(socketio):
                 # Resetear estado de jugadores
                 for j in sala['jugadores']:
                     j['esta_listo'] = False
+                
+                # ✅ AJUSTAR max_jugadores al número actual de jugadores conectados
+                jugadores_conectados = len(sala['jugadores'])
+                if jugadores_conectados > 0 and sala['max_jugadores'] != jugadores_conectados:
+                    print(f'⚙️ Ajustando max_jugadores de {sala["max_jugadores"]} a {jugadores_conectados} (jugadores actuales)')
+                    sala['max_jugadores'] = jugadores_conectados
+                    
+                    # Actualizar en base de datos
+                    try:
+                        conn = get_db_connection()
+                        cursor = conn.cursor()
+                        cursor.execute("""
+                            UPDATE salas_duelazo 
+                            SET max_jugadores = %s 
+                            WHERE codigo = %s
+                        """, (jugadores_conectados, codigo))
+                        conn.commit()
+                        cursor.close()
+                        conn.close()
+                        print(f'✅ max_jugadores actualizado en BD para sala {codigo}')
+                    except Exception as e:
+                        print(f'❌ Error al actualizar max_jugadores en BD: {str(e)}')
             
             # Verificar si la sala está llena (solo para jugadores nuevos)
             # Ya lo manejaremos más abajo
@@ -171,9 +193,32 @@ def registrar_eventos_socket(socketio):
                 print(f'🔄 {nombre} se reunió a sala {codigo}')
             else:
                 # Verificar si la sala está llena (solo para jugadores nuevos)
-                if len(sala['jugadores']) >= sala['max_jugadores']:
-                    emit('error', {'message': 'La sala está llena'})
-                    return
+                # Si la sala se ajustó automáticamente, permitir expansión hasta el límite original
+                limite_actual = min(sala['max_jugadores'], 10)  # Máximo absoluto de 10
+                if len(sala['jugadores']) >= limite_actual:
+                    if sala['max_jugadores'] < 10:
+                        # Expandir automáticamente la sala para permitir el nuevo jugador
+                        nueva_capacidad = min(len(sala['jugadores']) + 1, 10)
+                        print(f'🔄 Expandiendo sala {codigo} de {sala["max_jugadores"]} a {nueva_capacidad} jugadores')
+                        sala['max_jugadores'] = nueva_capacidad
+                        
+                        # Actualizar en BD
+                        try:
+                            conn = get_db_connection()
+                            cursor = conn.cursor()
+                            cursor.execute("""
+                                UPDATE salas_duelazo 
+                                SET max_jugadores = %s 
+                                WHERE codigo = %s
+                            """, (nueva_capacidad, codigo))
+                            conn.commit()
+                            cursor.close()
+                            conn.close()
+                        except Exception as e:
+                            print(f'❌ Error al expandir sala: {str(e)}')
+                    else:
+                        emit('error', {'message': 'La sala está llena'})
+                        return
                 
                 # Verificar si la sala ya empezó (solo para jugadores nuevos)
                 if sala['estado'] != 'esperando':
@@ -226,7 +271,8 @@ def registrar_eventos_socket(socketio):
             socketio.emit('jugador_unido', {
                 'jugador': jugador,
                 'jugadores': sala['jugadores'],
-                'total': len(sala['jugadores'])
+                'total': len(sala['jugadores']),
+                'max_jugadores': sala['max_jugadores']  # Incluir el límite actualizado
             }, room=codigo)
             
         except Exception as e:
@@ -583,6 +629,14 @@ def iniciar_ronda1(codigo, socketio):
     try:
         sala = salas_activas[codigo]
         sala['estado'] = 'jugando_ronda1'
+        
+        # ✅ RESETEAR PUNTUACIONES AL INICIAR NUEVA PARTIDA
+        print(f'🔄 Reseteando puntuaciones para nueva partida en sala {codigo}')
+        for jugador in sala['jugadores']:
+            jugador['puntuacion_ronda1'] = 0
+            jugador['puntuacion_final'] = 0
+            jugador['puntuacion_total'] = 0
+            jugador['clasifico_final'] = False
         
         # Obtener 10 preguntas aleatorias (mezcla de dificultades)
         conn = get_db_connection()
