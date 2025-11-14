@@ -813,12 +813,79 @@ def iniciar_ronda1(codigo, socketio):
                     'estado': sala['estado']
                 },
                 'jugadores': sala['jugadores'],
-                'total': len(sala['jugadores'])
+                'total': len(sala['jugadores']),
+                'max_jugadores': sala['max_jugadores']
             })
                 
         except Exception as e:
             print(f'❌ Error al obtener estado de sala: {str(e)}')
             emit('error', {'message': f'Error al obtener estado: {str(e)}'})
+
+    @socketio.on('actualizar_configuracion_sala')
+    def handle_actualizar_configuracion_sala(data):
+        """El host actualiza la configuración de participantes de la sala."""
+        try:
+            codigo = data.get('codigo', '').upper()
+            nuevo_max_jugadores = data.get('max_jugadores', 10)
+            
+            print(f'⚙️ Actualizando configuración de sala {codigo} - Nuevo máximo: {nuevo_max_jugadores}')
+            
+            if codigo not in salas_activas:
+                emit('error', {'message': 'Sala no encontrada'})
+                return
+            
+            sala = salas_activas[codigo]
+            
+            # Verificar que el jugador que solicita el cambio es el host
+            jugador_actual = None
+            for jugador in sala['jugadores']:
+                if jugador['socket_id'] == request.sid:
+                    jugador_actual = jugador
+                    break
+            
+            if not jugador_actual or jugador_actual['nombre'] != sala['creador']:
+                emit('error', {'message': 'Solo el host puede cambiar la configuración'})
+                return
+            
+            # Validar el nuevo número de jugadores
+            if nuevo_max_jugadores < 2 or nuevo_max_jugadores > 10:
+                emit('error', {'message': 'El número de jugadores debe estar entre 2 y 10'})
+                return
+            
+            if nuevo_max_jugadores < len(sala['jugadores']):
+                emit('error', {
+                    'message': f'No se puede reducir a {nuevo_max_jugadores}. Hay {len(sala["jugadores"])} jugadores conectados.'
+                })
+                return
+            
+            # Actualizar la configuración en memoria
+            sala['max_jugadores'] = nuevo_max_jugadores
+            
+            # Actualizar en base de datos
+            conn = get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("""
+                UPDATE salas_duelazo 
+                SET max_jugadores = %s 
+                WHERE codigo = %s
+            """, (nuevo_max_jugadores, codigo))
+            conn.commit()
+            cursor.close()
+            conn.close()
+            
+            print(f'✅ Configuración actualizada para sala {codigo}: {nuevo_max_jugadores} jugadores máximo')
+            
+            # Notificar a todos los jugadores de la sala sobre el cambio
+            emit('configuracion_sala_actualizada', {
+                'max_jugadores': nuevo_max_jugadores,
+                'jugadores': sala['jugadores'],
+                'total': len(sala['jugadores']),
+                'mensaje': f'El host cambió el límite a {nuevo_max_jugadores} jugadores'
+            }, room=codigo)
+            
+        except Exception as e:
+            print(f'❌ Error al actualizar configuración de sala: {str(e)}')
+            emit('error', {'message': f'Error al actualizar configuración: {str(e)}'})
 
 # Exportar función para registrar eventos
 def init_socketio_events(socketio):

@@ -8,7 +8,10 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
   const [total, setTotal] = useState(0);
   const [estoyListo, setEstoyListo] = useState(false);
   const [linkCopiado, setLinkCopiado] = useState(false);
-  const maxJugadores = 10;
+  const [maxJugadores, setMaxJugadores] = useState(10);
+  const [mostrarConfiguracion, setMostrarConfiguracion] = useState(false);
+  const [mensajeConfiguracion, setMensajeConfiguracion] = useState('');
+  const [errorConfiguracion, setErrorConfiguracion] = useState('');
 
   useEffect(() => {
     // Limpiar listeners existentes PRIMERO
@@ -108,8 +111,29 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
       console.log('📊 Estado actual de sala recibido:', data);
       setJugadores(data.jugadores);
       setTotal(data.total);
+      if (data.max_jugadores) {
+        setMaxJugadores(data.max_jugadores);
+      }
       // Resetear estado listo al volver
       setEstoyListo(false);
+    });
+
+    // Escuchar cambios en la configuración de la sala
+    socket.on('configuracion_sala_actualizada', (data) => {
+      console.log('⚙️ Configuración de sala actualizada:', data);
+      setMaxJugadores(data.max_jugadores);
+      setJugadores(data.jugadores);
+      setTotal(data.total);
+      
+      // Mostrar mensaje de confirmación
+      setMensajeConfiguracion(data.mensaje || `Límite actualizado a ${data.max_jugadores} jugadores`);
+      setTimeout(() => setMensajeConfiguracion(''), 3000);
+    });
+
+    // Escuchar errores de configuración
+    socket.on('error', (data) => {
+      setErrorConfiguracion(data.message);
+      setTimeout(() => setErrorConfiguracion(''), 3000);
     });
 
     return () => {
@@ -121,6 +145,8 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
       socket.off('jugador_salio');
       socket.off('sala_cerrada');
       socket.off('estado_sala_actual');
+      socket.off('configuracion_sala_actualizada');
+      socket.off('error');
     };
   }, [onIniciarJuego]);
 
@@ -180,6 +206,23 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
     }
   };
 
+  const actualizarConfiguracionSala = (nuevoMaxJugadores) => {
+    if (!esHost) return;
+    
+    socket.emit('actualizar_configuracion_sala', {
+      codigo: codigoSala,
+      max_jugadores: nuevoMaxJugadores
+    });
+    
+    setMostrarConfiguracion(false);
+  };
+
+  const toggleConfiguracion = () => {
+    if (esHost) {
+      setMostrarConfiguracion(!mostrarConfiguracion);
+    }
+  };
+
   // Si no hay código, mostrar loading
   if (!codigoSala.trim()) {
     const codigoGuardado = localStorage.getItem('futtribe_codigo_sala');
@@ -208,6 +251,18 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
       </button>
 
       <h2>⏳ Sala de Espera</h2>
+      
+      {mensajeConfiguracion && (
+        <div className="mensaje-configuracion-exito">
+          ✅ {mensajeConfiguracion}
+        </div>
+      )}
+      
+      {errorConfiguracion && (
+        <div className="mensaje-configuracion-error">
+          ❌ {errorConfiguracion}
+        </div>
+      )}
       
       {total === 0 && (
         <div style={{textAlign: 'center', padding: '20px', color: '#ffd700'}}>
@@ -245,7 +300,53 @@ function SalaEspera({ codigoSala, nombreJugador, onIniciarJuego, onVolver, esHos
       </div>
 
       <div className="lista-jugadores">
-        <h3>👥 Jugadores ({total}/{maxJugadores})</h3>
+        <div className="header-jugadores">
+          <h3>👥 Jugadores ({total}/{maxJugadores})</h3>
+          {esHost && (
+            <button 
+              className="btn-configurar-sala" 
+              onClick={toggleConfiguracion}
+              title="Configurar sala"
+            >
+              ⚙️
+            </button>
+          )}
+        </div>
+
+        {mostrarConfiguracion && esHost && (
+          <div className="configuracion-sala">
+            <h4>⚙️ Configuración de la Sala</h4>
+            <p>Selecciona el número máximo de jugadores:</p>
+            <div className="opciones-jugadores">
+              {[2, 4, 6, 8, 10].map(numero => {
+                const esSeleccionada = maxJugadores === numero;
+                const esDeshabilitada = numero < total;
+                const diferencia = total - numero;
+                
+                return (
+                  <button
+                    key={numero}
+                    className={`opcion-numero ${esSeleccionada ? 'seleccionada' : ''} ${esDeshabilitada ? 'deshabilitada' : ''}`}
+                    onClick={() => actualizarConfiguracionSala(numero)}
+                    disabled={esDeshabilitada}
+                    title={esDeshabilitada ? `No se puede reducir a ${numero}. Hay ${total} jugadores conectados.` : `Cambiar límite a ${numero} jugadores`}
+                  >
+                    {numero} jugadores
+                    {esDeshabilitada && <small>❌ Muy pocos</small>}
+                    {esSeleccionada && <small>✅ Actual</small>}
+                  </button>
+                );
+              })}
+            </div>
+            <button 
+              className="btn-cancelar-config" 
+              onClick={() => setMostrarConfiguracion(false)}
+            >
+              ❌ Cancelar
+            </button>
+          </div>
+        )}
+
         <ul>
           {jugadores.map((jugador, index) => (
             <li key={index} className={jugador.esta_listo ? 'listo' : 'esperando'}>

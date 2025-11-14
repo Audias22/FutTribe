@@ -305,6 +305,175 @@
   padding: 30px;
 }
 
+.header-jugadores {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 15px;
+}
+
+.btn-configurar-sala {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-configurar-sala:hover {
+  transform: scale(1.1);
+  box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+.configuracion-sala {
+  background: linear-gradient(135deg, #f8f9ff 0%, #e8f0fe 100%);
+  border: 2px solid #667eea;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.configuracion-sala h4 {
+  color: #667eea;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.configuracion-sala p {
+  color: #666;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+.opciones-jugadores {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.opcion-numero {
+  background: white;
+  border: 2px solid #ddd;
+  padding: 12px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.opcion-numero:hover:not(:disabled) {
+  border-color: #667eea;
+  transform: translateY(-2px);
+  box-shadow: 0 3px 10px rgba(102, 126, 234, 0.2);
+}
+
+.opcion-numero.seleccionada {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-color: #667eea;
+}
+
+.opcion-numero:disabled,
+.opcion-numero.deshabilitada {
+  background: #f5f5f5;
+  color: #999;
+  cursor: not-allowed;
+  border-color: #e0e0e0;
+}
+
+.opcion-numero:disabled:hover,
+.opcion-numero.deshabilitada:hover {
+  transform: none;
+  box-shadow: none;
+  border-color: #e0e0e0;
+}
+
+.opcion-numero small {
+  font-size: 10px;
+  margin-top: 4px;
+  opacity: 0.8;
+}
+
+.btn-cancelar-config {
+  background: #ff4757;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-weight: 600;
+  display: block;
+  margin: 0 auto;
+  transition: all 0.3s ease;
+}
+
+.btn-cancelar-config:hover {
+  background: #ff3742;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 71, 87, 0.3);
+}
+
+.mensaje-configuracion-exito {
+  background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.mensaje-configuracion-error {
+  background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+  color: white;
+  padding: 15px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-weight: 600;
+  animation: slideIn 0.3s ease-out;
+  box-shadow: 0 5px 15px rgba(244, 67, 54, 0.3);
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .codigo-sala-display {
   text-align: center;
   margin-bottom: 30px;
@@ -881,6 +1050,30 @@
   .botones-modo {
     grid-template-columns: 1fr;
     gap: 15px;
+  }
+
+  .header-jugadores {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+
+  .configuracion-sala {
+    padding: 15px;
+  }
+
+  .opciones-jugadores {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .opcion-numero {
+    padding: 10px 6px;
+    font-size: 12px;
+  }
+
+  .opcion-numero small {
+    font-size: 9px;
   }
   
   .juego-multiplayer {
