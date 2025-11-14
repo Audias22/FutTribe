@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo, useRef, useContext } from "react";
-import { AuthContext } from './AuthContext';
+import React, { useEffect, useState, useMemo, useRef } from "react";
+import { useAuth } from './AuthContext';
 
 const API_BASE = process.env.REACT_APP_API_BASE_URL || "https://futtribe-production.up.railway.app";
 const API_URL = `${API_BASE}/api/v1/jugadores-historicos`;
@@ -19,7 +19,7 @@ function useIsMobile() {
 
 function MiOnceIdeal({ onVolver }) {
   const isMobile = useIsMobile();
-  const { user, token } = useContext(AuthContext);
+  const { user, token } = useAuth();
 
 // Diseños de cancha disponibles
 const FIELD_DESIGNS = [
