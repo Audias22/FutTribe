@@ -14,7 +14,9 @@ function ResultadosMultiplayer({ codigoSala, datos, esFinal, isAuthenticated, ac
         // Verificar si gané (primer lugar)
         const gane = datos.jugadores[0]?.socket_id === socket.id;
         
-        // Actualizar estadísticas
+        // Actualizar estadísticas en multijugador
+        // TODO: Separar puntos multijugador de victorias
+        console.log('Actualizando estadísticas multijugador:', { puntuacion, gane });
         actualizarEstadisticas(puntuacion, gane);
       }
     }
