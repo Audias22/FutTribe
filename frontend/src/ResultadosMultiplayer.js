@@ -6,17 +6,25 @@ function ResultadosMultiplayer({ codigoSala, datos, esFinal, isAuthenticated, ac
   
   // Actualizar estadísticas cuando el componente se monta (solo para finales)
   useEffect(() => {
+    console.log('🎯 ResultadosMultiplayer useEffect:', {
+      esFinal,
+      isAuthenticated,
+      tieneActualizarEstadisticas: !!actualizarEstadisticas,
+      tieneDatos: !!datos?.jugadores,
+      socketId: socket.id
+    });
+    
     if (esFinal && isAuthenticated && actualizarEstadisticas && datos?.jugadores) {
       // Encontrar mi puntuación
       const miJugador = datos.jugadores.find(j => j.socket_id === socket.id);
+      console.log('🔍 Mi jugador encontrado:', miJugador);
+      
       if (miJugador) {
-        const puntuacion = miJugador.puntuacion || 0;
+        const puntuacion = miJugador.puntuacion_total || miJugador.puntuacion || 0;
         // Verificar si gané (primer lugar)
         const gane = datos.jugadores[0]?.socket_id === socket.id;
         
-        // Actualizar estadísticas en multijugador
-        // TODO: Separar puntos multijugador de victorias
-        console.log('Actualizando estadísticas multijugador:', { puntuacion, gane });
+        console.log('✅ Actualizando estadísticas multijugador:', { puntuacion, gane, miJugador });
         actualizarEstadisticas(puntuacion, gane);
       }
     }
