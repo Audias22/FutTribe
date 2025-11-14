@@ -240,23 +240,25 @@ function ElDuelazoMultiplayer({ onVolver, codigoSalaDirecto }) {
           isAuthenticated={isAuthenticated}
           actualizarEstadisticas={actualizarEstadisticas}
           onContinuar={(datos) => {
-            if (pantalla === 'resultados_finales') {
-              // Debugging para ver el estado
-              console.log('🔄 Volviendo a sala. Estado actual:');
-              console.log('  - codigoSala:', codigoSala);
-              console.log('  - nombreJugador:', nombreJugador);
-              console.log('  - localStorage codigo:', localStorage.getItem('futtribe_codigo_sala'));
-              console.log('  - localStorage nombre:', localStorage.getItem('futtribe_nombre_jugador'));
-              
-              // Si no hay código, recuperar de localStorage
-              if (!codigoSala.trim()) {
-                const codigoGuardado = localStorage.getItem('futtribe_codigo_sala');
-                if (codigoGuardado) {
-                  console.log('📁 Recuperando código de localStorage:', codigoGuardado);
-                  setCodigoSala(codigoGuardado);
-                }
+            // Debugging para ver el estado
+            console.log('🔄 Volviendo a sala desde:', pantalla);
+            console.log('  - codigoSala:', codigoSala);
+            console.log('  - nombreJugador:', nombreJugador);
+            console.log('  - localStorage codigo:', localStorage.getItem('futtribe_codigo_sala'));
+            console.log('  - localStorage nombre:', localStorage.getItem('futtribe_nombre_jugador'));
+            
+            // Si no hay código, recuperar de localStorage
+            if (!codigoSala.trim()) {
+              const codigoGuardado = localStorage.getItem('futtribe_codigo_sala');
+              if (codigoGuardado) {
+                console.log('📁 Recuperando código de localStorage:', codigoGuardado);
+                setCodigoSala(codigoGuardado);
               }
-              
+            }
+            
+            // ✅ VOLVER A SALA TANTO DESDE RONDA 1 COMO DESDE FINAL
+            if (pantalla === 'resultados_finales' || pantalla === 'resultados_ronda1') {
+              console.log('✅ Regresando a sala de espera');
               setPantalla('espera');
             }
           }}

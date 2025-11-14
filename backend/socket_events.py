@@ -291,27 +291,47 @@ def registrar_eventos_socket(socketio):
             
             sala = salas_activas[codigo]
             
+            # ✅ VERIFICAR QUE NO ESTEMOS EN ESTADO DE ESPERA FINAL
+            if sala.get('estado') == 'espera_final':
+                print(f'⚠️ Ignorando marcar_listo en {codigo} - sala en espera_final (usar finalista_listo)')
+                emit('error', {'message': 'La sala está en espera final. Los finalistas deben usar el botón correspondiente.'})
+                return
+            
             # Marcar jugador como listo
+            jugador_encontrado = False
             for jugador in sala['jugadores']:
                 if jugador['socket_id'] == request.sid:
+                    # ✅ VERIFICAR QUE EL JUGADOR NO SEA FINALISTA
+                    if jugador.get('clasifico_final', False):
+                        print(f'⚠️ Finalista {jugador["nombre"]} intentando marcar listo en sala normal - redirigiendo')
+                        emit('error', {'message': 'Eres finalista. Ve a la pantalla de Final.'})
+                        return
+                    
                     jugador['esta_listo'] = True
+                    jugador_encontrado = True
                     break
             
-            # Contar jugadores listos
-            listos = sum(1 for j in sala['jugadores'] if j['esta_listo'])
-            total = len(sala['jugadores'])
+            if not jugador_encontrado:
+                print(f'❌ Jugador no encontrado en sala {codigo}')
+                return
             
-            print(f'✅ Jugadores listos en {codigo}: {listos}/{total}')
+            # Contar solo jugadores NO finalistas
+            jugadores_no_finalistas = [j for j in sala['jugadores'] if not j.get('clasifico_final', False)]
+            listos = sum(1 for j in jugadores_no_finalistas if j['esta_listo'])
+            total = len(jugadores_no_finalistas)
+            
+            print(f'✅ Jugadores NO finalistas listos en {codigo}: {listos}/{total}')
             
             # Notificar a todos
             socketio.emit('estado_listos', {
                 'listos': listos,
                 'total': total,
-                'jugadores': sala['jugadores']
+                'jugadores': sala['jugadores']  # Enviar todos para mostrar en UI
             }, room=codigo)
             
-            # Si todos están listos, iniciar juego
-            if listos == total and total >= 2:
+            # Si todos los NO finalistas están listos, iniciar juego
+            if listos == total and total >= 1:  # Al menos 1 jugador eliminado debe estar listo
+                print(f'🎮 Todos los jugadores no finalistas están listos, iniciando nueva partida')
                 iniciar_ronda1(codigo, socketio)
             
         except Exception as e:
@@ -518,6 +538,11 @@ def registrar_eventos_socket(socketio):
             
             # Guardar finalistas en la sala para uso posterior
             sala['finalistas'] = finalistas
+            
+            # ✅ CAMBIAR ESTADO DE SALA A ESPERA_FINAL
+            if len(finalistas) >= 2:
+                sala['estado'] = 'espera_final'
+                print(f'🎯 Sala {codigo} cambiada a estado: espera_final')
             
             print(f'🏆 Finalistas de sala {codigo}: {[f["nombre"] for f in finalistas]}')
             
