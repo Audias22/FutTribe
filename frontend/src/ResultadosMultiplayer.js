@@ -14,15 +14,17 @@ function ResultadosMultiplayer({ codigoSala, datos, esFinal, isAuthenticated, ac
       socketId: socket.id
     });
     
-    if (esFinal && isAuthenticated && actualizarEstadisticas && datos?.jugadores) {
-      // Encontrar mi puntuación
-      const miJugador = datos.jugadores.find(j => j.socket_id === socket.id);
+    if (esFinal && isAuthenticated && actualizarEstadisticas && (datos?.jugadores || datos?.ranking)) {
+      // Encontrar mi puntuación (probar jugadores o ranking)
+      const jugadores = datos.jugadores || datos.ranking || [];
+      const miJugador = jugadores.find(j => j.socket_id === socket.id);
       console.log('🔍 Mi jugador encontrado:', miJugador);
+      console.log('🔍 Jugadores disponibles:', jugadores);
       
       if (miJugador) {
         const puntuacion = miJugador.puntuacion_total || miJugador.puntuacion || 0;
         // Verificar si gané (primer lugar)
-        const gane = datos.jugadores[0]?.socket_id === socket.id;
+        const gane = jugadores[0]?.socket_id === socket.id;
         
         console.log('✅ Actualizando estadísticas multijugador:', { puntuacion, gane, miJugador });
         actualizarEstadisticas(puntuacion, gane);
