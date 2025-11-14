@@ -4,33 +4,27 @@ import socket from './socket';
 
 function ResultadosMultiplayer({ codigoSala, datos, esFinal, isAuthenticated, actualizarEstadisticas, onContinuar, onIrEsperaFinal }) {
   
-  // Actualizar estadísticas cuando el componente se monta (solo para finales)
+  // Actualizar estadísticas cuando el componente se monta (solo para finales) - SOLO UNA VEZ
   useEffect(() => {
-    console.log('🎯 ResultadosMultiplayer useEffect:', {
-      esFinal,
-      isAuthenticated,
-      tieneActualizarEstadisticas: !!actualizarEstadisticas,
-      tieneDatos: !!datos?.jugadores,
-      socketId: socket.id
-    });
+    // Flag para evitar ejecución múltiple
+    let yaEjecutado = false;
     
-    if (esFinal && isAuthenticated && actualizarEstadisticas && (datos?.jugadores || datos?.ranking)) {
+    if (esFinal && isAuthenticated && actualizarEstadisticas && (datos?.jugadores || datos?.ranking) && !yaEjecutado) {
+      yaEjecutado = true;
+      
       // Encontrar mi puntuación (probar jugadores o ranking)
       const jugadores = datos.jugadores || datos.ranking || [];
       const miJugador = jugadores.find(j => j.socket_id === socket.id);
-      console.log('🔍 Mi jugador encontrado:', miJugador);
-      console.log('🔍 Jugadores disponibles:', jugadores);
       
       if (miJugador) {
         const puntuacion = miJugador.puntuacion_total || miJugador.puntuacion || 0;
-        // Verificar si gané (primer lugar)
         const gane = jugadores[0]?.socket_id === socket.id;
         
-        console.log('✅ Actualizando estadísticas multijugador:', { puntuacion, gane, miJugador });
+        console.log('✅ EJECUTANDO UNA VEZ:', { puntuacion, gane });
         actualizarEstadisticas(puntuacion, gane);
       }
     }
-  }, [esFinal, isAuthenticated, actualizarEstadisticas, datos]);
+  }, []); // SIN DEPENDENCIAS - solo se ejecuta al montar
 
   const handleContinuar = () => {
     if (esFinal) {
