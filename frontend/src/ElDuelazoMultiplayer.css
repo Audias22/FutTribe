@@ -961,6 +961,148 @@
   }
 }
 
+/* Pantalla de espera para otros jugadores */
+.esperando-jugadores {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  padding: 40px;
+}
+
+.esperando-content {
+  text-align: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 50px 40px;
+  border-radius: 25px;
+  box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+  max-width: 500px;
+  width: 100%;
+}
+
+.esperando-content h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.esperando-content p {
+  font-size: 1.3rem;
+  margin-bottom: 30px;
+  opacity: 0.9;
+}
+
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 30px 0;
+}
+
+.loading-dots span {
+  width: 12px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loading-dots span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.loading-dots span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0);
+  }
+  40% {
+    transform: scale(1);
+  }
+}
+
+.resumen-espera {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 25px;
+  padding-top: 25px;
+  border-top: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.puntos-final,
+.correctas-final {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 768px) {
+  .esperando-jugadores {
+    padding: 20px;
+    min-height: 300px;
+  }
+  
+  .esperando-content {
+    padding: 35px 25px;
+  }
+  
+  .esperando-content h2 {
+    font-size: 2rem;
+  }
+  
+  .esperando-content p {
+    font-size: 1.1rem;
+  }
+  
+  .resumen-espera {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .puntos-final,
+  .correctas-final {
+    font-size: 1rem;
+    padding: 10px 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .esperando-jugadores {
+    padding: 15px;
+  }
+  
+  .esperando-content {
+    padding: 30px 20px;
+  }
+  
+  .esperando-content h2 {
+    font-size: 1.8rem;
+  }
+  
+  .esperando-content p {
+    font-size: 1rem;
+  }
+  
+  .loading-dots span {
+    width: 10px;
+    height: 10px;
+  }
+  
+  .puntos-final,
+  .correctas-final {
+    font-size: 0.9rem;
+    padding: 8px 14px;
+  }
+}
+
 @media (max-width: 480px) {
   .juego-multiplayer {
     padding: 15px 10px;

@@ -10,6 +10,7 @@ function JuegoMultiplayer({ codigoSala, nombreJugador, preguntas, ronda, onFinal
   const [puntuacionTotal, setPuntuacionTotal] = useState(0);
   const [respuestasCorrectas, setRespuestasCorrectas] = useState(0);
   const [feedbackRespuesta, setFeedbackRespuesta] = useState(null);
+  const [esperandoOtrosJugadores, setEsperandoOtrosJugadores] = useState(false);
 
   const preguntaActual = preguntas[indicePregunta];
 
@@ -103,6 +104,9 @@ function JuegoMultiplayer({ codigoSala, nombreJugador, preguntas, ronda, onFinal
   };
 
   const finalizarRonda = () => {
+    // Mostrar mensaje de espera
+    setEsperandoOtrosJugadores(true);
+    
     const resultados = {
       puntuacion: puntuacionTotal,
       correctas: respuestasCorrectas,
@@ -118,6 +122,7 @@ function JuegoMultiplayer({ codigoSala, nombreJugador, preguntas, ronda, onFinal
       
       // Esperar a que TODOS terminen
       socket.once('resultados_ronda1', (data) => {
+        setEsperandoOtrosJugadores(false);
         onFinalizarRonda({ ...resultados, ...data });
       });
     } else {
@@ -128,6 +133,7 @@ function JuegoMultiplayer({ codigoSala, nombreJugador, preguntas, ronda, onFinal
       
       // Esperar a que TODOS terminen
       socket.once('resultados_finales', (data) => {
+        setEsperandoOtrosJugadores(false);
         onFinalizarRonda({ ...resultados, ...data });
       });
     }
@@ -143,6 +149,28 @@ function JuegoMultiplayer({ codigoSala, nombreJugador, preguntas, ronda, onFinal
 
   const porcentajeTiempo = (tiempoRestante / 15) * 100;
   const urgente = tiempoRestante <= 5;
+
+  if (esperandoOtrosJugadores) {
+    return (
+      <div className="juego-multiplayer">
+        <div className="esperando-jugadores">
+          <div className="esperando-content">
+            <h2>🎯 ¡Has terminado!</h2>
+            <p>Esperando a que otros jugadores terminen la {ronda === 'ronda1' ? 'Ronda 1' : 'Final'}...</p>
+            <div className="loading-dots">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+            <div className="resumen-espera">
+              <span className="puntos-final">⭐ {puntuacionTotal} puntos</span>
+              <span className="correctas-final">✅ {respuestasCorrectas}/{preguntas.length} correctas</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="juego-multiplayer">
